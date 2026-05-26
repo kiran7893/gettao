@@ -1,0 +1,3176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CDR Intelligence Platform v2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#060810;--s1:#0d1117;--s2:#141b26;--s3:#1a2235;
+  --border:#1f2d45;--border2:#253550;
+  --acc:#3b82f6;--acc2:#8b5cf6;--acc3:#06b6d4;
+  --green:#10b981;--red:#ef4444;--amber:#f59e0b;--pink:#ec4899;
+  --text:#e2e8f0;--muted:#94a3b8;--muted2:#475569;
+  --font:'Plus Jakarta Sans',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:10px;--r2:14px;--r3:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;overflow-x:hidden;overflow-y:auto;}
+
+/* ── AUTH ── */
+#auth{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+  background-image:radial-gradient(ellipse 60% 50% at 20% 40%,rgba(59,130,246,.07),transparent),
+                   radial-gradient(ellipse 50% 60% at 80% 60%,rgba(139,92,246,.06),transparent);}
+.auth-wrap{width:420px;}
+.auth-logo{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:4px;}
+.auth-logo span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.auth-tagline{color:var(--muted);font-size:12px;margin-bottom:32px;}
+.auth-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r3);padding:36px;position:relative;overflow:hidden;}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--acc3));}
+.f-label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-weight:600;}
+.f-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:.2s;margin-bottom:14px;}
+.f-input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(59,130,246,.12);}
+.auth-btn{width:100%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;border-radius:var(--r);padding:13px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:.2s;margin-top:4px;}
+.auth-btn:hover{filter:brightness(1.1);}
+.auth-err{color:var(--red);font-size:12px;min-height:18px;margin-top:8px;}
+.auth-hint{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.9;}
+.auth-hint b{color:var(--text);}
+
+/* ── LAYOUT ── */
+#app{display:none;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:230px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.main{margin-left:230px;min-height:100vh;padding:24px;}
+
+/* ── SIDEBAR ── */
+.sb-logo{padding:18px 20px 14px;font-size:18px;font-weight:800;letter-spacing:-.5px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-logo span{background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.sb-user{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;background:linear-gradient(135deg,var(--acc),var(--acc2));}
+.sb-uname{font-size:12px;font-weight:600;}
+.sb-role{font-size:10px;color:var(--muted);margin-top:1px;}
+.sb-logout{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px;}
+.sb-logout:hover{color:var(--red);}
+.sb-section{padding:14px 16px 4px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;margin:1px 8px;border-radius:8px;cursor:pointer;color:var(--muted);transition:.15s;font-size:12px;font-weight:500;}
+.nav-item:hover{background:var(--s2);color:var(--text);}
+.nav-item.active{background:rgba(59,130,246,.12);color:var(--acc);}
+.nav-icon{font-size:13px;width:18px;text-align:center;}
+.nav-badge{margin-left:auto;background:var(--acc);color:#fff;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.sb-bottom{margin-top:auto;padding:10px;border-top:1px solid var(--border);}
+
+/* ── GLOBAL FILTER BAR ── */
+.gfb{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.gfb-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.gf-sel{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:7px;font-family:var(--mono);font-size:11px;outline:none;cursor:pointer;transition:.15s;}
+.gf-sel:focus{border-color:var(--acc);}
+.gf-sep{width:1px;height:20px;background:var(--border);}
+.active-filter{display:inline-flex;align-items:center;gap:4px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--acc);padding:3px 8px;border-radius:6px;font-size:11px;}
+.active-filter button{background:none;border:none;color:var(--acc);cursor:pointer;font-size:12px;line-height:1;padding:0 0 0 2px;}
+.filter-actions{margin-left:auto;display:flex;gap:6px;}
+
+/* ── BUTTONS ── */
+.btn{padding:7px 14px;border-radius:8px;border:none;font-family:var(--font);font-size:12px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px;font-weight:600;}
+.btn-primary{background:var(--acc);color:#fff;}
+.btn-primary:hover{background:#2563eb;}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--text);border-color:var(--acc);}
+.btn-danger{background:transparent;color:var(--red);border:1px solid rgba(239,68,68,.3);}
+.btn-danger:hover{background:rgba(239,68,68,.08);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-amber{background:var(--amber);color:#000;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.ph-left h1{font-size:24px;font-weight:800;letter-spacing:-.5px;}
+.ph-left p{color:var(--muted);font-size:12px;margin-top:3px;}
+.ph-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.view-tag{font-size:10px;padding:3px 8px;border-radius:5px;background:rgba(59,130,246,.12);color:var(--acc);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;}
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:18px;position:relative;overflow:hidden;cursor:pointer;transition:.15s;}
+.kpi:hover{border-color:var(--border2);transform:translateY(-1px);}
+.kpi.selected{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:var(--kpi-c,var(--acc));}
+.kpi-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px;}
+.kpi-val{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:5px;}
+.kpi-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;padding:2px 6px;border-radius:6px;margin-top:6px;font-weight:600;}
+.trend-up{background:rgba(16,185,129,.12);color:var(--green);}
+.trend-dn{background:rgba(239,68,68,.12);color:var(--red);}
+
+/* ── CHART GRID ── */
+.cg{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-bottom:14px;}
+.cc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:18px;overflow:hidden;transition:.15s;}
+.cc:hover{border-color:var(--border2);}
+.cc.selected-chart{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);}
+.c12{grid-column:span 12;}.c8{grid-column:span 8;}.c7{grid-column:span 7;}.c6{grid-column:span 6;}.c5{grid-column:span 5;}.c4{grid-column:span 4;}.c3{grid-column:span 3;}
+@media(max-width:1200px){.c8,.c7,.c6,.c5,.c4,.c3,.c12{grid-column:span 12;}}
+.ct{font-weight:700;font-size:13px;margin-bottom:2px;}
+.cs{font-size:11px;color:var(--muted);margin-bottom:14px;}
+canvas{max-height:240px;}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto;border-radius:var(--r);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{text-align:left;padding:10px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;font-weight:700;user-select:none;}
+thead th:hover{color:var(--text);}
+tbody tr{border-bottom:1px solid rgba(31,45,69,.6);transition:.1s;cursor:pointer;}
+tbody tr:hover{background:var(--s2);}
+tbody tr.row-selected{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.2);}
+tbody td{padding:9px 12px;}
+.mono{font-family:var(--mono);}
+.dim{color:var(--muted);}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 7px;border-radius:6px;font-size:10px;font-weight:600;}
+.b-in{background:rgba(59,130,246,.12);color:#60a5fa;}
+.b-out{background:rgba(139,92,246,.12);color:#a78bfa;}
+.b-yes{background:rgba(16,185,129,.12);color:#34d399;}
+.b-no{background:rgba(239,68,68,.1);color:#f87171;}
+.b-miss{background:rgba(239,68,68,.12);color:#f87171;}
+.b-noresp{background:rgba(245,158,11,.12);color:#fbbf24;}
+.b-amber{background:rgba(245,158,11,.12);color:#fbbf24;}
+
+/* ── PROGRESS ── */
+.pbar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:3px;transition:.3s;}
+.pbar-wrap{display:flex;align-items:center;gap:8px;}
+.pbar-wrap .pbar{flex:1;}
+.pbar-pct{font-size:11px;font-family:var(--mono);width:38px;text-align:right;}
+
+/* ── PAGES ── */
+.page{display:none;}.page.active{display:block;}
+.page-header{margin-bottom:20px;}
+
+/* ── HEATMAP ── */
+.heatmap{display:grid;gap:3px;}
+.hm-cell{height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer;transition:.2s;}
+.hm-cell:hover{filter:brightness(1.3);outline:1px solid rgba(255,255,255,.3);}
+.hm-cell.hm-selected{outline:2px solid var(--acc);}
+
+/* ── UPLOAD ── */
+.drop-zone{border:2px dashed var(--border);border-radius:var(--r2);padding:40px;text-align:center;cursor:pointer;transition:.2s;}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--acc);background:rgba(59,130,246,.04);}
+.drop-icon{font-size:40px;margin-bottom:12px;}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:var(--r3);padding:32px;width:520px;max-width:95vw;max-height:85vh;overflow-y:auto;position:relative;}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:20px;}
+.modal-x{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;}
+.modal-x:hover{color:var(--text);}
+.form-row{margin-bottom:14px;}
+
+/* ── MAPPING TABLE ── */
+.mapping-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600;}
+.dm-carolyn{background:rgba(59,130,246,.12);color:#60a5fa;}
+.dm-elizabeth{background:rgba(16,185,129,.12);color:#34d399;}
+.dm-alejandra{background:rgba(245,158,11,.12);color:#fbbf24;}
+.dm-felicia{background:rgba(236,72,153,.12);color:#f472b6;}
+
+/* ── DOWNLOAD BAR ── */
+.dl-bar{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.dl-bar-label{font-size:11px;color:var(--muted);font-weight:600;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:12px 18px;font-size:12px;z-index:9999;transform:translateY(60px);opacity:0;transition:.3s;max-width:360px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:var(--green);}
+.toast.err{border-color:var(--red);}
+.toast.warn{border-color:var(--amber);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+.empty{text-align:center;padding:48px;color:var(--muted);}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--muted);}
+.sep{height:1px;background:var(--border);margin:20px 0;}
+.info-box{background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.18);border-radius:var(--r);padding:12px 16px;font-size:12px;color:var(--muted);margin-bottom:16px;}
+.info-box b{color:var(--acc);}
+
+/* Toggle */
+.toggle{width:34px;height:20px;border-radius:10px;background:var(--border);position:relative;cursor:pointer;transition:.2s;flex-shrink:0;}
+.toggle.on{background:var(--acc);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s;}
+.toggle.on::after{left:17px;}
+.perm-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border-radius:7px;border:1px solid var(--border);font-size:11px;}
+.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.role-pill{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.rp-superadmin{background:rgba(245,158,11,.15);color:var(--amber);}
+.rp-executive{background:rgba(139,92,246,.15);color:#a78bfa;}
+.rp-dm{background:rgba(59,130,246,.15);color:#60a5fa;}
+.rp-staff{background:rgba(16,185,129,.12);color:#34d399;}
+.rp-viewer{background:rgba(100,116,139,.15);color:var(--muted);}
+
+/* ── DUPLICATE MODAL ── */
+.dup-row{background:var(--s2);border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid var(--border);}
+.dup-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--muted);margin-top:6px;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth">
+  <div class="auth-wrap">
+    <div class="auth-logo">CDR<span>Intel</span> <span style="font-size:13px;font-weight:400;color:var(--muted);background:none;-webkit-text-fill-color:var(--muted)">v2</span></div>
+    <div class="auth-tagline">Insurance Call Center Intelligence Platform</div>
+    <div class="auth-card">
+      <label class="f-label">Username</label>
+      <input class="f-input" id="au" type="text" placeholder="firstname.lastname" autocomplete="off">
+      <label class="f-label">Password</label>
+      <input class="f-input" id="ap" type="password" placeholder="Password">
+      <button class="auth-btn" onclick="doLogin()">Sign In →</button>
+      <div class="auth-err" id="aerr"></div>
+      <div class="auth-hint">
+        Powered by: <span style="font-weight:700;color:var(--acc);letter-spacing:.03em">GETTAO.AI</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav class="sidebar">
+    <div class="sb-logo">CDR<span>Intel</span></div>
+    <div class="sb-user">
+      <div class="av" id="nav-av">SA</div>
+      <div>
+        <div class="sb-uname" id="nav-name">Super Admin</div>
+        <div class="sb-role" id="nav-role">Super Admin</div>
+      </div>
+      <button class="sb-logout" onclick="doLogout()" title="Logout">⏻</button>
+    </div>
+
+    <div class="sb-section">Analytics</div>
+    <div class="nav-item active" onclick="goPage('executive')" id="nb-executive"><span class="nav-icon">📊</span>Executive View</div>
+    <div class="nav-item" onclick="goPage('manager')" id="nb-manager"><span class="nav-icon">📈</span>Manager View</div>
+    <div class="nav-item" onclick="goPage('agents')" id="nb-agents"><span class="nav-icon">👤</span>Agent Performance</div>
+    <div class="nav-item" onclick="goPage('cdr')" id="nb-cdr"><span class="nav-icon">📋</span>CDR Records<span class="nav-badge" id="nb-cdr-cnt">26K</span></div>
+    <div class="nav-item" onclick="goPage('myperf')" id="nb-myperformance"><span class="nav-icon">🎯</span>My Performance</div>
+
+    <div class="sb-section">Management</div>
+    <div class="nav-item" onclick="goPage('mapping')" id="nb-mapping"><span class="nav-icon">🗂</span>Branch Mapping</div>
+    <div class="nav-item" onclick="goPage('upload')" id="nb-upload"><span class="nav-icon">⬆</span>Upload Data</div>
+    <div class="nav-item" onclick="goPage('users')" id="nb-users"><span class="nav-icon">🔐</span>User Management</div>
+    <div class="nav-item" onclick="goPage('validate')" id="nb-validate"><span class="nav-icon">✅</span>Data Validation</div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ═══ EXECUTIVE ═══ -->
+    <div class="page active" id="page-executive">
+      <div class="ph">
+        <div class="ph-left"><h1>Executive Overview <span class="view-tag">C-Suite</span></h1><p id="exec-subtitle"></p></div>
+        <div class="ph-right" id="exec-dl-btns"></div>
+      </div>
+      <div class="dl-bar"><span class="dl-bar-label">Download:</span>
+        <button class="btn btn-ghost btn-sm" onclick="downloadPDF('executive')">⬇ PDF Report</button>
+        <button class="btn btn-ghost btn-sm" onclick="downloadPBI()">⬇ Power BI (.pbix data)</button>
+        <span class="gf-sep"></span>
+        <span class="dl-bar-label">Viewing:</span>
+        <span id="exec-viewing-label" style="font-size:11px;color:var(--acc)">All Data</span>
+      </div>
+      <div class="gfb" id="exec-filters">
+        <span class="gfb-label">Filters:</span>
+        <select class="gf-sel" id="ef-date" onchange="applyFilters('exec')"><option value="all">All Days</option><option value="2026-05-09">May 9</option><option value="2026-05-08">May 8</option><option value="2026-05-07">May 7</option></select>
+        <select class="gf-sel" id="ef-dm" onchange="cascadeFromDM('exec')"><option value="all">All Districts</option></select>
+        <select class="gf-sel" id="ef-branch" onchange="cascadeFromBranch('exec')"><option value="all">All Branches</option></select>
+        <select class="gf-sel" id="ef-staff" onchange="applyFilters('exec')"><option value="all">All Staff</option></select>
+        <select class="gf-sel" id="ef-dir" onchange="applyFilters('exec')"><option value="all">All Directions</option><option value="Inbound">Inbound</option><option value="Outbound">Outbound</option></select>
+        <div class="filter-actions"><button class="btn btn-ghost btn-sm" onclick="clearFilters('exec')">✕ Clear</button></div>
+      </div>
+      <div class="kpi-grid" id="exec-kpis"></div>
+      <div class="cg">
+        <div class="cc c8" id="cc-daily"><div class="ct">Call Volume by Day</div><div class="cs">Total · Answered · Missed · No Response — click to filter</div><canvas id="ch-daily"></canvas></div>
+        <div class="cc c4" id="cc-donut"><div class="ct">Call Outcomes</div><div class="cs">Answer rate breakdown — click segment</div><canvas id="ch-donut"></canvas></div>
+        <div class="cc c6" id="cc-dir"><div class="ct">Inbound vs Outbound</div><div class="cs">Direction split — click to filter</div><canvas id="ch-dir"></canvas></div>
+        <div class="cc c6" id="cc-hourly"><div class="ct">Hourly Traffic Pattern</div><div class="cs">Peak hours — click bar to filter</div><canvas id="ch-hourly"></canvas></div>
+        <div class="cc c4" id="cc-connect"><div class="ct">Connect Rate</div><div class="cs">Inbound answer rate vs Outbound connect rate</div><div id="connect-gauge" style="padding-top:8px"></div></div>
+        <div class="cc c8" id="cc-branch-perf"><div class="ct">Branch Performance Overview</div><div class="cs">Click a branch bar to drill down</div><canvas id="ch-branch" style="max-height:220px"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ═══ MANAGER ═══ -->
+    <div class="page" id="page-manager">
+      <div class="ph">
+        <div class="ph-left"><h1>Manager Dashboard <span class="view-tag">District Manager</span></h1><p id="mgr-subtitle">Team performance across your branches</p></div>
+        <div class="ph-right">
+          <button class="btn btn-ghost btn-sm" onclick="downloadPDF('manager')">⬇ PDF</button>
+          <button class="btn btn-ghost btn-sm" onclick="downloadPBI()">⬇ Power BI</button>
+        </div>
+      </div>
+      <div class="dl-bar"><span class="dl-bar-label">Viewing district:</span><span id="mgr-viewing" style="font-size:11px;color:var(--acc)">All</span></div>
+      <div class="gfb">
+        <span class="gfb-label">Filters:</span>
+        <select class="gf-sel" id="mf-date" onchange="applyFilters('mgr')"><option value="all">All Days</option><option value="2026-05-09">May 9</option><option value="2026-05-08">May 8</option><option value="2026-05-07">May 7</option></select>
+        <select class="gf-sel" id="mf-dm" onchange="cascadeFromDM('mgr')"><option value="all">All Districts</option></select>
+        <select class="gf-sel" id="mf-branch" onchange="cascadeFromBranch('mgr')"><option value="all">All Branches</option></select>
+        <select class="gf-sel" id="mf-staff" onchange="applyFilters('mgr')"><option value="all">All Staff</option></select>
+        <select class="gf-sel" id="mf-dir" onchange="applyFilters('mgr')"><option value="all">All Directions</option><option value="Inbound">Inbound</option><option value="Outbound">Outbound</option></select>
+        <div class="filter-actions"><button class="btn btn-ghost btn-sm" onclick="clearFilters('mgr')">✕ Clear</button></div>
+      </div>
+      <div class="kpi-grid" id="mgr-kpis"></div>
+      <div class="cg">
+        <div class="cc c8"><div class="ct">Top Agents by Call Volume</div><div class="cs">Answered vs Missed — click bar to select agent</div><canvas id="ch-topage"></canvas></div>
+        <div class="cc c4"><div class="ct">Branch Breakdown</div><div class="cs">My branches — click to filter</div><div style="overflow-y:auto;max-height:260px" id="mgr-branch-list"></div></div>
+        <div class="cc c12"><div class="ct">Answer Rate by Agent (Top 20)</div><div class="cs">Inbound connect rate — green >70%, amber 40-70%, red <40%</div><canvas id="ch-ar" style="max-height:180px"></canvas></div>
+        <div class="cc c6"><div class="ct">Inbound Missed Calls by Branch</div><div class="cs">Missed inbound calls = no answer to customer</div><canvas id="ch-missed-branch"></canvas></div>
+        <div class="cc c6"><div class="ct">Outbound No Response by Branch</div><div class="cs">Outbound calls with no answer from customer</div><canvas id="ch-noresp-branch"></canvas></div>
+      </div>
+      <div class="cc" style="margin-bottom:14px">
+        <div class="ct">Call Volume Heatmap</div><div class="cs">Hour × Day — click cell to filter by hour</div>
+        <div id="mgr-heatmap" style="margin-top:12px;overflow-x:auto;"></div>
+        <div id="heatmap-detail-table"></div>
+      </div>
+    </div>
+
+    <!-- ═══ AGENTS ═══ -->
+    <div class="page" id="page-agents">
+      <div class="ph">
+        <div class="ph-left"><h1>Agent Performance <span class="view-tag">Supervisor</span></h1><p>Individual staff metrics with insurance KPIs</p></div>
+        <div class="ph-right">
+          <input class="gf-sel" id="ag-search" placeholder="🔍 Search agent…" oninput="renderAgents()" style="width:180px;">
+          <select class="gf-sel" id="agf-date" onchange="renderAgents()"><option value="all">All Days</option><option value="2026-05-09">May 9</option><option value="2026-05-08">May 8</option><option value="2026-05-07">May 7</option></select>
+          <select class="gf-sel" id="agf-branch" onchange="renderAgents()"><option value="all">All Branches</option></select>
+          <select class="gf-sel" id="agf-dm" onchange="cascadeAgentDM()"><option value="all">All Districts</option></select>
+          <button class="btn btn-ghost btn-sm" onclick="downloadPDF('agents')">⬇ PDF</button>
+        </div>
+      </div>
+      <div class="cc" style="margin-bottom:14px">
+        <div class="tw"><table>
+          <thead><tr>
+            <th>#</th><th onclick="sortAg('name')">Agent</th><th>Branch</th><th>District</th>
+            <th onclick="sortAg('total')">Total Calls</th>
+            <th onclick="sortAg('inbound')">Inbound</th><th onclick="sortAg('outbound')">Outbound</th>
+            <th onclick="sortAg('answered_in')">Answered In.</th><th onclick="sortAg('missed_in')">Missed In.</th>
+            <th onclick="sortAg('connect_out')">Connected Out.</th><th onclick="sortAg('noresp_out')">No Resp. Out.</th>
+            <th onclick="sortAg('inbound_rate')">Connect Rate ↕</th>
+            <th onclick="sortAg('outbound_rate')">Outbound Rate ↕</th>
+            <th onclick="sortAg('avg_dur')">Avg Duration</th>
+            <th onclick="sortAg('talk_time')">Talk Time</th>
+            <th>Trend</th>
+          </tr></thead>
+          <tbody id="ag-tbody"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ═══ CDR ═══ -->
+    <div class="page" id="page-cdr">
+      <div class="ph">
+        <div class="ph-left"><h1>CDR Records</h1><p id="cdr-sub">All call detail records</p></div>
+        <div class="ph-right">
+          <input class="gf-sel" id="cdr-search" placeholder="🔍 Search…" oninput="renderCDR(1)" style="width:150px;">
+          <select class="gf-sel" id="cdr-date" onchange="renderCDR(1)"><option value="all">All Days</option><option value="2026-05-09">May 9</option><option value="2026-05-08">May 8</option><option value="2026-05-07">May 7</option></select>
+          <select class="gf-sel" id="cdr-branch" onchange="renderCDR(1)"><option value="all">All Branches</option></select>
+          <select class="gf-sel" id="cdr-dir" onchange="renderCDR(1)"><option value="all">All</option><option value="Inbound">Inbound</option><option value="Outbound">Outbound</option></select>
+          <select class="gf-sel" id="cdr-ans" onchange="renderCDR(1)"><option value="all">All Outcomes</option><option value="answered">Answered</option><option value="missed">Missed (Inbound)</option><option value="noresp">No Response (Outbound)</option></select>
+          <button class="btn btn-ghost btn-sm" onclick="downloadPDF('cdr')">⬇ PDF</button>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="tw"><table>
+          <thead><tr><th>Date</th><th>Time</th><th>Agent</th><th>Branch</th><th>District</th><th>Caller</th><th>Calling #</th><th>Called #</th><th>Duration</th><th>Direction</th><th>Outcome</th></tr></thead>
+          <tbody id="cdr-tbody"></tbody>
+        </table></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);margin-top:4px;">
+          <div style="font-size:11px;color:var(--muted)" id="cdr-cnt"></div>
+          <div style="display:flex;gap:6px" id="cdr-pag"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MY PERFORMANCE ═══ -->
+    <div class="page" id="page-myperformance">
+      <div class="ph">
+        <div class="ph-left"><h1>My Performance <span class="view-tag">Staff</span></h1><p id="my-sub">Your personal call metrics</p></div>
+        <div class="ph-right"><button class="btn btn-ghost btn-sm" onclick="downloadPDF('myperf')">⬇ PDF</button></div>
+      </div>
+      <div class="kpi-grid" id="my-kpis"></div>
+      <div class="cg">
+        <div class="cc c8"><div class="ct">My Call Activity by Day</div><div class="cs">Daily breakdown of your calls</div><canvas id="ch-my-daily"></canvas></div>
+        <div class="cc c4"><div class="ct">My Call Outcomes</div><div class="cs">Answered, missed, no response</div><canvas id="ch-my-donut"></canvas></div>
+        <div class="cc c12"><div class="ct">My Hourly Activity</div><div class="cs">When you are most active</div><canvas id="ch-my-hourly"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ═══ MAPPING ═══ -->
+    <div class="page" id="page-mapping">
+      <div class="ph">
+        <div class="ph-left"><h1>Branch Directory <span class="view-tag">Admin</span></h1><p>All branches, district managers, and staff</p></div>
+        <div class="ph-right">
+          <button class="btn btn-primary" onclick="openMappingModal()">+ Add/Edit Entry</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportMappingCSV()">⬇ Export CSV</button>
+        </div>
+      </div>
+      <div class="gfb">
+        <span class="gfb-label">Filter:</span>
+        <input class="gf-sel" id="map-search" placeholder="🔍 Search branch, staff…" oninput="renderMapping()" style="width:200px;">
+        <select class="gf-sel" id="map-dm" onchange="renderMapping()"><option value="all">All Districts</option><option value="Carolyn">District: Carolyn</option><option value="Elizabeth">District: Elizabeth</option><option value="Alejandra">District: Alejandra</option><option value="Felicia">District: Felicia</option></select>
+      </div>
+      <div class="cc"><div class="tw">
+        <table id="mapping-table">
+          <thead><tr><th>Branch #</th><th>Branch Name</th><th>District Manager</th><th>Staff Member</th><th>Extension</th><th>Phone</th><th>Address</th><th>Actions</th></tr></thead>
+          <tbody id="map-tbody"></tbody>
+        </table>
+      </div></div>
+    </div>
+
+    <!-- ═══ UPLOAD ═══ -->
+    <div class="page" id="page-upload">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>Data Sources <span class="view-tag">Super Admin</span></h1>
+          <p>Load CDR records and the mapping file from CSV files on your local system</p>
+        </div>
+        <div class="ph-right">
+          <button class="btn btn-ghost btn-sm" onclick="dsShowDuplicates()" id="ds-dup-btn" style="display:none">
+            ⚠ View Duplicate Log
+          </button>
+        </div>
+      </div>
+
+      <!-- ── STATUS BANNER ────────────────────────────────── -->
+      <div id="ds-banner" style="background:rgba(245,158,11,.12);border:1px solid var(--amber);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">⚠</span>
+        <div>
+          <strong style="color:var(--amber)">No data loaded.</strong>
+          <span style="color:var(--muted)"> Load a Mapping File first, then load CDR records. Charts will populate automatically.</span>
+        </div>
+      </div>
+
+      <!-- ── TWO FILE INPUTS ───────────────────────────────── -->
+      <div class="cg" style="margin-bottom:16px">
+
+        <!-- MAPPING FILE -->
+        <div class="cc c6" style="padding:20px">
+          <div class="ct">Step 1 — Mapping File</div>
+          <div class="cs" style="margin-bottom:14px">Branch / staff / DM lookup table (CSV)</div>
+          <div style="background:var(--s2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:10px;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text)">Required columns (any order, header row needed):</strong><br>
+            <code style="color:var(--acc)">CDR Name</code> — the User Name exactly as it appears in CDR<br>
+            <code style="color:var(--acc)">Staff Name</code> — display name of the agent<br>
+            <code style="color:var(--acc)">Branch</code> — branch name<br>
+            <code style="color:var(--acc)">District Manager</code> — full DM name<br>
+            <em>Also accepts table.csv format: Branch Name, District Manager, Staff Name, Extension</em>
+          </div>
+          <div class="drop-zone" id="dz-map"
+            onclick="document.getElementById('fi-map').click()"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="dsDrop(event,'map')"
+            style="padding:20px;text-align:center;cursor:pointer">
+            <div style="font-size:26px;margin-bottom:6px">📋</div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">Drop mapping CSV or click to browse</div>
+            <div style="font-size:11px;color:var(--muted)">table.csv · mapping.csv · Any CSV with the required columns</div>
+            <input type="file" id="fi-map" accept=".csv" onchange="dsLoadMapping(event)" style="display:none">
+          </div>
+          <div id="ds-map-status" style="margin-top:10px;font-size:12px"></div>
+        </div>
+
+        <!-- CDR FILE -->
+        <div class="cc c6" style="padding:20px">
+          <div class="ct">Step 2 — CDR Records</div>
+          <div class="cs" style="margin-bottom:14px">Call Detail Records export (CSV) — multiple files supported</div>
+          <div style="background:var(--s2);border-radius:6px;padding:10px 12px;margin-bottom:10px;font-size:10px;color:var(--muted);line-height:1.7">
+            <strong style="color:var(--text)">Required columns:</strong><br>
+            <code style="color:var(--acc)">User Name</code> · <code style="color:var(--acc)">Direction</code> · <code style="color:var(--acc)">Answer Indicator</code><br>
+            <code style="color:var(--acc)">Duration (HH:MM:SS)</code> · <code style="color:var(--acc)">Start Date</code> · <code style="color:var(--acc)">Start Time (HH:MM:SS) Central</code><br>
+            <code style="color:var(--acc)">Source File</code> — used as the date identifier<br>
+            <em>Duplicates are tracked and logged — originals are kept, duplicates recorded with metadata.</em>
+          </div>
+          <div class="drop-zone" id="dz-cdr"
+            onclick="document.getElementById('fi-cdr').click()"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="dsDrop(event,'cdr')"
+            style="padding:20px;text-align:center;cursor:pointer">
+            <div style="font-size:26px;margin-bottom:6px">📞</div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px">Drop CDR CSV files or click to browse</div>
+            <div style="font-size:11px;color:var(--muted)">Supports multiple files · Auto-deduplicates · Appends to existing data</div>
+            <input type="file" id="fi-cdr" accept=".csv" multiple onchange="dsLoadCDR(event)" style="display:none">
+          </div>
+          <div id="ds-cdr-status" style="margin-top:10px;font-size:12px"></div>
+        <div id="ds-cdr-diag" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- ── FOLDER WATCHER ──────────────────────────────────── -->
+      <div class="cc" style="margin-bottom:16px;padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div><div class="ct">Auto-Import: Watch Local Folder</div>
+          <div class="cs">Select a folder — new CSV files dropped into it load automatically at the chosen interval</div></div>
+          <span id="ds-folder-last" style="font-size:10px;color:var(--muted)"></span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">WATCHED FOLDER</label>
+            <div style="background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:12px;color:var(--text)">
+              <span id="ds-folder-name">None selected</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">SCAN EVERY</label>
+            <select id="ds-watch-interval" class="gf-sel" style="padding:8px 10px;font-size:12px;background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--text)">
+              <option value="10000">10 sec</option>
+              <option value="30000" selected>30 sec</option>
+              <option value="60000">1 min</option>
+              <option value="300000">5 min</option>
+            </select>
+          </div>
+          <button class="btn" style="background:var(--acc);color:#fff;padding:9px 16px;font-weight:700" onclick="dsPickFolder()">Select Folder</button>
+          <button id="ds-folder-stop" class="btn btn-ghost" style="padding:9px 16px;display:none;color:var(--red)" onclick="dsStopWatch()">Stop Watch</button>
+        </div>
+        <div id="ds-folder-status" style="margin-top:8px;font-size:12px"></div>
+      </div>
+
+      <!-- ── CURRENT DATASET STATS ─────────────────────────── -->
+      <div class="cg">
+        <div class="cc c3">
+          <div class="ct">Dataset Summary</div>
+          <div id="ds-summary" style="margin-top:10px;font-size:12px">
+            <div style="color:var(--muted);text-align:center;padding:16px 0">No data loaded</div>
+          </div>
+        </div>
+        <div class="cc c3">
+          <div class="ct">Mapping Status</div>
+          <div id="ds-map-summary" style="margin-top:10px;font-size:12px">
+            <div style="color:var(--muted);text-align:center;padding:16px 0">No mapping loaded</div>
+          </div>
+        </div>
+        <div class="cc c3">
+          <div class="ct">Files Loaded</div>
+          <div id="ds-files-log" style="margin-top:10px;font-size:11px;max-height:160px;overflow-y:auto">
+            <div style="color:var(--muted);text-align:center;padding:16px 0">None</div>
+          </div>
+        </div>
+        <div class="cc c3">
+          <div class="ct">Duplicate Log <span id="ds-dup-count" style="color:var(--amber);font-size:11px"></span></div>
+          <div id="ds-dup-summary" style="margin-top:10px;font-size:11px;max-height:160px;overflow-y:auto">
+            <div style="color:var(--muted);text-align:center;padding:16px 0">No duplicates found</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="ds-unmapped-panel" style="display:none;margin-bottom:16px"><div class="cc" style="padding:16px;border:1px solid var(--amber)"></div></div>
+
+      <!-- ── FILE MANAGER ─────────────────────────────────────── -->
+      <div class="cc" style="margin-bottom:16px;padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div><div class="ct">Loaded CDR Files</div>
+          <div class="cs">Remove a file to purge its records — all charts rebuild immediately</div></div>
+        </div>
+        <div id="ds-file-manager">
+          <div style="color:var(--muted);text-align:center;padding:16px 0;font-size:12px">No CDR files loaded</div>
+        </div>
+      </div>
+
+      <!-- ── DUPLICATE DETAIL TABLE (hidden by default) ────── -->
+      <div id="ds-dup-detail" style="display:none;margin-top:16px">
+        <div class="cc" style="padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="ct">Duplicate Record Log</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="dsExportDuplicates()">Export CSV</button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('ds-dup-detail').style.display='none'">Hide</button>
+            </div>
+          </div>
+          <div class="cs" style="margin-bottom:10px">Original records were retained. These duplicates are logged for reference.</div>
+          <div class="tw" id="ds-dup-table-wrap" style="max-height:400px;overflow-y:auto"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ USERS ═══ -->
+    <div class="page" id="page-users">
+      <div class="ph">
+        <div class="ph-left">
+          <h1>User Management <span class="view-tag">Super Admin</span></h1>
+          <p>Manage logins, roles and access permissions</p>
+        </div>
+        <div class="ph-right">
+          <button class="btn btn-primary" onclick="openNewUser()">+ New User</button>
+        </div>
+      </div>
+      <div class="info-box"><b>Role Hierarchy:</b> Super Admin → Executive → District Manager → Staff.</div>
+      <div class="gfb">
+        <input class="gf-sel" id="usr-search" placeholder="🔍 Search users…" oninput="renderUsers()" style="width:200px;">
+        <select class="gf-sel" id="usr-role" onchange="renderUsers()">
+          <option value="all">All Roles</option>
+        </select>
+      </div>
+      <div class="cc" style="padding:0;overflow:auto;margin-top:16px">
+        <table style="width:100%">
+          <thead>
+            <tr><th>Name</th><th>Username</th><th>Role</th><th>Branch / Scope</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="users-list"></tbody>
+        </table>
+      </div>
+    </div>
+
+
+      <div class="page" id="page-validate" style="display:none">
+        <!-- populated by renderValidate() -->
+      </div></div>
+        <div class="ph-right"><button class="btn btn-primary" onclick="openUserModal()">+ New User</button></div>
+      </div>
+      <div class="info-box"><b>Role Hierarchy:</b> Super Admin → Executive → District Manager → Staff. Each role sees only data relevant to their scope.</div>
+      <div class="gfb"><input class="gf-sel" id="usr-search" placeholder="🔍 Search users…" oninput="renderUsers()" style="width:200px;"><select class="gf-sel" id="usr-role" onchange="renderUsers()"><option value="all">All Roles</option></select></div>
+      <div class="cc"><div class="tw">
+        <table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Branch / DM</th><th>Pages</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="usr-tbody"></tbody></table>
+      </div></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="overlay" id="user-modal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal('user-modal')">✕</button>
+    <div class="modal-title" id="um-title">Create User</div>
+    <div class="form-row"><label class="f-label">Full Name</label><input class="f-input" id="um-name" placeholder="First Last"></div>
+    <div class="form-row"><label class="f-label">Username</label><input class="f-input" id="um-uname" placeholder="first.last"></div>
+    <div class="form-row"><label class="f-label">Password</label><input class="f-input" id="um-pwd" type="password" placeholder="Min 6 chars"></div>
+    <div class="form-row"><label class="f-label">Role</label>
+      <select class="f-input" id="um-role" onchange="updatePermUI()">
+        <!-- populated by populateRoleSelect() -->
+      </select>
+    </div>
+    <div class="form-row" id="um-branch-row" style="display:none"><label class="f-label">Branch</label><select class="f-input" id="um-branch"></select></div>
+    <div class="form-row"><label class="f-label">Page Access</label><div class="perm-grid" id="um-perms"></div></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal('user-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="mapping-modal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal('mapping-modal')">✕</button>
+    <div class="modal-title" id="mm-title">Add / Edit Branch Entry</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-row"><label class="f-label">Branch #</label><input class="f-input" id="mm-bn" placeholder="e.g. 52"></div>
+      <div class="form-row"><label class="f-label">Branch Name</label><input class="f-input" id="mm-name" placeholder="Branch Name"></div>
+      <div class="form-row"><label class="f-label">District Manager</label><select class="f-input" id="mm-dm"><option>Carolyn</option><option>Elizabeth</option><option>Alejandra</option><option>Felicia</option></select></div>
+      <div class="form-row"><label class="f-label">Staff Name</label><input class="f-input" id="mm-staff" placeholder="First Last"></div>
+      <div class="form-row"><label class="f-label">Extension</label><input class="f-input" id="mm-ext" placeholder="77XXX"></div>
+      <div class="form-row"><label class="f-label">Phone</label><input class="f-input" id="mm-phone" placeholder="(708) 000-0000"></div>
+    </div>
+    <div class="form-row"><label class="f-label">Address</label><input class="f-input" id="mm-addr" placeholder="Full address"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal('mapping-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMapping()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="dup-modal">
+  <div class="modal" style="width:580px">
+    <button class="modal-x" onclick="closeModal('dup-modal')">✕</button>
+    <div class="modal-title">⚠ Duplicate Records Found</div>
+    <div style="color:var(--muted);font-size:12px;margin-bottom:16px" id="dup-count"></div>
+    <div id="dup-list" style="max-height:300px;overflow-y:auto;margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="resolveDups('keep')">Keep All</button>
+      <button class="btn btn-amber" onclick="resolveDups('remove')">Remove Duplicates</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>var curPage="";
+
+// EMBEDDED DATA v3
+const D = {
+  daily:[], hourly:[], dm_stats:[], branch_stats:[], staff_stats:[],
+  staff_daily:[], staff_hourly:[], user_stats:[], user_daily:[],
+  branch_stats_norm:[], dm_stats_norm:[], hourly_totals:[], hourly_by_date:[],
+  dates:[], branches:[], dms:[], cdr_user_map:{}, branch_dir:{},
+  users:[],
+  dates_available:[], date_range:{start:'',end:''},
+  redirect_reasons:{}, meta:{total_cdr_rows:0,agent_calls:0,system_calls_excluded:0},
+  duplicates:[]
+};
+;
+const CFG_USERS = [{"id": 1, "name": "Super Admin", "username": "superadmin", "password": "Admin@2026", "role": "superadmin", "branch": null, "branch_name": "", "dm": null, "extension": "", "branches_managed": []}, {"id": 10, "name": "Carolyn Wilson", "username": "carolyn.wilson", "password": "Carolyn@2026", "role": "district_manager", "branch": null, "branch_name": "", "dm": "Carolyn", "extension": "", "branches_managed": [2, 6, 9, 11, 15, 16, 25, 26, 32, 35, 41, 46]}, {"id": 11, "name": "Elizabeth Sosa", "username": "elizabeth.sosa", "password": "Elizabeth@2026", "role": "district_manager", "branch": null, "branch_name": "", "dm": "Elizabeth", "extension": "", "branches_managed": [3, 7, 8, 13, 17, 20, 21, 22, 23, 37, 42, 43]}, {"id": 12, "name": "Alejandra Mares", "username": "alejandra.mares", "password": "Alejandra@2026", "role": "district_manager", "branch": null, "branch_name": "", "dm": "Alejandra", "extension": "", "branches_managed": [4, 10, 12, 14, 18, 19, 27, 29, 31, 36, 39, 49]}, {"id": 13, "name": "Felicia Garcia", "username": "felicia.garcia", "password": "Felicia@2026", "role": "district_manager", "branch": null, "branch_name": "", "dm": "Felicia", "extension": "", "branches_managed": [5, 24, 28, 34, 38, 44, 45, 48, 50, 51]}, {"id": 14, "name": "Evelyn Arellano", "username": "evelyn.arellano", "password": "Evelyn@2026", "role": "staff", "branch": 2, "branch_name": "Lyons", "dm": "Carolyn", "extension": "77021", "branches_managed": []}, {"id": 15, "name": "Mario De Leon", "username": "mario.de.leon", "password": "Mario@2026", "role": "staff", "branch": 2, "branch_name": "Lyons", "dm": "Carolyn", "extension": "77022", "branches_managed": []}, {"id": 16, "name": "Priscela Cruz", "username": "priscela.cruz", "password": "Priscela@2026", "role": "staff", "branch": 2, "branch_name": "Lyons", "dm": "Carolyn", "extension": "77023", "branches_managed": []}, {"id": 17, "name": "Yoselin Arredondo", "username": "yoselin.arredondo", "password": "Yoselin@2026", "role": "staff", "branch": 3, "branch_name": "Westmont", "dm": "Elizabeth", "extension": "77034", "branches_managed": []}, {"id": 18, "name": "Mirna Ramirez", "username": "mirna.ramirez", "password": "Mirna@2026", "role": "staff", "branch": 4, "branch_name": "Cicero", "dm": "Alejandra", "extension": "77042", "branches_managed": []}, {"id": 19, "name": "Vanessa Lozano", "username": "vanessa.lozano", "password": "Vanessa@2026", "role": "staff", "branch": 4, "branch_name": "Cicero", "dm": "Alejandra", "extension": "77043", "branches_managed": []}, {"id": 20, "name": "Perla Zigala", "username": "perla.zigala", "password": "Perla@2026", "role": "staff", "branch": 4, "branch_name": "Cicero", "dm": "Alejandra", "extension": "77045", "branches_managed": []}, {"id": 21, "name": "Gabrielle Orozco", "username": "gabrielle.orozco", "password": "Gabrielle@2026", "role": "staff", "branch": 5, "branch_name": "Broadview", "dm": "Felicia", "extension": "77051", "branches_managed": []}, {"id": 22, "name": "Aileen Sagastume", "username": "aileen.sagastume", "password": "Aileen@2026", "role": "staff", "branch": 5, "branch_name": "Broadview", "dm": "Felicia", "extension": "77052", "branches_managed": []}, {"id": 23, "name": "Shekinah Edmond", "username": "shekinah.edmond", "password": "Shekinah@2026", "role": "staff", "branch": 5, "branch_name": "Broadview", "dm": "Felicia", "extension": "77054", "branches_managed": []}, {"id": 24, "name": "Natividad Hernandez", "username": "natividad.hernandez", "password": "Natividad@2026", "role": "staff", "branch": 6, "branch_name": "79th Street", "dm": "Carolyn", "extension": "77064", "branches_managed": []}, {"id": 25, "name": "Dalaysia King", "username": "dalaysia.king", "password": "Dalaysia@2026", "role": "staff", "branch": 6, "branch_name": "79th Street", "dm": "Carolyn", "extension": "77065", "branches_managed": []}, {"id": 26, "name": "Tania Martinez", "username": "tania.martinez", "password": "Tania@2026", "role": "staff", "branch": 7, "branch_name": "Hickory Hills", "dm": "Elizabeth", "extension": "77073", "branches_managed": []}, {"id": 27, "name": "Jacob Sangabriel", "username": "jacob.sangabriel", "password": "Jacob@2026", "role": "staff", "branch": 8, "branch_name": "L.V. (26th St)", "dm": "Elizabeth", "extension": "77084", "branches_managed": []}, {"id": 28, "name": "Kenyetta Thomas", "username": "kenyetta.thomas", "password": "Kenyetta@2026", "role": "staff", "branch": 9, "branch_name": "87th St (Halsted)", "dm": "Carolyn", "extension": "77093", "branches_managed": []}, {"id": 29, "name": "Latoya Austin", "username": "latoya.austin", "password": "Latoya@2026", "role": "staff", "branch": 9, "branch_name": "87th St (Halsted)", "dm": "Carolyn", "extension": "77094", "branches_managed": []}, {"id": 30, "name": "Toccara Bradberry", "username": "toccara.bradberry", "password": "Toccara@2026", "role": "staff", "branch": 9, "branch_name": "87th St (Halsted)", "dm": "Carolyn", "extension": "77095", "branches_managed": []}, {"id": 31, "name": "Evelyn Ontiveros", "username": "evelyn.ontiveros", "password": "Evelyn@2026", "role": "staff", "branch": 10, "branch_name": "Berwyn", "dm": "Alejandra", "extension": "77101", "branches_managed": []}, {"id": 32, "name": "Rosa Solis", "username": "rosa.solis", "password": "Rosa@2026", "role": "staff", "branch": 10, "branch_name": "Berwyn", "dm": "Alejandra", "extension": "77104", "branches_managed": []}, {"id": 33, "name": "Maybelline Aragon", "username": "maybelline.aragon", "password": "Maybelline@2026", "role": "staff", "branch": 11, "branch_name": "59th-Pulaski", "dm": "Carolyn", "extension": "77111", "branches_managed": []}, {"id": 34, "name": "Emily Barrera", "username": "emily.barrera", "password": "Emily@2026", "role": "staff", "branch": 11, "branch_name": "59th-Pulaski", "dm": "Carolyn", "extension": "77113", "branches_managed": []}, {"id": 35, "name": "Maleni Lopez", "username": "maleni.lopez", "password": "Maleni@2026", "role": "staff", "branch": 11, "branch_name": "59th-Pulaski", "dm": "Carolyn", "extension": "77114", "branches_managed": []}, {"id": 36, "name": "Maria Mora", "username": "maria.mora", "password": "Maria@2026", "role": "staff", "branch": 12, "branch_name": "Belmont", "dm": "Alejandra", "extension": "77121", "branches_managed": []}, {"id": 37, "name": "Jose De La Barrera", "username": "jose.de.la.barrera", "password": "Jose@2026", "role": "staff", "branch": 12, "branch_name": "Belmont", "dm": "Alejandra", "extension": "77123", "branches_managed": []}, {"id": 38, "name": "Alma Hernandez", "username": "alma.hernandez", "password": "Alma@2026", "role": "staff", "branch": 13, "branch_name": "Downers Grove", "dm": "Elizabeth", "extension": "77133", "branches_managed": []}, {"id": 39, "name": "Susan Torres", "username": "susan.torres", "password": "Susan@2026", "role": "staff", "branch": 14, "branch_name": "Elgin", "dm": "Alejandra", "extension": "77141", "branches_managed": []}, {"id": 40, "name": "Esmeralda De La Torre", "username": "esmeralda.de.la.torre", "password": "Esmeralda@2026", "role": "staff", "branch": 14, "branch_name": "Elgin", "dm": "Alejandra", "extension": "77144", "branches_managed": []}, {"id": 41, "name": "Rosalie Estrada", "username": "rosalie.estrada", "password": "Rosalie@2026", "role": "staff", "branch": 15, "branch_name": "Commercial", "dm": "Carolyn", "extension": "77151", "branches_managed": []}, {"id": 42, "name": "Melissa Deanda", "username": "melissa.deanda", "password": "Melissa@2026", "role": "staff", "branch": 15, "branch_name": "Commercial", "dm": "Carolyn", "extension": "77152", "branches_managed": []}, {"id": 43, "name": "Alejandra Mares", "username": "alejandra.mares", "password": "Alejandra@2026", "role": "staff", "branch": 15, "branch_name": "Commercial", "dm": "Carolyn", "extension": "77154", "branches_managed": []}, {"id": 44, "name": "Alexandria Stephens", "username": "alexandria.stephens", "password": "Alexandria@2026", "role": "staff", "branch": 16, "branch_name": "Harvey", "dm": "Carolyn", "extension": "77161", "branches_managed": []}, {"id": 45, "name": "Crystal Black", "username": "crystal.black", "password": "Crystal@2026", "role": "staff", "branch": 16, "branch_name": "Harvey", "dm": "Carolyn", "extension": "77163", "branches_managed": []}, {"id": 46, "name": "Nichelle Mc Bride", "username": "nichelle.mc.bride", "password": "Nichelle@2026", "role": "staff", "branch": 16, "branch_name": "Harvey", "dm": "Carolyn", "extension": "77164", "branches_managed": []}, {"id": 47, "name": "Hadassa Gomez", "username": "hadassa.gomez", "password": "Hadassa@2026", "role": "staff", "branch": 17, "branch_name": "Aurora", "dm": "Elizabeth", "extension": "77171", "branches_managed": []}, {"id": 48, "name": "Lluvia Rabadan", "username": "lluvia.rabadan", "password": "Lluvia@2026", "role": "staff", "branch": 17, "branch_name": "Aurora", "dm": "Elizabeth", "extension": "77173", "branches_managed": []}, {"id": 49, "name": "Nancy Jaimez", "username": "nancy.jaimez", "password": "Nancy@2026", "role": "staff", "branch": 17, "branch_name": "Aurora", "dm": "Elizabeth", "extension": "77174", "branches_managed": []}, {"id": 50, "name": "Miguel Cardenas", "username": "miguel.cardenas", "password": "Miguel@2026", "role": "staff", "branch": 17, "branch_name": "Aurora", "dm": "Elizabeth", "extension": "77175", "branches_managed": []}, {"id": 51, "name": "Janet Castro", "username": "janet.castro", "password": "Janet@2026", "role": "staff", "branch": 18, "branch_name": "Lincoln", "dm": "Alejandra", "extension": "77181", "branches_managed": []}, {"id": 52, "name": "Renely Roman", "username": "renely.roman", "password": "Renely@2026", "role": "staff", "branch": 18, "branch_name": "Lincoln", "dm": "Alejandra", "extension": "77184", "branches_managed": []}, {"id": 53, "name": "Gisela \"Jessie\" Leon", "username": "gisela.\"jessie\".leon", "password": "Gisela@2026", "role": "staff", "branch": 19, "branch_name": "Clark", "dm": "Alejandra", "extension": "77191", "branches_managed": []}, {"id": 54, "name": "Aaliyah Covington", "username": "aaliyah.covington", "password": "Aaliyah@2026", "role": "staff", "branch": 19, "branch_name": "Clark", "dm": "Alejandra", "extension": "77192", "branches_managed": []}, {"id": 55, "name": "Linda Kovell", "username": "linda.kovell", "password": "Linda@2026", "role": "staff", "branch": 19, "branch_name": "Clark", "dm": "Alejandra", "extension": "77193", "branches_managed": []}, {"id": 56, "name": "Jennifer Parra", "username": "jennifer.parra", "password": "Jennifer@2026", "role": "staff", "branch": 20, "branch_name": "Kedzie", "dm": "Elizabeth", "extension": "77202", "branches_managed": []}, {"id": 57, "name": "Lillian Navarro", "username": "lillian.navarro", "password": "Lillian@2026", "role": "staff", "branch": 20, "branch_name": "Kedzie", "dm": "Elizabeth", "extension": "77203", "branches_managed": []}, {"id": 58, "name": "Angelica Ruby", "username": "angelica.ruby", "password": "Angelica@2026", "role": "staff", "branch": 20, "branch_name": "Kedzie", "dm": "Elizabeth", "extension": "77204", "branches_managed": []}, {"id": 59, "name": "Gricelda Nicolas", "username": "gricelda.nicolas", "password": "Gricelda@2026", "role": "staff", "branch": 21, "branch_name": "Evergreen Park", "dm": "Elizabeth", "extension": "77212", "branches_managed": []}, {"id": 60, "name": "Maria Aguilar", "username": "maria.aguilar", "password": "Maria@2026", "role": "staff", "branch": 21, "branch_name": "Evergreen Park", "dm": "Elizabeth", "extension": "77213", "branches_managed": []}, {"id": 61, "name": "Miriam Gonzalez", "username": "miriam.gonzalez", "password": "Miriam@2026", "role": "staff", "branch": 22, "branch_name": "44th-Pulaski", "dm": "Elizabeth", "extension": "77223", "branches_managed": []}, {"id": 62, "name": "Jessica Ortiz", "username": "jessica.ortiz", "password": "Jessica@2026", "role": "staff", "branch": 22, "branch_name": "44th-Pulaski", "dm": "Elizabeth", "extension": "77224", "branches_managed": []}, {"id": 63, "name": "Angelina Damian", "username": "angelina.damian", "password": "Angelina@2026", "role": "staff", "branch": 23, "branch_name": "58th-Kedzie", "dm": "Elizabeth", "extension": "77231", "branches_managed": []}, {"id": 64, "name": "Juan Gutierrez", "username": "juan.gutierrez", "password": "Juan@2026", "role": "staff", "branch": 23, "branch_name": "58th-Kedzie", "dm": "Elizabeth", "extension": "77233", "branches_managed": []}, {"id": 65, "name": "Lissette Garcia", "username": "lissette.garcia", "password": "Lissette@2026", "role": "staff", "branch": 24, "branch_name": "63rd-Western", "dm": "Felicia", "extension": "77242", "branches_managed": []}, {"id": 66, "name": "Taprecia Triplett", "username": "taprecia.triplett", "password": "Taprecia@2026", "role": "staff", "branch": 24, "branch_name": "63rd-Western", "dm": "Felicia", "extension": "77244", "branches_managed": []}, {"id": 67, "name": "Asia Jackson", "username": "asia.jackson", "password": "Asia@2026", "role": "staff", "branch": 25, "branch_name": "87th-Ashland", "dm": "Carolyn", "extension": "77251", "branches_managed": []}, {"id": 68, "name": "Kimberly Martin", "username": "kimberly.martin", "password": "Kimberly@2026", "role": "staff", "branch": 25, "branch_name": "87th-Ashland", "dm": "Carolyn", "extension": "77252", "branches_managed": []}, {"id": 69, "name": "Dasember Booker", "username": "dasember.booker", "password": "Dasember@2026", "role": "staff", "branch": 26, "branch_name": "83rd-Cottage Grove", "dm": "Carolyn", "extension": "77261", "branches_managed": []}, {"id": 70, "name": "Nileedra Turner", "username": "nileedra.turner", "password": "Nileedra@2026", "role": "staff", "branch": 26, "branch_name": "83rd-Cottage Grove", "dm": "Carolyn", "extension": "77263", "branches_managed": []}, {"id": 71, "name": "Tashea Johnson", "username": "tashea.johnson", "password": "Tashea@2026", "role": "staff", "branch": 26, "branch_name": "83rd-Cottage Grove", "dm": "Carolyn", "extension": "77265", "branches_managed": []}, {"id": 72, "name": "Mayra Villasenor", "username": "mayra.villasenor", "password": "Mayra@2026", "role": "staff", "branch": 27, "branch_name": "Archer", "dm": "Alejandra", "extension": "77273", "branches_managed": []}, {"id": 73, "name": "Zuri Macedonio", "username": "zuri.macedonio", "password": "Zuri@2026", "role": "staff", "branch": 27, "branch_name": "Archer", "dm": "Alejandra", "extension": "77274", "branches_managed": []}, {"id": 74, "name": "Reyna Hernandez", "username": "reyna.hernandez", "password": "Reyna@2026", "role": "staff", "branch": 28, "branch_name": "Cicero 2", "dm": "Felicia", "extension": "77281", "branches_managed": []}, {"id": 75, "name": "Emily Naranjo", "username": "emily.naranjo", "password": "Emily@2026", "role": "staff", "branch": 28, "branch_name": "Cicero 2", "dm": "Felicia", "extension": "77282", "branches_managed": []}, {"id": 76, "name": "Silvia Dominguez", "username": "silvia.dominguez", "password": "Silvia@2026", "role": "staff", "branch": 28, "branch_name": "Cicero 2", "dm": "Felicia", "extension": "77283", "branches_managed": []}, {"id": 77, "name": "Dalila Martinez", "username": "dalila.martinez", "password": "Dalila@2026", "role": "staff", "branch": 29, "branch_name": "Oakbrook Terrace", "dm": "Alejandra", "extension": "77291", "branches_managed": []}, {"id": 78, "name": "Jocelyn Salgado", "username": "jocelyn.salgado", "password": "Jocelyn@2026", "role": "staff", "branch": 29, "branch_name": "Oakbrook Terrace", "dm": "Alejandra", "extension": "77292", "branches_managed": []}, {"id": 79, "name": "Diana Requejo", "username": "diana.requejo", "password": "Diana@2026", "role": "staff", "branch": 29, "branch_name": "Oakbrook Terrace", "dm": "Alejandra", "extension": "77294", "branches_managed": []}, {"id": 80, "name": "Daisy Ibara", "username": "daisy.ibara", "password": "Daisy@2026", "role": "staff", "branch": 31, "branch_name": "43rd & Ashland", "dm": "Alejandra", "extension": "77311", "branches_managed": []}, {"id": 81, "name": "Jocelyn Herrera", "username": "jocelyn.herrera", "password": "Jocelyn@2026", "role": "staff", "branch": 31, "branch_name": "43rd & Ashland", "dm": "Alejandra", "extension": "77312", "branches_managed": []}, {"id": 82, "name": "Leslie Mercado", "username": "leslie.mercado", "password": "Leslie@2026", "role": "staff", "branch": 31, "branch_name": "43rd & Ashland", "dm": "Alejandra", "extension": "77313", "branches_managed": []}, {"id": 83, "name": "Marnaie Yarber-Miller", "username": "marnaie.yarber-miller", "password": "Marnaie@2026", "role": "staff", "branch": 32, "branch_name": "Sibley", "dm": "Carolyn", "extension": "77321", "branches_managed": []}, {"id": 84, "name": "Timeka Jones", "username": "timeka.jones", "password": "Timeka@2026", "role": "staff", "branch": 32, "branch_name": "Sibley", "dm": "Carolyn", "extension": "77324", "branches_managed": []}, {"id": 85, "name": "Tamickia Riley", "username": "tamickia.riley", "password": "Tamickia@2026", "role": "staff", "branch": 34, "branch_name": "78th & Western", "dm": "Felicia", "extension": "77341", "branches_managed": []}, {"id": 86, "name": "Charmaine Weeden", "username": "charmaine.weeden", "password": "Charmaine@2026", "role": "staff", "branch": 34, "branch_name": "78th & Western", "dm": "Felicia", "extension": "77343", "branches_managed": []}, {"id": 87, "name": "Daphaney Rollins-Battle", "username": "daphaney.rollins-battle", "password": "Daphaney@2026", "role": "staff", "branch": 35, "branch_name": "Calumet City", "dm": "Carolyn", "extension": "77353", "branches_managed": []}, {"id": 88, "name": "Treasure Davis", "username": "treasure.davis", "password": "Treasure@2026", "role": "staff", "branch": 35, "branch_name": "Calumet City", "dm": "Carolyn", "extension": "77354", "branches_managed": []}, {"id": 89, "name": "Lucyy Rodriguez", "username": "lucyy.rodriguez", "password": "Lucyy@2026", "role": "staff", "branch": 36, "branch_name": "47th & California", "dm": "Alejandra", "extension": "77361", "branches_managed": []}, {"id": 90, "name": "Maria Ibarra", "username": "maria.ibarra", "password": "Maria@2026", "role": "staff", "branch": 36, "branch_name": "47th & California", "dm": "Alejandra", "extension": "77362", "branches_managed": []}, {"id": 91, "name": "Selene Arellano", "username": "selene.arellano", "password": "Selene@2026", "role": "staff", "branch": 36, "branch_name": "47th & California", "dm": "Alejandra", "extension": "77364", "branches_managed": []}, {"id": 92, "name": "Tierra Grier", "username": "tierra.grier", "password": "Tierra@2026", "role": "staff", "branch": 37, "branch_name": "Blue Island", "dm": "Elizabeth", "extension": "77371", "branches_managed": []}, {"id": 93, "name": "Alina Flores", "username": "alina.flores", "password": "Alina@2026", "role": "staff", "branch": 37, "branch_name": "Blue Island", "dm": "Elizabeth", "extension": "77372", "branches_managed": []}, {"id": 94, "name": "Rebeca Gamboa", "username": "rebeca.gamboa", "password": "Rebeca@2026", "role": "staff", "branch": 38, "branch_name": "Midlothian", "dm": "Felicia", "extension": "77382", "branches_managed": []}, {"id": 95, "name": "Syklaly Perez", "username": "syklaly.perez", "password": "Syklaly@2026", "role": "staff", "branch": 38, "branch_name": "Midlothian", "dm": "Felicia", "extension": "77384", "branches_managed": []}, {"id": 96, "name": "Cristian Concepcion", "username": "cristian.concepcion", "password": "Cristian@2026", "role": "staff", "branch": 39, "branch_name": "Addison", "dm": "Alejandra", "extension": "77391", "branches_managed": []}, {"id": 97, "name": "Maria Eugenia Abadia", "username": "maria.eugenia.abadia", "password": "Maria@2026", "role": "staff", "branch": 39, "branch_name": "Addison", "dm": "Alejandra", "extension": "77393", "branches_managed": []}, {"id": 98, "name": "Marlene Basaldua", "username": "marlene.basaldua", "password": "Marlene@2026", "role": "staff", "branch": 41, "branch_name": "Oak Park", "dm": "Carolyn", "extension": "77411", "branches_managed": []}, {"id": 99, "name": "Guadalupe Ceja", "username": "guadalupe.ceja", "password": "Guadalupe@2026", "role": "staff", "branch": 41, "branch_name": "Oak Park", "dm": "Carolyn", "extension": "77412", "branches_managed": []}, {"id": 100, "name": "Norma Rojas", "username": "norma.rojas", "password": "Norma@2026", "role": "staff", "branch": 42, "branch_name": "Aurora 2", "dm": "Elizabeth", "extension": "77421", "branches_managed": []}, {"id": 101, "name": "Sarahi Reynoso", "username": "sarahi.reynoso", "password": "Sarahi@2026", "role": "staff", "branch": 43, "branch_name": "Berwyn 3", "dm": "Elizabeth", "extension": "77432", "branches_managed": []}, {"id": 102, "name": "Faith Macedonio", "username": "faith.macedonio", "password": "Faith@2026", "role": "staff", "branch": 43, "branch_name": "Berwyn 3", "dm": "Elizabeth", "extension": "77433", "branches_managed": []}, {"id": 103, "name": "Jacqueline Coffee", "username": "jacqueline.coffee", "password": "Jacqueline@2026", "role": "staff", "branch": 44, "branch_name": "Cermak & Pulaski", "dm": "Felicia", "extension": "77443", "branches_managed": []}, {"id": 104, "name": "Dionne Strickland", "username": "dionne.strickland", "password": "Dionne@2026", "role": "staff", "branch": 44, "branch_name": "Cermak & Pulaski", "dm": "Felicia", "extension": "77444", "branches_managed": []}, {"id": 105, "name": "Elena Zermeno", "username": "elena.zermeno", "password": "Elena@2026", "role": "staff", "branch": 45, "branch_name": "87th Jeffery", "dm": "Felicia", "extension": "77451", "branches_managed": []}, {"id": 106, "name": "Michelle Boens", "username": "michelle.boens", "password": "Michelle@2026", "role": "staff", "branch": 45, "branch_name": "87th Jeffery", "dm": "Felicia", "extension": "77452", "branches_managed": []}, {"id": 107, "name": "Jacqueline Garcia", "username": "jacqueline.garcia", "password": "Jacqueline@2026", "role": "staff", "branch": 46, "branch_name": "106th Ave", "dm": "Carolyn", "extension": "77462", "branches_managed": []}, {"id": 108, "name": "Christina Davila", "username": "christina.davila", "password": "Christina@2026", "role": "staff", "branch": 46, "branch_name": "106th Ave", "dm": "Carolyn", "extension": "77463", "branches_managed": []}, {"id": 109, "name": "Jazmin Monroy", "username": "jazmin.monroy", "password": "Jazmin@2026", "role": "staff", "branch": 48, "branch_name": "Fullerton", "dm": "Felicia", "extension": "77482", "branches_managed": []}, {"id": 110, "name": "Christian Harris", "username": "christian.harris", "password": "Christian@2026", "role": "staff", "branch": 48, "branch_name": "Fullerton", "dm": "Felicia", "extension": "77483", "branches_managed": []}, {"id": 111, "name": "Daejah Hawthorne", "username": "daejah.hawthorne", "password": "Daejah@2026", "role": "staff", "branch": 48, "branch_name": "Fullerton", "dm": "Felicia", "extension": "77484", "branches_managed": []}, {"id": 112, "name": "Ana Delgado", "username": "ana.delgado", "password": "Ana@2026", "role": "staff", "branch": 49, "branch_name": "Villa Park", "dm": "Alejandra", "extension": "77494", "branches_managed": []}, {"id": 113, "name": "Everlin Alondra Hernandez", "username": "everlin.alondra.hernandez", "password": "Everlin@2026", "role": "staff", "branch": 50, "branch_name": "Cermak Western", "dm": "Felicia", "extension": "77503", "branches_managed": []}, {"id": 114, "name": "Yesenia Braulio", "username": "yesenia.braulio", "password": "Yesenia@2026", "role": "staff", "branch": 50, "branch_name": "Cermak Western", "dm": "Felicia", "extension": "77511", "branches_managed": []}, {"id": 115, "name": "Jazmin Monroy", "username": "jazmin.monroy", "password": "Jazmin@2026", "role": "staff", "branch": 50, "branch_name": "Cermak Western", "dm": "Felicia", "extension": "77512", "branches_managed": []}, {"id": 116, "name": "Claudia Acosta", "username": "claudia.acosta", "password": "Claudia@2026", "role": "staff", "branch": 51, "branch_name": "Westchester", "dm": "Felicia", "extension": "71212", "branches_managed": []}, {"id": 117, "name": "Juana Mendoza", "username": "juana.mendoza", "password": "Juana@2026", "role": "staff", "branch": 51, "branch_name": "Westchester", "dm": "Felicia", "extension": "71215", "branches_managed": []}];
+var CFG_BRANCHES = {}; // populated from mapping CSV
+;
+var CDR_PREFIX_MAP = {};
+;
+
+
+// ══════════════════════════════════════════════════════
+// MAPPING: CDR Username -> Staff
+// ══════════════════════════════════════════════════════
+var NUM_IDX = {};
+;
+var DM_FULL = {};
+;
+var DM_SHORT = {};
+;
+
+function cdrUserToStaff(cdrName) {
+  const nums = Object.keys(NUM_IDX);
+  for (const num of nums) {
+    if (cdrName.endsWith(' '+num)) {
+      const prefix = cdrName.slice(0,-(' '+num).length).replace(/User$/,'').trim();
+      const full = cdrName.slice(0,-(' '+num).length);
+      const bnum = CDR_PREFIX_MAP[full] || CDR_PREFIX_MAP[prefix];
+      if (bnum && CFG_BRANCHES[bnum]) {
+        const branch = CFG_BRANCHES[bnum];
+        const idx = NUM_IDX[num];
+        if (idx < branch.staff.length) {
+          return {
+            staffName: branch.staff[idx].name,
+            branchNum: bnum,
+            branchName: branch.name,
+            dm: branch.dm,
+            ext: branch.staff[idx].ext
+          };
+        }
+      }
+      return null;
+    }
+  }
+  return null;
+}
+
+// DATA NORMALISATION v3
+D.daily_summary=D.daily.map(function(d){return Object.assign({},d,{missed_in:+(d.inbound_missed||0),no_resp_out:+(d.outbound_no_response||0),missed:(+(d.inbound_missed||0))+(+(d.outbound_no_response||0)),avg_dur_secs:+(d.avg_dur||0)});});
+D.user_stats=D.staff_stats.map(function(u){return Object.assign({},u,{'User Name':u.real_staff,total_calls:+(u.total||0),missed_in:+(u.inbound_missed||0),no_resp_out:+(u.outbound_no_response||0),answered_in:+(u.inbound_answered||0),connect_out:+(u.outbound_answered||0),inbound_rate:+(u.inbound_connect_rate||0),outbound_rate:+(u.outbound_connect_rate||0),answer_rate:+(u.answer_rate||0),avg_dur:+(u.avg_dur||0),talk_time:+(u.total_dur||0),_staff:u.real_staff,_branch:u.branch,_dm:u.dm,_branchNum:null});});
+D.user_daily=D.staff_daily.map(function(d){return Object.assign({},d,{'User Name':d.real_staff,total_calls:+(d.total||0),missed_in:+(d.inbound_missed||0),no_resp_out:+(d.outbound_no_response||0),answered_in:+(d.inbound_answered||0),connect_out:+(d.outbound_answered||0),inbound_rate:+(d.inbound_connect_rate||0),outbound_rate:+(d.outbound_connect_rate||0)});});
+var BRANCH_NAME_TO_NUM={},BRANCH_NUM_TO_NAME={};
+// Rebuilt from mapping CSV via dsParseMapping()
+D.user_stats.forEach(function(u){u._branchNum=BRANCH_NAME_TO_NUM[u._branch]||null;});
+D.branch_stats_norm=D.branch_stats.map(function(b){return Object.assign({},b,{missed_in:+(b.inbound_missed||0),no_resp_out:+(b.outbound_no_response||0),icr:+(b.inbound_connect_rate||0),ocr:+(b.outbound_connect_rate||0),branchNum:BRANCH_NAME_TO_NUM[b.branch]||null});});
+D.dm_stats_norm=D.dm_stats.map(function(d){return Object.assign({},d,{missed_in:+(d.inbound_missed||0),no_resp_out:+(d.outbound_no_response||0),icr:+(d.inbound_connect_rate||0),ocr:+(d.outbound_connect_rate||0)});});
+var _ht={};D.hourly.forEach(function(h){_ht[h.hour]=(_ht[h.hour]||0)+(+h.calls||0);});
+D.hourly_totals=Object.entries(_ht).sort().map(function(e){return {hour:e[0],calls:+e[1]};});
+D.hourly_by_date=D.hourly;D.dates_available=D.dates;D.date_range={start:D.dates[0],end:D.dates[D.dates.length-1]};
+D.redirect_reasons={'hunt-group':13051,'no-answer':0};
+var STAFF_LOOKUP={};D.user_stats.forEach(function(u){if(!STAFF_LOOKUP[u._staff])STAFF_LOOKUP[u._staff]={branchNum:u._branchNum,branchName:u._branch,dm:u._dm};});
+D.users = typeof CFG_USERS !== 'undefined' ? CFG_USERS : []; // auth users are always available
+console.log('CSI CDR v3: dashboard ready, awaiting CSV data load');
+
+// ══════════════════════════════════════════════════════
+// AUTH & STATE
+// ══════════════════════════════════════════════════════
+let USERS = JSON.parse(localStorage.getItem('cdri_users') || 'null') || CFG_USERS;
+let CU = null; // current user
+let nextUID = Math.max(...USERS.map(u=>u.id))+1;
+let editUID = null;
+let pendingUploadRows = [];
+let pendingDupRows = [];
+let uploadHistory = [];
+let cdrRows = buildSampleCDR();
+let cdrPage = 1;
+let agSortCol = 'total', agSortDir = -1;
+let activeFilters = {}; // cross-chart filters
+let MAPPING_DATA = JSON.parse(JSON.stringify(CFG_BRANCHES));
+
+function saveUsers(){
+  try {
+    localStorage.setItem('cdri_users', JSON.stringify(USERS));
+  } catch(e) {
+    showToast('Warning: could not save users to browser storage (' + e.message + ')', 'err');
+    console.error('saveUsers error:', e);
+  }
+}
+
+function doLogin(){
+  // Re-read users from storage to catch any added since page load
+  try {
+    var stored = localStorage.getItem('cdri_users');
+    if (stored) USERS = JSON.parse(stored) || USERS;
+  } catch(e) {}
+  var u=document.getElementById('au').value.trim(),p=document.getElementById('ap').value;p=p.trim();var user=USERS.find(function(x){return x.username===u&&x.password===p&&x.active!==false;});if(!user){document.getElementById('aerr').textContent='Invalid credentials.';return;}CU=user;document.getElementById('auth').style.display='none';document.getElementById('app').style.display='block';document.getElementById('nav-av').textContent=user.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();document.getElementById('nav-name').textContent=user.name;document.getElementById('nav-role').textContent=({superadmin:'Super Admin',executive:'Executive',district_manager:'District Manager',staff:'Staff',viewer:'Viewer'})[user.role]||user.role;applyNavPerms();populateFilterDropdowns();initCharts();var pages=getAllowedPages();var defs={superadmin:'executive',executive:'executive',district_manager:'manager',staff:'myperformance',viewer:'executive'};var first=defs[CU.role]||pages[0]||'executive';goPage(pages.includes(first)?first:(pages[0]||'executive'));}
+
+function doLogout(){CU=null;document.getElementById('app').style.display='none';document.getElementById('auth').style.display='flex';document.getElementById('au').value='';document.getElementById('ap').value='';document.getElementById('aerr').textContent='';destroyAllCharts();}
+document.getElementById('ap').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+var ROLE_PAGES = {
+  superadmin:       ['executive','manager','agents','cdr','myperformance','mapping','upload','users'],
+  executive:        ['executive','manager','agents','cdr','myperformance','mapping','users'],
+  district_manager: ['manager','agents','cdr','myperformance','mapping'],
+  staff:            ['cdr','myperformance'],
+  viewer:           ['executive']
+};
+var ROLE_LABELS = {
+  superadmin:'Super Admin', executive:'Executive',
+  district_manager:'District Manager', staff:'Staff', viewer:'Viewer'
+};
+var PAGE_LABELS = {
+  executive:'Executive Overview', manager:'Manager Dashboard',
+  agents:'Agent Performance', cdr:'CDR Records',
+  myperformance:'My Performance', mapping:'Branch Directory',
+  upload:'Data Sources', users:'User Management'
+};
+
+function renderUsers() {
+  var el = document.getElementById('users-list');
+  if (!el) return;
+  var roleFilter = document.getElementById('usr-role');
+  if (roleFilter && roleFilter.options.length <= 1) {
+    roleFilter.innerHTML = '<option value="all">All Roles</option>' +
+      Object.entries(ROLE_LABELS||{}).map(function(e){
+        return '<option value="'+e[0]+'">'+e[1]+'</option>';
+      }).join('');
+  }
+  var cur = roleFilter ? (roleFilter.value||'all') : 'all';
+  var search = (document.getElementById('usr-search')||{}).value||'';
+  var list = USERS.filter(function(u){
+    if (cur!=='all' && u.role!==cur) return false;
+    if (search && (u.name||'').toLowerCase().indexOf(search.toLowerCase())<0 &&
+        (u.username||'').toLowerCase().indexOf(search.toLowerCase())<0) return false;
+    return true;
+  });
+  el.innerHTML = list.map(function(u){
+    return '<tr>'
+      +'<td style="font-weight:600;font-size:12px">'+u.name+'</td>'
+      +'<td class="mono dim">'+u.username+'</td>'
+      +'<td><span class="badge">'+( ROLE_LABELS[u.role]||u.role )+'</span></td>'
+      +'<td style="font-size:11px">'+(u.branch_name||'—')+'</td>'
+      +'<td>'
+        +'<button class="btn btn-ghost btn-sm" onclick="editUser('+u.id+')">Edit</button> '
+        +'<button class="btn btn-danger btn-sm" onclick="deleteUser('+u.id+')" '+(u.id<=5?'disabled':'')+'>'
+        +'Del</button>'
+      +'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+function editUser(id){
+  var u=USERS.find(function(x){return x.id===id;});
+  if(!u)return;editUID=id;populateRoleSelect();
+  var nm=document.getElementById('um-name');if(nm)nm.value=u.name||'';
+  var un=document.getElementById('um-uname');if(un)un.value=u.username||'';
+  var ro=document.getElementById('um-role');if(ro)ro.value=u.role||'staff';
+  var pw=document.getElementById('um-pwd');if(pw)pw.value='';
+  var ti=document.getElementById('um-title');if(ti)ti.textContent='Edit User';
+  updatePermUI();document.getElementById('user-modal').classList.add('open');}
+
+function deleteUser(id){
+  if(id<=5){showToast('Cannot delete built-in accounts','err');return;}
+  if(!confirm('Delete this user?')) return;
+  USERS = USERS.filter(function(u){return u.id!==id;});
+  saveUsers(); renderUsers(); showToast('User deleted','ok');
+}
+
+function openUserModal(){openNewUser();}
+function openNewUser(){
+  editUID=null;populateRoleSelect();
+  ['um-name','um-uname','um-pwd'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var ti=document.getElementById('um-title');if(ti)ti.textContent='Create User';
+  updatePermUI();document.getElementById('user-modal').classList.add('open');
+}
+function populateRoleSelect(){
+  var el=document.getElementById('um-role');if(!el)return;
+  var labels=ROLE_LABELS&&Object.keys(ROLE_LABELS).length?ROLE_LABELS:
+    {superadmin:'Super Admin',executive:'Executive',district_manager:'District Manager',staff:'Staff'};
+  el.innerHTML='<option value="">Select role…</option>'+
+    Object.entries(labels).map(function(kv){
+      return '<option value="'+kv[0]+'">'+kv[1]+'</option>';
+    }).join('');
+  if(el.options.length<=1)el.options[0].selected=true;
+}
+function updatePermUI(){
+  var roleEl = document.getElementById('um-role');
+  var role = (roleEl && roleEl.value && roleEl.value !== '') ? roleEl.value : 'staff';
+  var pages=(ROLE_PAGES||{})[role]||[];var grid=document.getElementById('um-perms');if(!grid)return;
+  grid.innerHTML=Object.entries(PAGE_LABELS||{}).map(function(kv){
+    var on=pages.indexOf(kv[0])>=0;
+    return '<label style="font-size:11px;display:flex;align-items:center;gap:4px">'
+      +'<input type="checkbox" '+(on?'checked':'disabled')+' style="pointer-events:none"> '+kv[1]+'</label>';}).join('');}
+function saveUser(){
+  var name=(document.getElementById('um-name').value||'').trim();
+  var uname=(document.getElementById('um-uname').value||'').trim();
+  var roleEl = document.getElementById('um-role');
+  var role = (roleEl && roleEl.value && roleEl.value !== '') ? roleEl.value : 'staff';
+  var pass=(document.getElementById('um-pwd').value||'').trim();
+  if(!name||!uname){showToast('Name and username required','err');return;}
+  if(editUID){
+    var u = USERS.find(function(x){return x.id===editUID;});
+    if(u){u.name=name;u.username=uname;u.role=role;if(pass)u.password=pass;}
+    editUID=null;
+  } else {
+    if(USERS.find(function(u){return u.username===uname;})){showToast('Username taken','err');return;}
+    if(!pass){showToast('Password required for new user','err');return;}
+    USERS.push({id:nextUID++,name:name,username:uname,password:pass,role:role,
+                branch:null,branch_name:'',dm:null,extension:'',branches_managed:[],active:true});
+  }
+  saveUsers();
+  closeModal('user-modal');
+  renderUsers();
+  // Scroll to the just-saved user in the table
+  var newRow = document.querySelector('#users-list tr:last-child');
+  if (newRow) newRow.scrollIntoView({behavior:'smooth', block:'nearest'});
+  showToast((editUID?'Updated':'Created user: ')+name+' ('+role+')', 'ok');
+}
+
+function getAllowedPages(){if(!CU)return[];return ROLE_PAGES[CU.role]||CU.pages||['myperformance'];}
+
+function applyNavPerms(){var a=getAllowedPages();['executive','manager','agents','cdr','myperformance','mapping','upload','users','validate'].forEach(function(id){var nb=document.getElementById('nb-'+id);if(nb)nb.style.display=a.includes(id)?'':'none';var pg=document.getElementById('page-'+id);if(pg&&!a.includes(id)){pg.style.display='none';pg.classList.remove('active');}});}
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
+// ── MISSING HELPER FUNCTIONS ─────────────────────────────────────────────────
+
+function dsUpdateBanner() {
+  var el = document.getElementById('ds-banner');
+  if (!el) return;
+  var total = DS.rawCDRRows.length;
+  var files = DS.cdrFilesLoaded.length;
+  var dms   = Object.keys(DM_FULL).length;
+  var brs   = Object.keys(CFG_BRANCHES).length;
+  var dr    = D.date_range || {};
+  if (total === 0) {
+    el.innerHTML = '<span style="color:var(--muted)">No CDR data loaded. Use the steps below to import data.</span>';
+    return;
+  }
+  el.innerHTML =
+    '<span style="color:var(--green);font-weight:700">\u2713 ' + total.toLocaleString() + ' CDR records</span>'
+    + ' &nbsp;&middot;&nbsp; <b>' + files + '</b> file' + (files!==1?'s':'')
+    + ' &nbsp;&middot;&nbsp; <b>' + brs + '</b> branches'
+    + ' &nbsp;&middot;&nbsp; <b>' + dms + '</b> DMs'
+    + (dr.start ? ' &nbsp;&middot;&nbsp; ' + dr.start + ' \u2192 ' + dr.end : '');
+}
+
+function dsUpdateSummary() {
+  var el = document.getElementById('ds-summary');
+  if (!el) return;
+  var total = DS.rawCDRRows.length;
+  var dups  = D.duplicates ? D.duplicates.length : 0;
+  var dr    = D.date_range || {};
+  if (total === 0) {
+    el.innerHTML = '<div style="color:var(--muted);text-align:center;padding:16px 0">No data loaded</div>';
+    return;
+  }
+  el.innerHTML =
+    dsRow('CDR Rows',      total.toLocaleString(), 'var(--text)') +
+    dsRow('Staff',         (D.user_stats||[]).length.toString(), 'var(--text)') +
+    dsRow('Branches',      (D.branch_stats||[]).length.toString(), 'var(--text)') +
+    dsRow('Date Range',    (dr.start||'\u2014') + ' to ' + (dr.end||'\u2014')) +
+    dsRow('Duplicates',    dups.toString(), dups > 0 ? 'var(--amber)' : 'var(--muted)') +
+    dsRow('Inbound',       (D.daily_summary||[]).reduce(function(a,d){return a+(+d.inbound||0);},0).toLocaleString()) +
+    dsRow('Outbound',      (D.daily_summary||[]).reduce(function(a,d){return a+(+d.outbound||0);},0).toLocaleString());
+}
+
+function dsLogFile(fileName, type, detail) {
+  var el = document.getElementById('ds-files-log');
+  if (!el) return;
+  var time = new Date().toLocaleTimeString();
+  var prev = el.innerHTML;
+  if (prev.indexOf('No data') >= 0 || prev.indexOf('None') >= 0) prev = '';
+  var icon = type === 'Mapping' ? '\ud83d\uddfa' : '\ud83d\udcc4';
+  el.innerHTML = '<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">'
+    + '<span style="color:var(--muted)">' + time + '</span> '
+    + icon + ' <b>' + type + '</b>: ' + fileName
+    + '<br><span style="color:var(--muted);font-size:10px">' + detail + '</span>'
+    + '</div>' + prev;
+}
+
+function dsUpdateDuplicateLog() {
+  var dupes = D.duplicates || [];
+  var countEl = document.getElementById('ds-dup-count');
+  if (countEl) countEl.textContent = dupes.length ? '(' + dupes.length + ')' : '';
+  var el = document.getElementById('ds-dup-summary');
+  if (!el) return;
+  if (!dupes.length) {
+    el.innerHTML = '<div style="color:var(--muted);text-align:center;padding:16px 0;font-size:11px">No duplicates</div>';
+    return;
+  }
+  var byFile = {};
+  dupes.forEach(function(d) { byFile[d.file] = (byFile[d.file]||0) + 1; });
+  el.innerHTML = Object.entries(byFile).map(function(e) {
+    return '<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;border-bottom:1px solid var(--border)">'
+      + '<span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%">' + e[0] + '</span>'
+      + '<span style="color:var(--amber)">' + e[1] + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function renderUploadStats() {
+  dsUpdateBanner();
+  dsUpdateSummary();
+  dsUpdateFileManager();
+  if (DS.unmapped && Object.keys(DS.unmapped).length) dsShowUnmappedPanel();
+}
+
+function showHeatmapDetail(date, hour) {
+  var dmF    = (document.getElementById('mf-dm')    || {}).value || 'all';
+  var brF    = (document.getElementById('mf-branch') || {}).value || 'all';
+  var stF    = (document.getElementById('mf-staff')  || {}).value || 'all';
+  var brName = brF !== 'all' ? (BRANCH_NUM_TO_NAME[brF] || brF) : null;
+  var rows = (D.staff_hourly || []).filter(function(h) {
+    if (h.date !== date || h.hour !== hour) return false;
+    if (dmF !== 'all' && h.dm !== dmF) return false;
+    if (brName && h.branch !== brName) return false;
+    if (stF !== 'all' && h.real_staff !== stF) return false;
+    return true;
+  });
+  var total = rows.reduce(function(a,h){ return a + h.calls; }, 0);
+  var el = document.getElementById('heatmap-detail');
+  if (!el) { showToast(date + ' ' + hour + ':00 — ' + total + ' calls', 'ok'); return; }
+  el.innerHTML = '<div style="font-weight:700;margin-bottom:8px">' + date + ' ' + hour + ':00 — ' + total + ' calls</div>'
+    + (rows.length
+      ? '<div class="tw"><table><thead><tr><th>Staff</th><th>Branch</th><th>Calls</th></tr></thead><tbody>'
+        + rows.sort(function(a,b){return b.calls-a.calls;}).map(function(h){
+            return '<tr><td style="font-size:11px">' + h.real_staff + '</td><td style="font-size:11px">' + h.branch + '</td><td class="mono">' + h.calls + '</td></tr>';
+          }).join('') + '</tbody></table></div>'
+      : '<div style="color:var(--muted);font-size:11px">No records for this slot</div>');
+  el.style.display = '';
+}
+
+function downloadPDF(pageId){
+  if(typeof html2canvas==='undefined'){showToast('html2canvas not loaded','err');return;}
+  var el=document.getElementById('page-'+pageId);
+  if(!el){showToast('Page not found','err');return;}
+  var ttl=({executive:'Executive Overview',manager:'Manager Dashboard',
+    agents:'Agent Performance',cdr:'CDR Records',myperformance:'My Performance',
+    mapping:'Branch Directory'})[pageId]||pageId;
+  showToast('Preparing PDF\u2026','ok');
+
+  // For agents: use narrower capture so table fits readable on page
+  var captureW = (pageId==='agents') ? 1400 : el.scrollWidth;
+
+  html2canvas(el,{
+    scale: pageId==='agents' ? 1.2 : 1.5,
+    backgroundColor:'#060810', useCORS:true, allowTaint:true, logging:false,
+    width: captureW, height: el.scrollHeight,
+    windowWidth: captureW, scrollX:0, scrollY:0
+  }).then(function(canvas){
+    var stamp = 'CSI CDR | '+ttl+' | '+new Date().toLocaleString()+' | '+(CU?CU.name:'');
+    var win = window.open('','_blank');
+
+    // Page height in canvas pixels: A4 landscape = 297/210 ratio
+    // We aim for about 560px "page height" at our scale (readable)
+    var pgH = Math.round(canvas.width * (210/297));
+
+    // For exec/manager: split at second chart-grid row
+    var splitPoints = [];
+    if(pageId==='executive'||pageId==='manager'){
+      var cgs=el.querySelectorAll?el.querySelectorAll('.cg'):[];
+      if(cgs&&cgs.length>=2){
+        var rr=cgs[1].getBoundingClientRect(), rP=el.getBoundingClientRect();
+        var rawY = rr.top - rP.top + (el.scrollTop||0);
+        var scl = canvas.width / (captureW||1);
+        var sp = Math.round(rawY * scl);
+        if(sp>50 && sp<canvas.height-50) splitPoints = [sp];
+      }
+    } else {
+      // Auto-split at page-height intervals
+      for(var y=pgH; y<canvas.height-100; y+=pgH) splitPoints.push(y);
+    }
+
+    function crop(c,y1,y2){
+      var h=y2-y1; if(h<=0)return null;
+      var cv=document.createElement('canvas'); cv.width=c.width; cv.height=h;
+      cv.getContext('2d').drawImage(c,0,y1,c.width,h,0,0,c.width,h);
+      return cv.toDataURL('image/png');
+    }
+
+    // Build pages
+    var boundaries=[0].concat(splitPoints).concat([canvas.height]);
+    var pages=[];
+    for(var i=0;i<boundaries.length-1;i++){
+      var img=crop(canvas,boundaries[i],boundaries[i+1]);
+      if(img) pages.push(img);
+    }
+
+    var css='*{margin:0;padding:0;box-sizing:border-box}'
+      +'@page{size:A4 landscape;margin:0}'
+      +'body{background:#fff;font-family:Arial,sans-serif}'
+      +'.st{font-size:8px;color:#555;padding:3px 8px;background:#f5f5f5;border-bottom:1px solid #ddd;white-space:nowrap}'
+      +'.pg{page-break-before:always}'
+      +'img{display:block;width:100%;max-height:calc(210mm - 16px);object-fit:contain;object-position:top left}';
+
+    var body=pages.map(function(src,idx){
+      var cls=idx===0?'':'pg';
+      return '<div class="'+cls+'"><div class="st">'+stamp+(pages.length>1?' ('+(idx+1)+'/'+pages.length+')':'')+'</div>'
+        +'<img src="'+src+'"></div>';
+    }).join('');
+
+    win.document.write('<!DOCTYPE html><html><head><title>'+ttl+'</title>'
+      +'<style>'+css+'</style></head><body>'+body+'</body></html>');
+    win.document.close();
+    setTimeout(function(){win.focus();win.print();},1200);
+  }).catch(function(e){showToast('Capture failed: '+e.message,'err');});
+}
+
+function openAgentDetail(staffName) {
+  var u = (D.user_stats || []).find(function(x){ return (x._staff||x['User Name']||'') === staffName; });
+  var msg = u
+    ? staffName + ': ' + (u.total_calls||0) + ' calls | ' + (u.answer_rate||0) + '% answer rate | ' + (u._branch||'')
+    : 'No data for ' + staffName;
+  showToast(msg, u ? 'ok' : 'err');
+}
+
+
+function showToast(msg, type) {
+  var el = document.getElementById('toast');
+  if (!el) {
+    // Create toast element if missing
+    el = document.createElement('div');
+    el.id = 'toast';
+    el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;'
+      + 'padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;'
+      + 'max-width:360px;opacity:0;transition:opacity 0.3s;pointer-events:none';
+    document.body.appendChild(el);
+  }
+  var colors = {ok:'#10b981', err:'#ef4444', warn:'#f59e0b', info:'#3b82f6'};
+  el.style.background = colors[type||'ok'] || colors.ok;
+  el.style.color = '#fff';
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.style.opacity = '0'; }, 3000);
+}
+
+function closeModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
+
+function goPage(id){var a=getAllowedPages();if(!a.includes(id)){if(a.length)goPage(a[0]);return;}document.querySelectorAll('.page').forEach(function(p){p.style.display='none';p.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});var pg=document.getElementById('page-'+id);if(pg){pg.style.display='block';pg.classList.add('active');}var nb=document.getElementById('nb-'+id);if(nb)nb.classList.add('active');curPage=id;setTimeout(function(){if(id==='executive')renderExec();else if(id==='manager')renderMgr();else if(id==='agents')renderAgents();else if(id==='cdr')renderCDR(1);else if(id==='myperformance')renderMyPerf();else if(id==='mapping')renderMapping();else if(id==='upload')renderUploadStats();else if(id==='users'){renderUsers();populateRoleSelect();}},30);}
+
+// ══════════════════════════════════════════════════════
+// FILTER DROPDOWNS
+// ══════════════════════════════════════════════════════
+function populateFilterDropdowns(){var myDM=scopedDM();var allDMs=(D.dms&&D.dms.length)?D.dms:Object.values(DM_FULL).filter(Boolean);var visDMs=allDMs.filter(function(d){return d!=='Unknown';});if(myDM)visDMs=[myDM];var dmOpts=visDMs.map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');['ef-dm','mf-dm'].forEach(function(id){var el=document.getElementById(id);if(!el)return;if(myDM){el.innerHTML='<option value="'+myDM+'">'+myDM+'</option>';el.disabled=true;}else{el.innerHTML='<option value="all">All Districts</option>'+dmOpts;el.disabled=false;}});var agDm=document.getElementById('agf-dm');if(agDm){if(myDM){agDm.innerHTML='<option value="'+myDM+'">'+myDM+'</option>';agDm.disabled=true;}else{agDm.innerHTML='<option value="all">All Districts</option>'+dmOpts;agDm.disabled=false;}}var visBN=null;if(CU.role==='district_manager'){visBN={};D.user_stats.filter(function(u){return(u._dm||u.dm||'')===myDM;}).forEach(function(u){if(u._branch)visBN[u._branch]=1;});}else if(CU.role==='staff'){visBN={};D.user_stats.filter(function(u){return(u._staff||u['User Name']||'')===CU.name;}).forEach(function(u){if(u._branch)visBN[u._branch]=1;});}var brOpts=Object.entries(CFG_BRANCHES).filter(function(e){return !visBN||visBN[e[1].name];}).sort(function(a,b){return a[1].name.localeCompare(b[1].name);}).map(function(e){return '<option value="'+e[1].name+'">'+e[1].name+'</option>';}).join('');['ef-branch','mf-branch','agf-branch','cdr-branch'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Branches</option>'+brOpts;});var seen={};var sn=CU.role==='district_manager'?D.user_stats.filter(function(u){return(u._dm||u.dm||'')===myDM;}).map(function(u){return u._staff||u['User Name']||'';}).filter(function(n){if(!n||seen[n])return false;seen[n]=1;return true;}).sort():CU.role==='staff'?[CU.name]:getAllVisibleStaff();['ef-staff','mf-staff'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Staff</option>'+sn.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');});
+  var dOpts=(D.dates_available||D.dates||[]).map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');
+  ['ef-date','mf-date'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Dates</option>'+dOpts;});}
+
+function getVisibleBranches() {
+  if (!CU) return [];
+  if (CU.role==='superadmin'||CU.role==='executive') return Object.keys(CFG_BRANCHES).map(Number);
+  if (CU.role==='district_manager') return CU.branches_managed||[];
+  if (CU.role==='staff') return CU.branch ? [CU.branch] : [];
+  return [];
+}
+
+function getAllVisibleStaff() {
+  const vb = getVisibleBranches();
+  const names=[];
+  Object.entries(CFG_BRANCHES).forEach(([bn,br])=>{
+    if(!vb.length||vb.includes(+bn)){
+      br.staff.forEach(s=>{if(s.name&&s.name!=='Open Desk')names.push(s.name);});
+    }
+  });
+  return [...new Set(names)].sort();
+}
+
+// ── FILTER CASCADE ────────────────────────────────────────────────────────────
+// Called when DM dropdown changes: re-scopes branch + staff, then re-renders
+function cascadeFromDM(page) {
+  var pfx = page==='exec' ? 'ef' : 'mf';
+  var dmEl  = document.getElementById(pfx+'-dm');
+  var brEl  = document.getElementById(pfx+'-branch');
+  var stEl  = document.getElementById(pfx+'-staff');
+  var selectedDM = dmEl ? dmEl.value : 'all';
+
+  // Reset downstream selections
+  if(brEl) brEl.value = 'all';
+  if(stEl) stEl.value = 'all';
+
+  // Scope branch list to selected DM
+  var visBr = null;
+  if(selectedDM && selectedDM !== 'all') {
+    visBr = {};
+    D.user_stats.filter(function(u){ return (u._dm||u.dm||'') === selectedDM; })
+                .forEach(function(u){ if(u._branch) visBr[u._branch] = 1; });
+  } else {
+    var myDM = scopedDM();
+    if(myDM) {
+      visBr = {};
+      D.user_stats.filter(function(u){ return (u._dm||u.dm||'') === myDM; })
+                  .forEach(function(u){ if(u._branch) visBr[u._branch] = 1; });
+    }
+  }
+  if(brEl) {
+    var brOpts = Object.entries(CFG_BRANCHES)
+      .filter(function(e){ return !visBr || visBr[e[1].name]; })
+      .sort(function(a,b){ return a[1].name.localeCompare(b[1].name); })
+      .map(function(e){ return '<option value="'+e[0]+'">'+e[1].name+'</option>'; }).join('');
+    brEl.innerHTML = '<option value="all">All Branches</option>' + brOpts;
+  }
+
+  // Scope staff list to selected DM
+  var filterDM = (selectedDM !== 'all') ? selectedDM : scopedDM();
+  if(stEl) {
+    var seen = {};
+    var staffNames = filterDM
+      ? D.user_stats.filter(function(u){ return (u._dm||u.dm||'') === filterDM; })
+                    .map(function(u){ return u._staff||u['User Name']||''; })
+                    .filter(function(n){ if(!n||seen[n]) return false; seen[n]=1; return true; })
+                    .sort()
+      : getAllVisibleStaff();
+    stEl.innerHTML = '<option value="all">All Staff</option>' +
+      staffNames.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
+  }
+
+  if(page==='exec') renderExec(); else renderMgr();
+}
+
+// Called when branch changes: re-scopes staff, then re-renders
+function cascadeFromBranch(page) {
+  var pfx = page==='exec' ? 'ef' : 'mf';
+  var dmEl  = document.getElementById(pfx+'-dm');
+  var brEl  = document.getElementById(pfx+'-branch');
+  var stEl  = document.getElementById(pfx+'-staff');
+  var selectedBranch = brEl ? brEl.value : 'all';
+  var selectedDM     = dmEl ? dmEl.value : 'all';
+  if(stEl) stEl.value = 'all';
+
+  if(stEl) {
+    var staffNames;
+    if(selectedBranch && selectedBranch !== 'all') {
+      var branchName = selectedBranch; // value is now the branch name directly
+      var seen = {};
+      staffNames = D.user_stats
+        .filter(function(u){ return u._branch === branchName; })
+        .map(function(u){ return u._staff||u['User Name']||''; })
+        .filter(function(n){ if(!n||seen[n]) return false; seen[n]=1; return true; })
+        .sort();
+    } else if(selectedDM && selectedDM !== 'all') {
+      var seen2 = {};
+      staffNames = D.user_stats
+        .filter(function(u){ return (u._dm||u.dm||'') === selectedDM; })
+        .map(function(u){ return u._staff||u['User Name']||''; })
+        .filter(function(n){ if(!n||seen2[n]) return false; seen2[n]=1; return true; })
+        .sort();
+    } else {
+      staffNames = getAllVisibleStaff();
+    }
+    stEl.innerHTML = '<option value="all">All Staff</option>' +
+      staffNames.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
+  }
+  if(page==='exec') renderExec(); else renderMgr();
+}
+
+// Called when agents DM changes: re-scopes branch dropdown
+function cascadeAgentDM() {
+  var dmEl = document.getElementById('agf-dm');
+  var brEl = document.getElementById('agf-branch');
+  var selectedDM = dmEl ? dmEl.value : 'all';
+  if(brEl) {
+    var visBr = null;
+    if(selectedDM && selectedDM !== 'all') {
+      visBr = {};
+      D.user_stats.filter(function(u){ return (u._dm||u.dm||'') === selectedDM; })
+                  .forEach(function(u){ if(u._branch) visBr[u._branch] = 1; });
+    }
+    var brOpts = Object.entries(CFG_BRANCHES)
+      .filter(function(e){ return !visBr || visBr[e[1].name]; })
+      .sort(function(a,b){ return a[1].name.localeCompare(b[1].name); })
+      .map(function(e){ return '<option value="'+e[0]+'">'+e[1].name+'</option>'; }).join('');
+    brEl.innerHTML = '<option value="all">All Branches</option>' + brOpts;
+    brEl.value = 'all';
+  }
+  renderAgents();
+}
+
+function getFilterValues(page) {
+  const map={exec:{date:'ef-date',dm:'ef-dm',branch:'ef-branch',staff:'ef-staff',dir:'ef-dir'},
+             mgr:{date:'mf-date',dm:'mf-dm',branch:'mf-branch',staff:'mf-staff',dir:'mf-dir'},
+             agents:{date:'agf-date',branch:'agf-branch',dm:'agf-dm'}};
+  const res={};
+  const ids=map[page]||{};
+  Object.entries(ids).forEach(([k,id])=>{
+    const el=document.getElementById(id);
+    if(el)res[k]=el.value;
+  });
+  return res;
+}
+
+function applyFilters(page) {
+  if (page==='exec')    renderExec();
+  if (page==='mgr')     renderMgr();
+  if (page==='agents')  renderAgents();
+  if (page==='cdr')     renderCDR(1);
+  if (page==='myperformance') renderMyPerf();
+}
+
+function clearFilters(page) {
+  const map={exec:['ef-date','ef-dm','ef-branch','ef-staff','ef-dir'],
+             mgr:['mf-date','mf-branch','mf-staff','mf-dir']};
+  (map[page]||[]).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.selectedIndex=0;
+  });
+  if(page==='exec')renderExec();
+  if(page==='mgr')renderMgr();
+}
+
+// ══════════════════════════════════════════════════════
+// DATA FILTER LOGIC
+// ══════════════════════════════════════════════════════
+function scopedDM(){if(!CU)return null;if(CU.role==='district_manager'){var s=DM_SHORT[CU.username]||CU.dm||'';return DM_FULL[s]||CU.name||null;}return null;}
+function scopedStaff(){return CU&&CU.role==='staff'?CU.name:null;}
+function isVisibleStaff(u){var dm=scopedDM();if(dm&&(u._dm||u.dm||'')!==dm)return false;var st=scopedStaff();if(st&&(u._staff||u['User Name']||'')!==st)return false;return true;}
+function isVisibleRow(r){var dm=scopedDM();if(dm&&(r.dm||'')!==dm)return false;var st=scopedStaff();if(st&&(r.staff||'')!==st)return false;return true;}
+
+function filterUserStats(opts){opts=opts||{};var data=D.user_stats.filter(function(u){return isVisibleStaff(u);});if(opts.dm&&opts.dm!=='all'&&(CU.role==='superadmin'||CU.role==='executive')){data=data.filter(function(u){return(u._dm||u.dm||'')===opts.dm;});}if(opts.branch&&opts.branch!=='all'){var _bname=BRANCH_NUM_TO_NAME[opts.branch]||opts.branch;data=data.filter(function(u){var bn=u._branch||u.branch||'';return bn===opts.branch||bn===_bname||String(u._branchNum||'')===String(opts.branch);});}if(opts.staff&&opts.staff!=='all'){data=data.filter(function(u){return(u._staff||u['User Name']||'')===opts.staff;});}return data;}
+
+function filterDaily(dateFilter='all') {
+  if (dateFilter==='all') return D.daily_summary;
+  return D.daily_summary.filter(d=>d.date===dateFilter);
+}
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+const fmt=n=>n>=1000?(n/1000).toFixed(1)+'K':String(n);
+const durFmt=s=>{s=Math.round(+s||0);const m=Math.floor(s/60),ss=s%60;return m>0?`${m}m${ss}s`:`${ss}s`;};
+const pct=n=>(+n||0).toFixed(1)+'%';
+const cc=(c,a)=>`rgba(${hexToRgb(c)},${a})`;
+
+function hexToRgb(h){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return `${r},${g},${b}`;}
+
+const COLORS={acc:'#3b82f6',acc2:'#8b5cf6',green:'#10b981',red:'#ef4444',amber:'#f59e0b',cyan:'#06b6d4',pink:'#ec4899'};
+const CHART_OPTS={
+  responsive:true,maintainAspectRatio:true,
+  plugins:{legend:{labels:{color:'#94a3b8',font:{family:'Plus Jakarta Sans',size:11}}}},
+  scales:{x:{ticks:{color:'#94a3b8',font:{size:10}},grid:{color:'#1f2d45'}},y:{ticks:{color:'#94a3b8',font:{size:10}},grid:{color:'#1f2d45'}}}
+};
+
+// Per-agent inbound/outbound connect rates
+function agentMetrics(u) {
+  const inb = u.inbound||0, outb = u.outbound||0;
+  const ans = u.answered||0, miss = u.missed||0;
+  // Inbound: answered = connected, no-answer = missed
+  // Outbound: answered = connected, no-answer = no response
+  const in_answered = Math.round(ans * (inb/(inb+outb||1)));
+  const out_connected = ans - in_answered;
+  const missed_inbound = Math.max(0, inb - in_answered);
+  const noresp_outbound = Math.max(0, outb - out_connected);
+  return {
+    inbound: inb, outbound: outb,
+    answered_in: in_answered,
+    missed_in: missed_inbound,
+    connect_out: out_connected,
+    noresp_out: noresp_outbound,
+    inbound_rate: inb>0 ? (in_answered/inb*100) : 0,
+    outbound_rate: outb>0 ? (out_connected/outb*100) : 0,
+    avg_dur: u.avg_dur||0,
+    talk_time: u.total_dur||0,
+    total: u.total_calls||0
+  };
+}
+
+// ══════════════════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════════════════
+const CH={};
+function destroyAllCharts(){Object.values(CH).forEach(c=>{try{c.destroy()}catch(e){}});}
+
+function mk(id,type,data,opts){
+  if(CH[id]){CH[id].destroy();}
+  const ctx=document.getElementById(id);
+  if(!ctx)return null;
+  CH[id]=new Chart(ctx,{type,data,options:{...CHART_OPTS,...opts}});
+  // Click handler
+  ctx.onclick=function(evt){
+    const pts=CH[id].getElementsAtEventForMode(evt,'nearest',{intersect:true},false);
+    if(pts.length){chartClicked(id,pts[0].index,CH[id].data.labels[pts[0].index]);}
+  };
+  return CH[id];
+}
+
+function chartClicked(chartId, idx, label) {
+  // Cross-filtering logic
+  if(chartId==='ch-daily'){
+    const dates=['2026-05-07','2026-05-08','2026-05-09'];
+    const clicked=dates[idx];
+    if(clicked){
+      document.getElementById('ef-date').value=clicked;
+      applyFilters('exec');
+      showToast(`Filtered to ${clicked}`,'ok');
+    }
+  }
+  if(chartId==='ch-dir'){
+    const dirs=['Inbound','Outbound'];
+    const d=dirs[idx];
+    if(d){document.getElementById('ef-dir').value=d;applyFilters('exec');showToast(`Filtered: ${d}`,'ok');}
+  }
+  if(chartId==='ch-hourly'){
+    showToast(`Peak hour: ${label} — ${D.hourly_totals.find(h=>h.hour+':00'===label)?.calls||0} calls`,'ok');
+  }
+  if(chartId==='ch-branch'){
+    const branchNames=Object.values(CFG_BRANCHES).map(b=>b.name);
+    showToast(`Branch: ${label} — click filter below to drill in`,'ok');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// INIT CHARTS
+// ══════════════════════════════════════════════════════
+function initCharts() {
+  Chart.defaults.color='#64748b';
+  Chart.defaults.font.family='Plus Jakarta Sans';
+  setTimeout(()=>{
+    renderExec();
+  }, 100);
+}
+
+// ══════════════════════════════════════════════════════
+// EXECUTIVE PAGE
+// ══════════════════════════════════════════════════════
+function renderExec() {
+  const f=getFilterValues('exec');
+  const daily=filterDaily(f.date||'all');
+  const users=filterUserStats(f);
+
+  // Direction filter: scope aggregation to Inbound or Outbound only
+  // Dynamic caption
+  (function(){
+    var subEl = document.getElementById('exec-subtitle') || document.querySelector('.exec-subtitle');
+    if (!subEl) return;
+    var dr = D.date_range || {};
+    var scope = (f.dm&&f.dm!=='all') ? f.dm
+              : (f.branch&&f.branch!=='all') ? f.branch + ' Branch'
+              : 'Organisation-wide';
+    var dateStr = dr.start ? dr.start + (dr.end&&dr.end!==dr.start ? ' – ' + dr.end : '') : 'No data loaded';
+    subEl.textContent = scope + ' call analytics · ' + dateStr;
+  })();
+  const dirF = f.dir || 'all';
+  // When any DM/branch/staff filter active → aggregate from filtered users for accuracy
+  const isFiltered = (f.dm&&f.dm!=='all')||(f.branch&&f.branch!=='all')||(f.staff&&f.staff!=='all');
+  function aggU(prop){ return users.reduce(function(a,u){return a+(+(u[prop]||0));},0); }
+  function aggD(prop){ return daily.reduce(function(a,d){return a+(+(d[prop]||0));},0); }
+  let total, ans, miss, inb, outb, dur, ar, missedInbound, noRespOutbound;
+  if(isFiltered){
+    if(dirF==='Inbound'){
+      inb=aggU('inbound');total=inb;outb=0;dur=0;
+      ans=aggU('inbound_answered');miss=aggU('inbound_missed');
+    }else if(dirF==='Outbound'){
+      outb=aggU('outbound');total=outb;inb=0;dur=0;
+      ans=aggU('outbound_answered');miss=aggU('outbound_no_response');
+    }else{
+      total=aggU('total_calls');ans=aggU('answered');
+      inb=aggU('inbound');outb=aggU('outbound');
+      dur=users.reduce(function(a,u){return a+(+(u.total_dur||u.talk_time||0));},0);
+      miss=aggU('inbound_missed')+aggU('outbound_no_response');
+    }
+    missedInbound  = aggU('inbound_missed');
+    noRespOutbound = aggU('outbound_no_response');
+  }else{
+    if(dirF==='Inbound'){
+      inb=aggD('inbound');total=inb;outb=0;dur=0;
+      ans=aggD('inbound_answered');miss=aggD('inbound_missed');
+    }else if(dirF==='Outbound'){
+      outb=aggD('outbound');total=outb;inb=0;dur=0;
+      ans=aggD('outbound_answered');miss=aggD('outbound_no_response');
+    }else{
+      total=aggD('total');ans=aggD('answered');
+      inb=aggD('inbound');outb=aggD('outbound');
+      dur=aggD('total_dur');miss=aggD('missed');
+    }
+    missedInbound  = aggD('inbound_missed');
+    noRespOutbound = aggD('outbound_no_response');
+  }
+  ar = total ? (ans/total*100).toFixed(1) : 0;
+  
+  
+  // Connect rates
+  const inbConnRate = inb ? ((inb-missedInbound)/inb*100).toFixed(1) : 0;
+  const outConnRate = outb ? ((outb-noRespOutbound)/outb*100).toFixed(1) : 0;
+
+  document.getElementById('exec-kpis').innerHTML=`
+    <div class="kpi" style="--kpi-c:#3b82f6" onclick="chartClicked('kpi','total','total')">
+      <div class="kpi-lbl">Total Calls</div>
+      <div class="kpi-val">${fmt(total)}</div>
+      <div class="kpi-sub">${inb.toLocaleString()} in · ${outb.toLocaleString()} out</div>
+    </div>
+    <div class="kpi" style="--kpi-c:#10b981">
+      <div class="kpi-lbl">Inbound Connect Rate</div>
+      <div class="kpi-val">${inbConnRate}%</div>
+      <div class="kpi-sub">${(inb-missedInbound).toLocaleString()} answered of ${inb.toLocaleString()}</div>
+      <div class="kpi-trend trend-up">📞 Inbound Calls Answered</div>
+    </div>
+    <div class="kpi" style="--kpi-c:#8b5cf6">
+      <div class="kpi-lbl">Outbound Connect Rate</div>
+      <div class="kpi-val">${outConnRate}%</div>
+      <div class="kpi-sub">${(outb-noRespOutbound).toLocaleString()} connected of ${outb.toLocaleString()}</div>
+      <div class="kpi-trend trend-up">📤 Outbound Connected</div>
+    </div>
+    <div class="kpi" style="--kpi-c:#ef4444">
+      <div class="kpi-lbl">Missed Calls (Inbound)</div>
+      <div class="kpi-val">${fmt(missedInbound)}</div>
+      <div class="kpi-sub">Inbound calls not answered</div>
+    </div>
+    <div class="kpi" style="--kpi-c:#f59e0b">
+      <div class="kpi-lbl">No Response (Outbound)</div>
+      <div class="kpi-val">${fmt(noRespOutbound)}</div>
+      <div class="kpi-sub">Outbound with no answer</div>
+    </div>
+    <div class="kpi" style="--kpi-c:#06b6d4">
+      <div class="kpi-lbl">Avg Talk Time</div>
+      <div class="kpi-val">${durFmt(total?dur/total:0)}</div>
+      <div class="kpi-sub">${Math.round(dur/3600)}h total talk time</div>
+    </div>`;
+
+  // Daily chart
+  // Build daily chart datasets based on direction filter
+  // When filtered: compute per-date and per-hour from the scoped staff
+  // This ensures ch-daily and ch-hourly match the KPI numbers
+  var chartDates = D.dates || [];
+  var filteredDateMap = {};  // {date: {total,answered,inbound,outbound,inb_ans,inb_miss,out_ans,out_nr}}
+  var filteredHourMap = {};  // {hour: calls}
+  if (isFiltered) {
+    var staffSet = {};
+    users.forEach(function(u){ staffSet[u._staff||u['User Name']||'']=1; });
+    // Aggregate user_daily rows that belong to the filtered staff
+    (D.user_daily||[]).forEach(function(d){
+      var sn = d.real_staff||d['User Name']||'';
+      if (!staffSet[sn]) return;
+      var dt = d.date;
+      if (!filteredDateMap[dt]) filteredDateMap[dt]={total:0,answered:0,inbound:0,outbound:0,inb_ans:0,inb_miss:0,out_ans:0,out_nr:0};
+      var r = filteredDateMap[dt];
+      r.total    += +(d.total||0);
+      r.answered += +(d.answered||0);
+      r.inbound  += +(d.inbound||0);
+      r.outbound += +(d.outbound||0);
+      r.inb_ans  += +(d.inbound_answered||d.answered_in||0);
+      r.inb_miss += +(d.inbound_missed||d.missed_in||0);
+      r.out_ans  += +(d.outbound_answered||d.connect_out||0);
+      r.out_nr   += +(d.outbound_no_response||d.no_resp_out||0);
+    });
+    // If a date filter is set, apply it
+    if (f.date && f.date !== 'all') {
+      Object.keys(filteredDateMap).forEach(function(dt){
+        if (dt !== f.date) delete filteredDateMap[dt];
+      });
+    }
+    // Build per-hour map from staff_hourly
+    (D.staff_hourly||[]).forEach(function(h){
+      var sn = h.real_staff||'';
+      if (!staffSet[sn]) return;
+      if (f.date && f.date !== 'all' && h.date !== f.date) return;
+      var hr = h.hour;
+      filteredHourMap[hr] = (filteredHourMap[hr]||0) + h.calls;
+    });
+    // Use filtered dates for chart labels
+    chartDates = Object.keys(filteredDateMap).sort();
+  }
+
+  // Use filteredDateMap when DM/branch/staff selected, else org-wide daily
+  var dLabels = isFiltered
+    ? chartDates.map(function(dt){return dt.slice(5);})
+    : daily.map(function(d){return d.date.slice(5);});
+  function dVal(field, fmField) {
+    return isFiltered
+      ? chartDates.map(function(dt){ var r=filteredDateMap[dt]||{}; return +(r[fmField]||0); })
+      : daily.map(function(d){ return +(d[field]||0); });
+  }
+  var dailyDs = [];
+  if (dirF === 'Inbound') {
+    dailyDs = [
+      {label:'Inbound',  data:dVal('inbound','inbound'),    backgroundColor:cc('#3b82f6',.5),borderColor:'#3b82f6',borderWidth:1.5,borderRadius:4},
+      {label:'Answered', data:dVal('inbound_answered','inb_ans'),  backgroundColor:cc('#10b981',.6),borderColor:'#10b981',borderWidth:1.5,borderRadius:4},
+      {label:'Missed',   data:dVal('inbound_missed','inb_miss'),   backgroundColor:cc('#ef4444',.5),borderColor:'#ef4444',borderWidth:1.5,borderRadius:4},
+    ];
+  } else if (dirF === 'Outbound') {
+    dailyDs = [
+      {label:'Outbound',     data:dVal('outbound','outbound'),   backgroundColor:cc('#8b5cf6',.5),borderColor:'#8b5cf6',borderWidth:1.5,borderRadius:4},
+      {label:'Connected',    data:dVal('outbound_answered','out_ans'), backgroundColor:cc('#10b981',.6),borderColor:'#10b981',borderWidth:1.5,borderRadius:4},
+      {label:'No Response',  data:dVal('outbound_no_response','out_nr'), backgroundColor:cc('#f59e0b',.5),borderColor:'#f59e0b',borderWidth:1.5,borderRadius:4},
+    ];
+  } else {
+    dailyDs = [
+      {label:'Total',        data:dVal('total','total'),       backgroundColor:cc('#3b82f6',.4),borderColor:'#3b82f6',borderWidth:1.5,borderRadius:4},
+      {label:'Answered',     data:dVal('answered','answered'), backgroundColor:cc('#10b981',.5),borderColor:'#10b981',borderWidth:1.5,borderRadius:4},
+      {label:'Missed (In)',  data:dVal('inbound_missed','inb_miss'), backgroundColor:cc('#ef4444',.4),borderColor:'#ef4444',borderWidth:1.5,borderRadius:4},
+      {label:'No Resp (Out)',data:dVal('outbound_no_response','out_nr'), backgroundColor:cc('#f59e0b',.4),borderColor:'#f59e0b',borderWidth:1.5,borderRadius:4},
+    ];
+  }
+  mk('ch-daily','bar',{labels:dLabels,datasets:dailyDs},{});
+
+  // Donut — direction aware
+  var donutLabels, donutData;
+  if (dirF === 'Inbound') {
+    donutLabels = ['Answered','Missed']; donutData = [ans, missedInbound];
+  } else if (dirF === 'Outbound') {
+    donutLabels = ['Connected','No Response']; donutData = [ans, noRespOutbound];
+  } else {
+    donutLabels = ['Answered','Missed (In)','No Resp (Out)']; donutData = [ans, missedInbound, noRespOutbound];
+  }
+  mk('ch-donut','doughnut',{
+    labels:donutLabels,
+    datasets:[{data:donutData,backgroundColor:['#10b981','#ef4444','#f59e0b'],borderWidth:0,hoverOffset:8}]
+  },{plugins:{legend:{position:'bottom',labels:{color:'#94a3b8'}}},scales:{x:{display:false},y:{display:false}}});
+
+  // Direction
+  mk('ch-dir','bar',{
+    labels:['Inbound','Outbound'],
+    datasets:[{data:[inb,outb],backgroundColor:['#3b82f6','#8b5cf6'],borderWidth:0,borderRadius:8}]
+  },{plugins:{legend:{display:false}},scales:{...CHART_OPTS.scales}});
+
+  // Hourly — when filtered, use staff_hourly filtered to visible staff
+  var hmap = {};
+  if (isFiltered) {
+    // filteredHourMap already built above from staff_hourly
+    hmap = filteredHourMap;
+  } else {
+    var hd = f.date&&f.date!=='all' ? D.hourly_by_date.filter(function(h){return h.date===f.date;}) : D.hourly_totals;
+    hd.forEach(function(h){ hmap[h.hour]=(hmap[h.hour]||0)+h.calls; });
+  }
+  var hrs=Array.from({length:24},function(_,i){return String(i).padStart(2,'0');});
+  mk('ch-hourly','line',{
+    labels:hrs.map(function(h){return h+':00';}),
+    datasets:[{label:'Calls',data:hrs.map(function(h){return hmap[h]||0;}),fill:true,backgroundColor:cc('#3b82f6',.1),borderColor:'#3b82f6',tension:.35,pointRadius:2,borderWidth:2}]
+  },{plugins:{legend:{display:false}},scales:{...CHART_OPTS.scales}});
+
+  // Connect gauge
+  const gaugeEl=document.getElementById('connect-gauge');
+  if(gaugeEl){
+    gaugeEl.innerHTML=`
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:11px;color:var(--muted)">📞 Inbound Connect Rate</span>
+          <span style="font-weight:700;color:${+inbConnRate>50?'var(--green)':'var(--red)'}">${inbConnRate}%</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill" style="width:${inbConnRate}%;background:${+inbConnRate>70?'var(--green)':+inbConnRate>40?'var(--amber)':'var(--red)'}"></div></div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:11px;color:var(--muted)">📤 Outbound Connect Rate</span>
+          <span style="font-weight:700;color:${+outConnRate>50?'var(--green)':'var(--amber)'}">${outConnRate}%</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill" style="width:${outConnRate}%;background:${+outConnRate>70?'var(--green)':+outConnRate>40?'var(--amber)':'var(--red)'}"></div></div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
+        <b style="color:var(--text)">Insurance KPIs:</b><br>
+        ✓ Avg Handle Time: ${durFmt(total?dur/total:0)}<br>
+        ✓ Active Agents: ${users.filter(u=>u.total_calls>0).length}<br>
+        ✓ Hunt Group Calls: ${D.redirect_reasons['hunt-group']||0}<br>
+        ✓ Voicemail/No-ans: ${D.redirect_reasons['no-answer']||0}
+      </div>`;
+  }
+
+
+  // Branch performance
+  var branchStats={};
+  users.forEach(function(u){
+    var bn=u._branch; if(!bn||bn==='Unknown') return;
+    if(!branchStats[bn]) branchStats[bn]={ans:0,miss:0,total:0};
+    if(dirF==='Inbound'){
+      branchStats[bn].ans  +=+(u.inbound_answered||0);
+      branchStats[bn].miss +=+(u.inbound_missed||0);
+      branchStats[bn].total+=+(u.inbound||0);
+    }else if(dirF==='Outbound'){
+      branchStats[bn].ans  +=+(u.outbound_answered||0);
+      branchStats[bn].miss +=+(u.outbound_no_response||0);
+      branchStats[bn].total+=+(u.outbound||0);
+    }else{
+      branchStats[bn].ans  +=+(u.answered||0);
+      branchStats[bn].miss +=+(u.inbound_missed||0)+(+(u.outbound_no_response||0));
+      branchStats[bn].total+=+(u.total_calls||u.total||0);
+    }
+  });
+  var topBranches=Object.entries(branchStats)
+    .filter(function(e){return e[1].total>0;})
+    .sort(function(a,b){return b[1].total-a[1].total;})
+    .slice(0,20);
+  mk('ch-branch','bar',{
+    labels:topBranches.map(([k])=>k),
+    datasets:[
+      {label:'Answered',data:topBranches.map(([,v])=>v.ans),backgroundColor:cc('#10b981',.5),borderRadius:3},
+      {label:'Missed/No Resp',data:topBranches.map(([,v])=>v.miss),backgroundColor:cc('#ef4444',.4),borderRadius:3},
+    ]
+  },{scales:{x:{...CHART_OPTS.scales.x,stacked:true},y:{...CHART_OPTS.scales.y,stacked:true}}});
+}
+
+// ══════════════════════════════════════════════════════
+// MANAGER PAGE
+// ══════════════════════════════════════════════════════
+function renderMgr() {
+  const f=getFilterValues('mgr');
+  const daily=filterDaily(f.date||'all');
+  const mgrDmFilter = CU.role==='district_manager' ? scopedDM() : (f.dm&&f.dm!=='all'?f.dm:null);
+  const users=filterUserStats(Object.assign({},f,{dm:mgrDmFilter||'all'}));
+
+  // Direction filter + use staff stats (scoped to branch/DM)
+  let total,ans,inb,outb,miss;
+  // Direction filter + use staff stats
+  const mgrDirF = f.dir || 'all';
+  let missedIn, noRespOut;
+  if(mgrDirF==='Inbound'){
+    inb    = users.reduce(function(a,u){return a+(+(u.inbound||0));},0);
+    ans    = users.reduce(function(a,u){return a+(+(u.inbound_answered||0));},0);
+    missedIn=users.reduce(function(a,u){return a+(+(u.inbound_missed||0));},0);
+    total=inb; outb=0; miss=missedIn; noRespOut=0;
+  }else if(mgrDirF==='Outbound'){
+    outb    = users.reduce(function(a,u){return a+(+(u.outbound||0));},0);
+    ans     = users.reduce(function(a,u){return a+(+(u.outbound_answered||0));},0);
+    noRespOut=users.reduce(function(a,u){return a+(+(u.outbound_no_response||0));},0);
+    total=outb; inb=0; miss=noRespOut; missedIn=0;
+  }else{
+    total  = users.reduce(function(a,u){return a+(+(u.total_calls||u.total||0));},0);
+    ans    = users.reduce(function(a,u){return a+(+(u.answered||0));},0);
+    inb    = users.reduce(function(a,u){return a+(+(u.inbound||0));},0);
+    outb   = users.reduce(function(a,u){return a+(+(u.outbound||0));},0);
+    missedIn =users.reduce(function(a,u){return a+(+(u.inbound_missed||0));},0);
+    noRespOut=users.reduce(function(a,u){return a+(+(u.outbound_no_response||0));},0);
+    miss = missedIn + noRespOut;
+  }
+  document.getElementById('mgr-kpis').innerHTML=`
+    <div class="kpi" style="--kpi-c:#3b82f6"><div class="kpi-lbl">Team Calls</div><div class="kpi-val">${fmt(total)}</div><div class="kpi-sub">${users.length} agents</div></div>
+    <div class="kpi" style="--kpi-c:#10b981"><div class="kpi-lbl">Inbound Connect</div><div class="kpi-val">${inb?(((inb-missedIn)/inb)*100).toFixed(1):0}%</div></div>
+    <div class="kpi" style="--kpi-c:#8b5cf6"><div class="kpi-lbl">Outbound Connect</div><div class="kpi-val">${outb?(((outb-noRespOut)/outb)*100).toFixed(1):0}%</div></div>
+    <div class="kpi" style="--kpi-c:#ef4444"><div class="kpi-lbl">Missed (Inbound)</div><div class="kpi-val">${fmt(missedIn)}</div></div>
+    <div class="kpi" style="--kpi-c:#f59e0b"><div class="kpi-lbl">No Response (Out)</div><div class="kpi-val">${fmt(noRespOut)}</div></div>`;
+
+  const top15=users.slice().sort(function(a,b){return (+(b.total_calls||b.total||0))-(+(a.total_calls||a.total||0));}).slice(0,15);
+  var topDs;
+  if (mgrDirF === 'Inbound') {
+    topDs = [
+      {label:'Inb Answered',data:top15.map(function(u){return +(u.answered_in||u.inbound_answered||0);}),backgroundColor:'#10b981',borderRadius:3},
+      {label:'Missed',data:top15.map(function(u){return +(u.missed_in||u.inbound_missed||0);}),backgroundColor:'#ef4444',borderRadius:3},
+    ];
+  } else if (mgrDirF === 'Outbound') {
+    topDs = [
+      {label:'Connected',data:top15.map(function(u){return +(u.connect_out||u.outbound_answered||0);}),backgroundColor:'#8b5cf6',borderRadius:3},
+      {label:'No Response',data:top15.map(function(u){return +(u.no_resp_out||u.outbound_no_response||0);}),backgroundColor:'#f59e0b',borderRadius:3},
+    ];
+  } else {
+    topDs = [
+      {label:'Answered',data:top15.map(function(u){return +(u.answered||0);}),backgroundColor:'#10b981',borderRadius:3},
+      {label:'Missed/No Resp',data:top15.map(function(u){return +(u.missed_in||0)+(+(u.no_resp_out||0));}),backgroundColor:'#ef4444',borderRadius:3},
+    ];
+  }
+  mk('ch-topage','bar',{
+    labels:top15.map(function(u){return u._staff||u['User Name'];}),
+    datasets:topDs
+  },{scales:{x:{...CHART_OPTS.scales.x,stacked:true,ticks:{...CHART_OPTS.scales.x.ticks,maxRotation:45,font:{size:9}}},y:{...CHART_OPTS.scales.y,stacked:true}}});
+
+  // Branch list
+  const branchMap={};
+  users.forEach(u=>{
+    if(!u._branch)return;
+    if(!branchMap[u._branch])branchMap[u._branch]={total:0,ans:0};
+    branchMap[u._branch].total+=u.total_calls||0;
+    branchMap[u._branch].ans+=u.answered||0;
+  });
+  const maxBr=Math.max(...Object.values(branchMap).map(b=>b.total),1);
+  document.getElementById('mgr-branch-list').innerHTML=
+    Object.entries(branchMap).sort((a,b)=>b[1].total-a[1].total).map(([name,v])=>`
+      <div style="padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="document.getElementById('mf-branch').value='${getBranchNumByName(name)}';applyFilters('mgr')">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:11px;font-weight:600">${name}</span>
+          <span style="font-size:11px;color:var(--green)">${v.total?((v.ans/v.total)*100).toFixed(0):0}%</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill" style="width:${(v.total/maxBr)*100}%;background:var(--acc)"></div></div>
+      </div>`).join('');
+
+  // Answer rate
+  const ar20=users.filter(u=>u.total_calls>5).sort((a,b)=>b.answer_rate-a.answer_rate).slice(0,20);
+  mk('ch-ar','bar',{
+    labels:ar20.map(u=>(u._staff||u['User Name']).split(' ')[0]),
+    datasets:[{label:'Answer %',data:ar20.map(u=>u.answer_rate||0),
+      backgroundColor:ar20.map(u=>u.answer_rate>70?cc('#10b981',.5):u.answer_rate>40?cc('#f59e0b',.5):cc('#ef4444',.5)),
+      borderRadius:3}]
+  },{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{...CHART_OPTS.scales.x,max:100},y:{...CHART_OPTS.scales.y,ticks:{...CHART_OPTS.scales.y.ticks,font:{size:9}}}}});
+
+  // Missed by branch
+  const branchMissed={};
+  users.forEach(u=>{
+    if(!u._branch)return;
+    const m=agentMetrics(u);
+    if(!branchMissed[u._branch])branchMissed[u._branch]={miss:0,noresp:0};
+    branchMissed[u._branch].miss+=m.missed_in;
+    branchMissed[u._branch].noresp+=m.noresp_out;
+  });
+  const bm=Object.entries(branchMissed).sort((a,b)=>b[1].miss-a[1].miss).slice(0,12);
+  mk('ch-missed-branch','bar',{
+    labels:bm.map(([k])=>k),
+    datasets:[{label:'Missed Inbound',data:bm.map(([,v])=>v.miss),backgroundColor:cc('#ef4444',.5),borderRadius:3}]
+  },{plugins:{legend:{display:false}},scales:{x:{...CHART_OPTS.scales.x,ticks:{...CHART_OPTS.scales.x.ticks,maxRotation:40,font:{size:9}}},y:{...CHART_OPTS.scales.y}}});
+
+  const bn=Object.entries(branchMissed).sort((a,b)=>b[1].noresp-a[1].noresp).slice(0,12);
+  mk('ch-noresp-branch','bar',{
+    labels:bn.map(([k])=>k),
+    datasets:[{label:'No Response Outbound',data:bn.map(([,v])=>v.noresp),backgroundColor:cc('#f59e0b',.5),borderRadius:3}]
+  },{plugins:{legend:{display:false}},scales:{x:{...CHART_OPTS.scales.x,ticks:{...CHART_OPTS.scales.x.ticks,maxRotation:40,font:{size:9}}},y:{...CHART_OPTS.scales.y}}});
+
+  // Heatmap
+  // Build filterOpts for heatmap using identical field logic as showHeatmapDetail
+  var hmFilterOpts = null;
+  var _hmDm  = mgrDmFilter || (f.dm&&f.dm!=='all' ? f.dm : null);
+  var _hmBr  = f.branch&&f.branch!=='all' ? (BRANCH_NUM_TO_NAME[f.branch]||f.branch) : null;
+  var _hmSt  = f.staff&&f.staff!=='all' ? f.staff : null;
+  if(_hmDm || _hmBr || _hmSt) {
+    hmFilterOpts = {dm:_hmDm, branchName:_hmBr, staff:_hmSt};
+  }
+  renderHeatmap(f.date||'all', 'mgr-heatmap', hmFilterOpts);
+}
+
+function getBranchNumByName(name){
+  const e=Object.entries(CFG_BRANCHES).find(([,b])=>b.name===name);
+  return e?e[0]:'all';
+}
+
+function renderHeatmap(dateFilter, containerId, filterOpts) {
+  // filterOpts: {dm, branchName, staff} — same fields as showHeatmapDetail uses
+  // Using identical field-level filters guarantees cell value === detail table total
+  var container=document.getElementById(containerId);
+  if(!container) return;
+  var dates=dateFilter==='all' ? D.dates_available : [dateFilter];
+  var hmap={};
+  if(filterOpts) {
+    (D.staff_hourly||[]).forEach(function(h){
+      if(dates.indexOf(h.date)<0) return;
+      if(filterOpts.dm     && (h.dm||'')!==filterOpts.dm)         return;
+      if(filterOpts.branchName && (h.branch||'')!==filterOpts.branchName) return;
+      if(filterOpts.staff  && (h.real_staff||'')!==filterOpts.staff) return;
+      var k=h.date+'_'+h.hour;
+      hmap[k]=(hmap[k]||0)+h.calls;
+    });
+  } else {
+    D.hourly_by_date.filter(function(h){return dates.indexOf(h.date)>=0;}).forEach(function(h){
+      var k=h.date+'_'+h.hour;
+      hmap[k]=(hmap[k]||0)+h.calls;
+    });
+  }
+  const maxV=Math.max(...Object.values(hmap),1);
+  const hrs=Array.from({length:24},(_,i)=>String(i).padStart(2,'0'));
+  let html=`<div class="heatmap" style="grid-template-columns:45px repeat(24,1fr)">`;
+  html+=`<div style="font-size:9px;color:var(--muted)"></div>`;
+  hrs.forEach(h=>html+=`<div style="font-size:8px;color:var(--muted);text-align:center">${h}</div>`);
+  dates.forEach(d=>{
+    html+=`<div style="font-size:9px;color:var(--muted);padding-right:4px">${d.slice(5)}</div>`;
+    hrs.forEach(h=>{
+      const v=hmap[d+'_'+h]||0;
+      const i=v/maxV;
+      const bg=v>0?`rgba(59,130,246,${Math.max(.08,i*.9)})`:'var(--s2)';
+      html+=`<div class="hm-cell" style="background:${bg}" title="${d} ${h}:00 — ${v} calls" onclick="showHeatmapDetail('${d}','${h}')">${v||''}</div>`;
+    });
+  });
+  html+='</div>';
+  container.innerHTML=html;
+}
+
+// ══════════════════════════════════════════════════════
+// AGENTS PAGE
+// ══════════════════════════════════════════════════════
+function renderAgents() {
+  const search=(document.getElementById('ag-search')?.value||'').toLowerCase();
+  const dateF=document.getElementById('agf-date')?.value||'all';
+  const branchF=document.getElementById('agf-branch')?.value||'all';
+  const dmF=document.getElementById('agf-dm')?.value||'all';
+
+  let data=filterUserStats({dm:CU.role==='district_manager'?(DM_SHORT[CU.username]||CU.dm):dmF, branch:branchF});
+  if(dateF!=='all'){
+    const daily=D.user_daily.filter(d=>d.date===dateF);
+    const dm2={};
+    daily.forEach(d=>{
+      if(!dm2[d['User Name']])dm2[d['User Name']]={total:0,answered:0,inbound:0,outbound:0};
+      dm2[d['User Name']].total+=d.total;
+      dm2[d['User Name']].answered+=d.answered;
+      dm2[d['User Name']].inbound+=d.inbound;
+      dm2[d['User Name']].outbound+=d.outbound;
+    });
+    data=data.filter(u=>dm2[u['User Name']]).map(u=>{
+      const d=dm2[u['User Name']]||{};
+      return {...u,total_calls:d.total||0,answered:d.answered||0,missed:(d.total||0)-(d.answered||0),inbound:d.inbound||0,outbound:d.outbound||0,answer_rate:d.total?((d.answered/d.total)*100).toFixed(1):0};
+    });
+  }
+  if(search)data=data.filter(u=>(u._staff||u['User Name']).toLowerCase().includes(search)||(u._branch||'').toLowerCase().includes(search));
+  
+  const sortMap={name:'_staff',total:'total_calls',inbound:'inbound',outbound:'outbound',answered_in:'answered_in',missed_in:'missed_in',connect_out:'connect_out',noresp_out:'noresp_out',inbound_rate:'inbound_rate',outbound_rate:'outbound_rate',avg_dur:'avg_dur',talk_time:'total_dur'};
+  const sc=sortMap[agSortCol]||agSortCol;
+  data=data.map(u=>({...u,...agentMetrics(u)}));
+  data.sort((a,b)=>{
+    const av=a[sc]??0, bv=b[sc]??0;
+    return typeof av==='string'?av.localeCompare(bv)*agSortDir:(bv-av)*-agSortDir;
+  });
+
+  // Sort descending by total calls before rendering
+  data.sort(function(a,b){return (+(b.total_calls||b.total||0))-(+(a.total_calls||a.total||0));});
+  const tbody=document.getElementById('ag-tbody');
+  tbody.innerHTML=data.map((u,i)=>{
+    const irColor=u.inbound_rate>70?'var(--green)':u.inbound_rate>40?'var(--amber)':'var(--red)';
+    const orColor=u.outbound_rate>70?'var(--green)':u.outbound_rate>40?'var(--amber)':'var(--red)';
+    const trend=D.user_daily.filter(d=>d['User Name']===u['User Name']).map(d=>d.total);
+    const dmClass={'Carolyn':'dm-carolyn','Elizabeth':'dm-elizabeth','Alejandra':'dm-alejandra','Felicia':'dm-felicia'}[u._dm]||'';
+    return `<tr style="cursor:pointer" onclick="openAgentDetail('${(u._staff||u['User Name']||'').replace(/'/g,'\\\'')}')">
+      <td class="dim">${i+1}</td>
+      <td style="font-weight:600;font-size:12px">${u._staff||u['User Name']}</td>
+      <td style="font-size:11px">${u._branch||'—'}</td>
+      <td><span class="mapping-badge ${dmClass}">${DM_FULL[u._dm]||u._dm||'—'}</span></td>
+      <td class="mono">${u.total_calls}</td>
+      <td><span class="badge b-in">${u.inbound}</span></td>
+      <td><span class="badge b-out">${u.outbound}</span></td>
+      <td><span class="badge b-yes">${u.answered_in}</span></td>
+      <td><span class="badge b-miss">${u.missed_in}</span></td>
+      <td><span class="badge b-yes">${u.connect_out}</span></td>
+      <td><span class="badge b-noresp">${u.noresp_out}</span></td>
+      <td>
+        <div class="pbar-wrap"><div class="pbar"><div class="pbar-fill" style="width:${Math.min(u.inbound_rate,100)}%;background:${irColor}"></div></div>
+        <span class="pbar-pct" style="color:${irColor}">${u.inbound_rate.toFixed(0)}%</span></div>
+      </td>
+      <td>
+        <div class="pbar-wrap"><div class="pbar"><div class="pbar-fill" style="width:${Math.min(u.outbound_rate,100)}%;background:${orColor}"></div></div>
+        <span class="pbar-pct" style="color:${orColor}">${u.outbound_rate.toFixed(0)}%</span></div>
+      </td>
+      <td class="mono dim">${durFmt(u.avg_dur)}</td>
+      <td class="mono dim">${durFmt(u.talk_time)}</td>
+      <td><svg width="60" height="22" viewBox="0 0 60 22">${mkSparkline(trend)}</svg></td>
+    </tr>`;
+  }).join('');
+  // Setup click delegation for agent rows
+  var atb=document.getElementById('ag-tbody');
+  if(atb&&!atb._agClk){atb._agClk=true;atb.addEventListener('click',function(e){var r=e.target.closest('[data-staff]');if(r)openAgentDetail(r.getAttribute('data-staff'));});}
+}
+
+function mkSparkline(vals){
+  if(!vals||vals.length<2)return '';
+  const max=Math.max(...vals,1),min=Math.min(...vals,0);
+  const pts=vals.map((v,i)=>{
+    const x=(i/(vals.length-1))*58+1;
+    const y=21-((v-min)/(max-min||1))*19;
+    return `${x},${y}`;
+  }).join(' ');
+  return `<polyline points="${pts}" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>`;
+}
+
+function sortAg(col){if(agSortCol===col)agSortDir*=-1;else{agSortCol=col;agSortDir=-1;}renderAgents();}
+
+// ══════════════════════════════════════════════════════
+// CDR PAGE
+// ══════════════════════════════════════════════════════
+function buildSampleCDR(){var rows=[],users=D.user_stats.slice(0,40),dates=D.dates||['2026-05-07','2026-05-08','2026-05-09'];dates.forEach(function(date){users.forEach(function(u){var n=Math.min(5,Math.max(1,Math.round((+(u.total_calls||u.total||0))/3)));for(var i=0;i<n;i++){var dir=Math.random()>.5?'Inbound':'Outbound',ans=Math.random()<(+(u.answer_rate||0)/100),dur=ans?Math.floor(Math.random()*300)+10:0;rows.push({date:date,time:String(9+Math.floor(Math.random()*8)).padStart(2,'0')+':'+String(Math.floor(Math.random()*60)).padStart(2,'0')+':00',user:u['User Name'],staff:u._staff||u['User Name'],branch:u._branch||'',branchNum:u._branchNum||null,dm:u._dm||'',caller:'WIRELESS CALLER',calling:'630'+Math.floor(3e6+Math.random()*9e5),called:'312'+Math.floor(8e6+Math.random()*9e5),duration:'00:'+String(Math.floor(dur/60)).padStart(2,'0')+':'+String(dur%60).padStart(2,'0'),direction:dir,answer:ans?'Yes':'No',outcome:ans?'Answered':(dir==='Inbound'?'Missed':'No Response'),source:'sample'});}});});return rows;}
+
+function renderCDR(page) {
+  cdrPage=page||1;
+  const search=(document.getElementById('cdr-search')?.value||'').toLowerCase();
+  const dateF=document.getElementById('cdr-date')?.value||'all';
+  const branchF=document.getElementById('cdr-branch')?.value||'all';
+  const dirF=document.getElementById('cdr-dir')?.value||'all';
+  const ansF=document.getElementById('cdr-ans')?.value||'all';
+
+  let rows=cdrRows;
+  rows=rows.filter(function(r){return isVisibleRow(r);});
+  if(dateF!=='all')rows=rows.filter(r=>r.date===dateF);
+  if(branchF!=='all')rows=rows.filter(r=>r.branch===branchF||String(r.branchNum)===String(branchF));
+  if(dirF!=='all')rows=rows.filter(r=>r.direction===dirF);
+  if(ansF==='answered')rows=rows.filter(r=>r.answer==='Yes');
+  else if(ansF==='missed')rows=rows.filter(r=>r.direction==='Inbound'&&r.answer==='No');
+  else if(ansF==='noresp')rows=rows.filter(r=>r.direction==='Outbound'&&r.answer==='No');
+  if(search)rows=rows.filter(r=>JSON.stringify(r).toLowerCase().includes(search));
+
+  const perPage=50;
+  const total=rows.length;
+  const pages=Math.ceil(total/perPage)||1;
+  const slice=rows.slice((cdrPage-1)*perPage,cdrPage*perPage);
+
+  document.getElementById('cdr-sub').textContent=`${total.toLocaleString()} records · page ${cdrPage}/${pages}`;
+  document.getElementById('cdr-cnt').textContent=`Showing ${slice.length} of ${total.toLocaleString()}`;
+  document.getElementById('nb-cdr-cnt').textContent=total>999?Math.round(total/1000)+'K':total;
+
+  document.getElementById('cdr-tbody').innerHTML=slice.map(r=>`
+    <tr>
+      <td class="mono dim">${r.date}</td>
+      <td class="mono">${r.time}</td>
+      <td style="font-weight:500;font-size:11px">${r.staff}</td>
+      <td style="font-size:11px">${r.branch}</td>
+      <td><span class="mapping-badge ${({Carolyn:'dm-carolyn',Elizabeth:'dm-elizabeth',Alejandra:'dm-alejandra',Felicia:'dm-felicia'})[r.dm]||''}">${DM_FULL[r.dm]||r.dm||'—'}</span></td>
+      <td style="font-size:11px">${r.caller}</td>
+      <td class="mono dim" style="font-size:11px">${r.calling}</td>
+      <td class="mono dim" style="font-size:11px">${r.called}</td>
+      <td class="mono">${r.duration}</td>
+      <td><span class="badge ${r.direction==='Inbound'?'b-in':'b-out'}">${r.direction}</span></td>
+      <td><span class="badge ${r.outcome==='Answered'?'b-yes':r.outcome==='Missed'?'b-miss':'b-noresp'}">${r.outcome}</span></td>
+    </tr>`).join('');
+
+  const pag=document.getElementById('cdr-pag');
+  const btns=[];
+  if(cdrPage>1)btns.push(`<button class="btn btn-ghost btn-sm" onclick="renderCDR(${cdrPage-1})">←</button>`);
+  const s=Math.max(1,cdrPage-2),e=Math.min(pages,cdrPage+2);
+  for(let i=s;i<=e;i++)btns.push(`<button class="btn ${i===cdrPage?'btn-primary':'btn-ghost'} btn-sm" onclick="renderCDR(${i})">${i}</button>`);
+  if(cdrPage<pages)btns.push(`<button class="btn btn-ghost btn-sm" onclick="renderCDR(${cdrPage+1})">→</button>`);
+  pag.innerHTML=btns.join('');
+}
+
+// ══════════════════════════════════════════════════════
+// MY PERFORMANCE PAGE
+// ══════════════════════════════════════════════════════
+function renderMyPerf(){if(!CU)return;var myDM=scopedDM();var ud=(CU.role==='district_manager'||CU.role==='executive'||CU.role==='superadmin')?D.user_stats.filter(function(u){return isVisibleStaff(u);}):D.user_stats.filter(function(u){return(u._staff||u['User Name']||'')===CU.name;});var m={total_calls:0,answered:0,inbound:0,outbound:0,total_dur:0,inbound_answered:0,inbound_missed:0,outbound_answered:0,outbound_no_response:0};ud.forEach(function(u){m.total_calls+=+(u.total_calls||u.total||0);m.answered+=+(u.answered||0);m.inbound+=+(u.inbound||0);m.outbound+=+(u.outbound||0);m.total_dur+=+(u.total_dur||u.talk_time||0);m.inbound_answered+=+(u.inbound_answered||u.answered_in||0);m.inbound_missed+=+(u.inbound_missed||u.missed_in||0);m.outbound_answered+=+(u.outbound_answered||u.connect_out||0);m.outbound_no_response+=+(u.outbound_no_response||u.no_resp_out||0);});var sl=CU.role==='executive'||CU.role==='superadmin'?'All districts - '+ud.length+' active staff':CU.role==='district_manager'?(myDM||'')+' - '+ud.length+' staff':(CU.branch_name||'');var se=document.getElementById('my-sub');if(se)se.textContent=sl;document.getElementById('my-kpis').innerHTML='<div class="kpi" style="--kpi-c:#3b82f6"><div class="kpi-lbl">'+(CU.role==='staff'?'My Total Calls':'Team Calls')+'</div><div class="kpi-val">'+m.total_calls+'</div></div><div class="kpi" style="--kpi-c:#10b981"><div class="kpi-lbl">Inbound Connect</div><div class="kpi-val">'+(m.inbound>0?((m.inbound_answered/m.inbound)*100).toFixed(1):0)+'%</div><div class="kpi-sub">'+m.inbound_answered+' of '+m.inbound+'</div></div><div class="kpi" style="--kpi-c:#8b5cf6"><div class="kpi-lbl">Outbound Connect</div><div class="kpi-val">'+(m.outbound>0?((m.outbound_answered/m.outbound)*100).toFixed(1):0)+'%</div><div class="kpi-sub">'+m.outbound_answered+' of '+m.outbound+'</div></div><div class="kpi" style="--kpi-c:#ef4444"><div class="kpi-lbl">Missed Inbound</div><div class="kpi-val">'+m.inbound_missed+'</div></div><div class="kpi" style="--kpi-c:#f59e0b"><div class="kpi-lbl">No Resp Out</div><div class="kpi-val">'+m.outbound_no_response+'</div></div><div class="kpi" style="--kpi-c:#06b6d4"><div class="kpi-lbl">Avg Handle Time</div><div class="kpi-val">'+durFmt(m.total_calls?m.total_dur/m.total_calls:0)+'</div></div>';var md=D.user_daily.filter(function(d){return isVisibleRow({dm:d.dm||d._dm||'',staff:d.real_staff||d['User Name']||''});});var bd={};md.forEach(function(d){bd[d.date]=bd[d.date]||{t:0,a:0};bd[d.date].t+=+(d.total||0);bd[d.date].a+=+(d.answered||0);});mk('ch-my-daily','bar',{labels:Object.keys(bd),datasets:[{label:'Total',data:Object.values(bd).map(function(v){return v.t;}),backgroundColor:'rgba(59,130,246,.4)',borderRadius:4},{label:'Answered',data:Object.values(bd).map(function(v){return v.a;}),backgroundColor:'rgba(16,185,129,.5)',borderRadius:4}]},{});mk('ch-my-donut','doughnut',{labels:['Answered','Missed In','No Resp Out'],datasets:[{data:[m.inbound_answered+m.outbound_answered,m.inbound_missed,m.outbound_no_response],backgroundColor:['#10b981','#ef4444','#f59e0b'],borderWidth:0}]},{plugins:{legend:{position:'bottom',labels:{color:'#94a3b8'}}},scales:{x:{display:false},y:{display:false}}});}
+
+// ══════════════════════════════════════════════════════
+// MAPPING PAGE
+// ══════════════════════════════════════════════════════
+function renderMapping() {
+  const search=(document.getElementById('map-search')?.value||'').toLowerCase();
+  var _mde=document.getElementById('map-dm');
+  if(_mde&&_mde.options.length<=1&&Object.keys(DM_FULL).length){_mde.innerHTML='<option value="all">All Districts</option>'+Object.keys(DM_FULL).map(function(k){return '<option value="'+DM_FULL[k]+'">'+(DM_FULL[k]||k)+'</option>';}).join('');}
+  const dmF=_mde?_mde.value:'all';
+  const tbody=document.getElementById('map-tbody');
+  const rows=[];
+  var _src=Object.keys(CFG_BRANCHES).length?CFG_BRANCHES:MAPPING_DATA;
+  Object.entries(_src).forEach(([bn,br])=>{
+    if(dmF!=='all'&&br.dm!==dmF)return;
+    var _dk=Object.keys(DM_FULL);var _di=_dk.indexOf(br.dm);var _dc=['dm-carolyn','dm-elizabeth','dm-alejandra','dm-felicia'];var dmClass=_di>=0?_dc[_di%_dc.length]:'';
+    if(!br.staff||br.staff.length===0){
+      const key=`${bn}_main`;
+      if(!search||(br.name.toLowerCase().includes(search)||(DM_FULL[br.dm]||'').toLowerCase().includes(search))){
+        rows.push({bn,br,s:{name:'Main',ext:'Main'},dmClass,key});
+      }
+    } else {
+      br.staff.forEach(s=>{
+        const key=`${bn}_${s.ext}`;
+        if(!search||(br.name.toLowerCase().includes(search)||s.name.toLowerCase().includes(search)||(DM_FULL[br.dm]||'').toLowerCase().includes(search))){
+          rows.push({bn,br,s,dmClass,key});
+        }
+      });
+    }
+  });
+  tbody.innerHTML=rows.map(({bn,br,s,dmClass})=>`
+    <tr>
+      <td class="mono">${bn}</td>
+      <td style="font-weight:600">${br.name}</td>
+      <td><span class="mapping-badge ${dmClass}">${DM_FULL[br.dm]||br.dm}</span></td>
+      <td>${s.name}</td>
+      <td class="mono">${s.ext}</td>
+      <td class="dim" style="font-size:11px">${br.phone||'—'}</td>
+      <td class="dim" style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${br.address||'—'}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="editMappingRow(${bn},'${s.ext}')">✏</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteMappingRow(${bn},'${s.ext}')">✕</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openMappingModal(){document.getElementById('mm-title').textContent='Add New Entry';['mm-bn','mm-name','mm-staff','mm-ext','mm-phone','mm-addr'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('mapping-modal').classList.add('open');}
+function editMappingRow(bn,ext){
+  const br=MAPPING_DATA[bn];if(!br)return;
+  const s=br.staff.find(x=>x.ext===String(ext))||{};
+  document.getElementById('mm-bn').value=bn;
+  document.getElementById('mm-name').value=br.name;
+  document.getElementById('mm-dm').value=br.dm;
+  document.getElementById('mm-staff').value=s.name||'';
+  document.getElementById('mm-ext').value=s.ext||'';
+  document.getElementById('mm-phone').value=br.phone||'';
+  document.getElementById('mm-addr').value=br.address||'';
+  document.getElementById('mapping-modal').classList.add('open');
+}
+function deleteMappingRow(bn,ext){
+  if(!confirm('Remove this entry?'))return;
+  if(MAPPING_DATA[bn])MAPPING_DATA[bn].staff=MAPPING_DATA[bn].staff.filter(s=>s.ext!==String(ext));
+  renderMapping();showToast('Entry removed','ok');
+}
+function saveMapping(){
+  const bn=document.getElementById('mm-bn').value.trim();
+  const name=document.getElementById('mm-name').value.trim();
+  const dm=document.getElementById('mm-dm').value;
+  const staff=document.getElementById('mm-staff').value.trim();
+  const ext=document.getElementById('mm-ext').value.trim();
+  const phone=document.getElementById('mm-phone').value.trim();
+  const addr=document.getElementById('mm-addr').value.trim();
+  if(!bn||!name){showToast('Branch # and name required','err');return;}
+  if(!MAPPING_DATA[bn])MAPPING_DATA[bn]={name,dm,phone,address:addr,staff:[]};
+  MAPPING_DATA[bn].name=name;MAPPING_DATA[bn].dm=dm;MAPPING_DATA[bn].phone=phone;MAPPING_DATA[bn].address=addr;
+  if(staff&&ext){
+    const idx=MAPPING_DATA[bn].staff.findIndex(s=>s.ext===ext);
+    if(idx>=0)MAPPING_DATA[bn].staff[idx]={name:staff,ext};
+    else MAPPING_DATA[bn].staff.push({name:staff,ext});
+  }
+  closeModal('mapping-modal');renderMapping();showToast('Saved','ok');
+}
+function exportMappingCSV(){
+  const rows=[['Branch #','Branch Name','District Manager','Staff','Extension','Phone','Address']];
+  Object.entries(MAPPING_DATA).forEach(([bn,br])=>{
+    if(!br.staff||br.staff.length===0)rows.push([bn,br.name,br.dm,'Main','',br.phone,br.address]);
+    else br.staff.forEach(s=>rows.push([bn,br.name,br.dm,s.name,s.ext,br.phone,br.address]));
+  });
+  const csv=rows.map(r=>r.map(c=>`"${c||''}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='branch_mapping.csv';a.click();
+  showToast('CSV exported','ok');
+}
+
+// ══════════════════════════════════════════════════════
+// UPLOAD PAGE
+// ══════════════════════════════════════════════════════
+// removed
+// removed
+
+// removed
+
+function cleanCDRData(rows){
+  const seen=new Set();const cleaned=[];const dupes=[];let invalid=0;
+  rows.forEach(r=>{
+    const date=r['Start Date (MM/DD/YYYY)']||r['date']||'';
+    const user=r['User Name']||r['user']||'';
+    if(!date||!user){invalid++;return;}
+    const key=`${date}_${user}_${r['Start Time (HH:MM:SS) Central']||r['time']||''}_${r['Direction']||r['direction']||''}`;
+    if(seen.has(key))dupes.push(r);
+    else{seen.add(key);cleaned.push(r);}
+  });
+  return{cleaned,dupes,invalid};
+}
+
+// removed
+
+// removed
+
+function buildOutcome(ans,dir){
+  if(ans==='Yes'||ans.startsWith('Yes'))return'Answered';
+  return dir==='Inbound'?'Missed':'No Response';
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DATA SOURCES — CSV LOADER, PARSER, AGGREGATOR
+// ══════════════════════════════════════════════════════════════════════════════
+
+// State
+var DS = {
+  mappingLoaded: false,
+  cdrFilesLoaded: [],
+  rawCDRRows: [],           // all accepted CDR rows [{date,hour,user,direction,answered,dur_secs,branch,dm,real_staff}]
+  seenKeys: {},             // dedup: "date|user|time|dir" → true
+};
+
+// ── Utility ──────────────────────────────────────────────────────────────────
+function dsRow(label, value, color) {
+  return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">'
+    + '<span style="color:var(--muted)">' + label + '</span>'
+    + '<span' + (color ? ' style="color:' + color + '"' : '') + '>' + value + '</span>'
+    + '</div>';
+}
+
+function dsSetStatus(elId, msg, type) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var colors = {ok:'var(--green)', err:'var(--red)', warn:'var(--amber)', info:'var(--muted)'};
+  el.innerHTML = '<span style="color:' + (colors[type||'info']) + '">' + msg + '</span>';
+}
+
+function dsDrop(e, type) {
+  e.preventDefault();
+  document.getElementById('dz-' + type).classList.remove('drag');
+  var files = Array.from(e.dataTransfer.files).filter(function(f){ return f.name.endsWith('.csv'); });
+  if (!files.length) { dsSetStatus('ds-' + type + '-status', 'Only CSV files are accepted.', 'err'); return; }
+  if (type === 'map') { dsParseMapping(files[0]); }
+  else { files.forEach(function(f){ dsParseCSV(f); }); }
+}
+
+function dsLoadMapping(e) {
+  var file = e.target.files[0];
+  if (file) dsParseMapping(file);
+}
+
+function dsLoadCDR(e) {
+  Array.from(e.target.files).forEach(function(f){ dsParseCSV(f); });
+}
+
+// ── Parse mapping CSV → build CFG_BRANCHES + cdr_user_map + DM constants ─────
+function dsParseMapping(file) {
+  dsSetStatus('ds-map-status', 'Reading ' + file.name + '\u2026', 'info');
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    encoding: 'UTF-8',
+    complete: function(res) {
+      var rows = res.data;
+      var rawHeaders = res.meta.fields || [];
+
+      // Strip BOM and whitespace from headers
+      var headers = rawHeaders.map(function(h){ return h.replace(/^\uFEFF/,'').trim(); });
+      var h = headers.map(function(x){ return x.toLowerCase(); });
+
+      if (!rows.length || !headers.length) {
+        dsSetStatus('ds-map-status', 'File is empty or has no header row.', 'err');
+        return;
+      }
+
+      // Show detected headers to user for debugging
+      var headerDisplay = headers.map(function(x){ return '"'+x+'"'; }).join(', ');
+
+      // ── Flexible column detection ───────────────────────────────────────
+      // Find column index by checking if any header CONTAINS the keyword
+      function findCol(keywords) {
+        for (var ki=0; ki < keywords.length; ki++) {
+          var kw = keywords[ki].toLowerCase();
+          for (var hi=0; hi < h.length; hi++) {
+            if (h[hi].indexOf(kw) >= 0) return hi;
+          }
+        }
+        return -1;
+      }
+
+      var colBranch  = findCol(['branch name', 'branch']);
+      var colDM      = findCol(['district manager', 'manager', 'dm']);
+      var colStaff   = findCol(['staff name', 'agent name', 'employee', 'staff', 'agent', 'name']);
+      var colExt     = findCol(['extension', 'ext']);
+      var colCDRName = findCol(['cdr name', 'user name', 'username', 'cdr', 'seat']);
+
+      // If staff column would match the branch column, find the NEXT name column
+      if (colStaff === colBranch && colStaff >= 0) {
+        colStaff = -1;
+        for (var hi=0; hi < h.length; hi++) {
+          if (hi !== colBranch && hi !== colDM &&
+              (h[hi].indexOf('name') >= 0 || h[hi].indexOf('staff') >= 0 || h[hi].indexOf('agent') >= 0)) {
+            colStaff = hi; break;
+          }
+        }
+      }
+
+      // Must have at least branch + DM to proceed
+      if (colBranch < 0 || colDM < 0) {
+        dsSetStatus('ds-map-status',
+          'Could not find Branch and District Manager columns. Detected headers: ' + headerDisplay, 'err');
+        document.getElementById('ds-map-summary').innerHTML =
+          '<div style="font-size:10px;color:var(--amber);padding:8px 0">'
+          + '<strong>Detected ' + headers.length + ' columns:</strong><br>'
+          + headers.map(function(h,i){return (i+1)+'. '+h;}).join('<br>')
+          + '<br><br><em>Need at least a "Branch Name" column and a "District Manager" column.</em></div>';
+        return;
+      }
+
+      // Log what was auto-detected
+      console.log('Mapping columns:', {
+        branch: headers[colBranch], dm: headers[colDM],
+        staff: colStaff>=0?headers[colStaff]:'(none)',
+        ext: colExt>=0?headers[colExt]:'(none)',
+        cdrName: colCDRName>=0?headers[colCDRName]:'(none)'
+      });
+
+      // ── Build CFG_BRANCHES + cdr_user_map ────────────────────────────────
+      CFG_BRANCHES = {};
+      DM_FULL  = {};
+      DM_SHORT = {};
+      D.cdr_user_map = {};
+      BRANCH_NAME_TO_NUM = {};
+      BRANCH_NUM_TO_NAME = {};
+
+      var branchNum = 1;
+      var dmShortMap = {};
+
+      rows.forEach(function(r) {
+        // Read using the original header keys (before lowercase)
+        var branchName = (r[headers[colBranch]] || '').trim();
+        var dmFull     = (r[headers[colDM]]     || '').trim();
+        var staffName  = colStaff >= 0 ? (r[headers[colStaff]] || '').trim() : '';
+        var ext        = colExt   >= 0 ? (r[headers[colExt]]   || '').trim() : '';
+        var cdrName    = colCDRName >= 0 ? (r[headers[colCDRName]] || '').trim() : '';
+
+        if (!branchName || !dmFull) return; // skip blank rows
+
+        // Find or create branch entry
+        var existingNum = Object.keys(CFG_BRANCHES).find(function(k){
+          return CFG_BRANCHES[k].name === branchName;
+        });
+
+        if (!existingNum) {
+          existingNum = String(branchNum++);
+          // DM short (first name only)
+          var dmParts  = dmFull.trim().split(/\s+/);
+          var dmShort  = dmParts[0] || dmFull;
+          if (!dmShortMap[dmFull]) dmShortMap[dmFull] = dmShort;
+
+          DM_FULL[dmShort] = dmFull;
+          // username → short (e.g. carolyn.wilson → Carolyn)
+          var uLogin = dmFull.toLowerCase().replace(/\s+/g, '.');
+          DM_SHORT[uLogin] = dmShort;
+          var uLogin2 = (dmParts[0]||'')[0].toLowerCase() + (dmParts[1]||'').toLowerCase();
+          if (uLogin2) DM_SHORT[uLogin2] = dmShort;
+
+          CFG_BRANCHES[existingNum] = {
+            name: branchName, dm: dmShort, address: '', phone: '', staff: []
+          };
+          BRANCH_NAME_TO_NUM[branchName] = existingNum;
+          BRANCH_NUM_TO_NAME[existingNum] = branchName;
+        }
+
+        var bn = existingNum;
+        // Add staff member
+        if (staffName && staffName !== 'Open Desk') {
+          // Avoid duplicate staff entries for the same branch
+          var alreadyHas = CFG_BRANCHES[bn].staff.some(function(s){ return s.name === staffName; });
+          if (!alreadyHas) CFG_BRANCHES[bn].staff.push({name: staffName, ext: ext});
+        }
+        // Map CDR name to staff/branch/DM
+        var mapKey = cdrName || staffName;
+        if (mapKey) {
+          D.cdr_user_map[mapKey] = {
+            branch: branchName,
+            dm:     DM_FULL[dmShortMap[dmFull]] || dmFull,
+            staff:  staffName || mapKey
+          };
+        }
+      });
+
+      var numBranches = Object.keys(CFG_BRANCHES).length;
+      var numDMs      = Object.keys(DM_FULL).length;
+      var numMapped   = Object.keys(D.cdr_user_map).length;
+
+      DS.mappingLoaded = true;
+      dsSetStatus('ds-map-status',
+        '\u2713 Loaded: ' + numBranches + ' branches, ' + numDMs + ' DMs, ' + numMapped + ' staff mapped', 'ok');
+
+      var el = document.getElementById('ds-map-summary');
+      if (el) el.innerHTML =
+        dsRow('File', file.name) +
+        dsRow('Rows parsed', rows.length.toString()) +
+        dsRow('Branches', numBranches.toString(), 'var(--text)') +
+        dsRow('District Managers', numDMs.toString(), 'var(--text)') +
+        dsRow('Staff mapped', numMapped.toString(), 'var(--text)') +
+        dsRow('Col: Branch', headers[colBranch]) +
+        dsRow('Col: DM', headers[colDM]) +
+        dsRow('Col: Staff', colStaff>=0?headers[colStaff]:'(not found)') +
+        dsRow('Status', '\u25cf Ready', 'var(--green)');
+
+      MAPPING_DATA=JSON.parse(JSON.stringify(CFG_BRANCHES));
+      if (dsParseCSV._extMap) dsParseCSV._extMap = null; // reset TN→extension cache
+      populateFilterDropdowns();
+      dsUpdateBanner();
+      dsUpdateSummary();
+      dsLogFile(file.name,'Mapping',numBranches+' branches, '+numDMs+' DMs');
+    },
+    error: function(e) { dsSetStatus('ds-map-status', 'Parse error: ' + e.message, 'err'); }
+  });
+}
+
+
+// ── Parse CDR CSV → validate, dedup, aggregate ────────────────────────────────
+var DS_CDR_REQUIRED = ['User Name','Direction','Answer Indicator','Duration (HH:MM:SS)'];
+
+// ── Parse CDR CSV → flexible column detection → dedup → aggregate ────────────
+// DS_CDR_REQUIRED kept for reference; actual detection is keyword-based
+var DS_CDR_REQUIRED = ['User Name','Direction','Answer Indicator','Duration (HH:MM:SS)'];
+
+function dsParseCSV(file) {
+  if (!DS.mappingLoaded) {
+    dsSetStatus('ds-cdr-status', '\u26a0 Load the Mapping File first (Step 1).', 'warn');
+    return;
+  }
+  dsSetStatus('ds-cdr-status', 'Reading ' + file.name + '\u2026', 'info');
+
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(res) {
+      var rows    = res.data;
+      var rawHdrs = res.meta.fields || [];
+      var loadedAt = new Date().toISOString();
+
+      if (!rows.length) {
+        dsSetStatus('ds-cdr-status',
+          '\u2715 ' + file.name + ': file appears empty or could not be parsed.', 'err');
+        return;
+      }
+
+      // ── Flexible column detection (case-insensitive keyword matching) ──────
+      // Strip BOM + whitespace from every header, then match by keyword
+      var headers = rawHdrs.map(function(h){ return h.replace(/^\uFEFF/,'').trim(); });
+      var hLow    = headers.map(function(h){ return h.toLowerCase(); });
+
+      function findHdr(keywords) {
+        for (var ki = 0; ki < keywords.length; ki++) {
+          var kw = keywords[ki].toLowerCase();
+          for (var hi = 0; hi < hLow.length; hi++) {
+            if (hLow[hi] === kw || hLow[hi].indexOf(kw) >= 0) return headers[hi];
+          }
+        }
+        return null;
+      }
+
+      var colUser  = findHdr(['user name','user','agent name','agent','extension','seat','login','employee']);
+      var colDir   = findHdr(['direction','call direction','call type','type']);
+      var colAns   = findHdr(['answer indicator','answer','answered','connected','status','result','disposition']);
+      var colDur   = findHdr(['duration (hh:mm:ss)','duration','dur','talk time','length','handle time']);
+      var colDate  = findHdr(['start date (mm/dd/yyyy)','start date','date','call date','date (mm/dd/yyyy)']);
+      var colTime  = findHdr(['start time (hh:mm:ss) central','start time','time','call time']);
+      var colSrc       = findHdr(['source file','source','file name']);
+      var colCallingTN = findHdr(['calling tn','calling number','caller number','from number','ani','calling party']);
+      var colCalledTN  = findHdr(['called tn','called number','dialed number','to number','dnis','called party','destination']);
+
+      // Must have at minimum user + direction
+      if (!colUser || !colDir) {
+        var detected = headers.length
+          ? 'Detected ' + headers.length + ' columns: ' + headers.slice(0,8).join(', ') + (headers.length>8?'…':'')
+          : 'No headers found.';
+        dsSetStatus('ds-cdr-status',
+          '\u2715 ' + file.name + ': cannot find User/Agent and Direction columns. ' + detected, 'err');
+        return;
+      }
+
+      // Show what was mapped
+      console.log('CDR columns detected in ' + file.name + ':', {
+        user: colUser, direction: colDir, answer: colAns,
+        duration: colDur, date: colDate, time: colTime
+      });
+
+      var accepted = 0, dupes = 0, system = 0, invalid = 0;
+
+      rows.forEach(function(r) {
+        var userName  = (r[colUser]  || '').trim();
+        var dir       = (r[colDir]   || '').trim();
+        var ans       = colAns  ? (r[colAns]  || '').trim() : '';
+        var dur       = colDur  ? (r[colDur]  || '00:00:00').trim() : '00:00:00';
+        var srcFile   = colSrc  ? (r[colSrc]  || '').trim() : '';
+        var startDate = normaliseDateStr(colDate ? (r[colDate] || '').trim() : '');
+        var startTime = colTime ? (r[colTime] || '').trim() : '';
+
+        // Fallback date from source file name
+        if (!startDate && srcFile) startDate = srcFile.slice(0,10);
+        if (!startDate) startDate = file.name.slice(0,10);
+
+        // Normalise direction first (needed for TN matching below)
+        if (/^in/i.test(dir))  dir = 'Inbound';
+        else if (/^out/i.test(dir)) dir = 'Outbound';
+        if (!dir) { invalid++; return; }
+
+        // ── Resolve empty User Name from phone number (BroadWorks group-level CDRs) ──
+        if (!userName) {
+          // Build extension → staff map on first use
+          if (!dsParseCSV._extMap) {
+            dsParseCSV._extMap = {};
+            Object.entries(CFG_BRANCHES).forEach(function(e) {
+              var br = e[1];
+              (br.staff||[]).forEach(function(s) {
+                if (s.ext) dsParseCSV._extMap[s.ext.replace(/\D/g,'')] = {
+                  staff: s.name, branch: br.name,
+                  dm: DM_FULL[br.dm]||br.dm, ext: s.ext
+                };
+              });
+            });
+          }
+          var extMap = dsParseCSV._extMap;
+
+          // For inbound: agent = Called TN; for outbound: agent = Calling TN
+          var callingTN = colCallingTN ? (r[colCallingTN]||'').replace(/\D/g,'') : '';
+          var calledTN  = colCalledTN  ? (r[colCalledTN] ||'').replace(/\D/g,'') : '';
+          var agentTN   = (dir === 'Inbound') ? calledTN : callingTN;
+          var otherTN   = (dir === 'Inbound') ? callingTN : calledTN;
+
+          // Try matching last 3..7 digits of agentTN against known extensions
+          var matched = null;
+          for (var elen = 7; elen >= 3 && !matched; elen--) {
+            var sfx = agentTN.slice(-elen);
+            if (sfx && extMap[sfx]) { matched = extMap[sfx]; break; }
+          }
+
+          if (matched) {
+            // Extension matched → treat as that agent's call
+            userName = matched.staff;
+            // Pre-cache in cdr_user_map so later lookup is instant
+            if (!D.cdr_user_map[userName]) {
+              D.cdr_user_map[userName] = {branch: matched.branch, dm: matched.dm, staff: matched.staff};
+            }
+          } else {
+            // No extension match — use last 5 digits as synthetic seat ID
+            // Still record the call so call volume is accurate
+            var seatId = agentTN.slice(-5) || otherTN.slice(-5) || 'Unknown';
+            userName = 'Seat-' + seatId;
+          }
+        }
+
+        if (!userName) { invalid++; return; }
+
+        // Skip system/hunt-group calls
+        if (/Hunt Group|Auto Attendant|HG\)|AA\)/i.test(userName) || /^Main/i.test(userName)) {
+          system++; return;
+        }
+
+        // Dedup
+        var dk = startDate + '|' + userName + '|' + startTime + '|' + dir;
+        if (DS.seenKeys[dk]) {
+          dupes++;
+          D.duplicates.push({
+            file: file.name, loaded_at: loadedAt,
+            date: startDate, time: startTime,
+            user: userName,  direction: dir,
+            answered: ans,   duration: dur,
+            dup_key: dk
+          });
+          return;
+        }
+        DS.seenKeys[dk] = true;
+
+        // Map to branch/DM/staff
+        var info = D.cdr_user_map[userName];
+        if (!info) {
+          var lun = userName.toLowerCase().replace(/\s+/g,'');
+          Object.entries(CFG_BRANCHES).forEach(function(e) {
+            if (info) return;
+            var bn = e[1].name.toLowerCase().replace(/\s+/g,'');
+            if (bn.length >= 3 && lun.indexOf(bn) >= 0) {
+              info = { branch: e[1].name, dm: DM_FULL[e[1].dm]||e[1].dm, staff: userName };
+              D.cdr_user_map[userName] = info;
+            }
+          });
+        }
+        if (!info) info = {branch:'Unknown', dm:'Unknown', staff: userName};
+
+        // Parse duration to seconds
+        var parts = dur.split(':');
+        var durSecs = (+parts[0]||0)*3600 + (+parts[1]||0)*60 + (+parts[2]||0);
+        var isAns   = /^yes/i.test(ans) || /^answer/i.test(ans) || /^connect/i.test(ans);
+        var hour    = (startTime.slice(0,2) || '00').padStart(2,'0');
+
+        DS.rawCDRRows.push({
+          sourceFile: file.name,
+          date:       startDate,
+          time:       startTime,
+          hour:       hour,
+          user:       userName,
+          real_staff: info.staff,
+          branch:     info.branch,
+          dm:         info.dm,
+          direction:  dir,
+          answered:   isAns,
+          dur_secs:   durSecs,
+          callingTN:  colCallingTN ? (r[colCallingTN]||'').trim() : '',
+          calledTN:   colCalledTN  ? (r[colCalledTN] ||'').trim() : '',
+          source:     srcFile || file.name
+        });
+        accepted++;
+      });
+
+      // Update unmapped tracking
+      if (!DS.unmapped) DS.unmapped={};
+      if (!DS.unmappedTN) DS.unmappedTN={};
+      rows.forEach(function(r){
+        var un=colUser?(r[colUser]||'').trim():'';
+        if(!un||/Hunt Group|Auto Attendant/i.test(un)||/^Main/i.test(un))return;
+        if(!D.cdr_user_map[un]){
+          DS.unmapped[un]=(DS.unmapped[un]||0)+1;
+          if(!DS.unmappedTN[un])DS.unmappedTN[un]={
+            calledTN:colCalledTN?(r[colCalledTN]||'').trim():'',
+            callingTN:colCallingTN?(r[colCallingTN]||'').trim():''};
+        }
+      });
+
+      DS.cdrFilesLoaded.push({
+        name: file.name, rows: accepted, dupes: dupes,
+        system: system, invalid: invalid, loadedAt: loadedAt
+      });
+
+      var detailMsg = '\u2713 ' + file.name + ': '
+        + accepted + ' accepted'
+        + (dupes   > 0 ? ', ' + dupes   + ' duplicates'        : '')
+        + (system  > 0 ? ', ' + system  + ' system skipped'    : '')
+        + (invalid > 0 ? ', ' + invalid + ' invalid rows'      : '')
+        + ' (cols: ' + colUser + ' / ' + colDir + ')';
+      dsSetStatus('ds-cdr-status', detailMsg, accepted > 0 ? 'ok' : 'warn');
+
+      if (accepted === 0) {
+        // Show diagnostics to help the user fix the issue
+        var diag = document.getElementById('ds-cdr-diag');
+        if (diag) {
+          diag.style.display = '';
+          diag.innerHTML =
+            '<div style="font-size:11px;color:var(--amber);padding:8px;background:var(--s2);border-radius:6px;margin-top:6px">'
+            + '<strong>\u26a0 0 rows accepted.</strong>'
+            + ' Total rows in file: ' + rows.length
+            + ' | Invalid (blank user/dir): ' + invalid
+            + ' | System skipped: ' + system
+            + '<br>Columns detected: '
+            + headers.map(function(h){return '"'+h+'"';}).join(', ')
+            + '<br>Mapped to: user=<b>' + (colUser||'?') + '</b>'
+            + ' dir=<b>' + (colDir||'?') + '</b>'
+            + ' date=<b>' + (colDate||'not found') + '</b>'
+            + ' ans=<b>' + (colAns||'not found') + '</b>'
+            + '<br>Sample row[0]: ' + JSON.stringify(rows[0]).slice(0,200)
+            + '</div>';
+        }
+      }
+
+      dsBuildAggregates();
+      dsUpdateSummary();
+      dsUpdateDuplicateLog();
+      dsLogFile(file.name, 'CDR', accepted + ' rows, ' + dupes + ' dupes');
+      dsUpdateFileManager();
+      dsUpdateBanner();
+      dsShowUnmappedPanel();
+
+      if (dupes > 0) {
+        var btn = document.getElementById('ds-dup-btn');
+        if (btn) btn.style.display = '';
+        var dc = document.getElementById('ds-dup-count');
+        if (dc) dc.textContent = '(' + D.duplicates.length + ')';
+      }
+    },
+    error: function(e) {
+      dsSetStatus('ds-cdr-status', 'Parse error: ' + e.message, 'err');
+    }
+  });
+}
+
+
+// ── Aggregate rawCDRRows → D.staff_stats, branch_stats, dm_stats, daily, hourly, staff_hourly ──
+function dsBuildAggregates() {
+  var byStaff  = {}, byBranch = {}, byDM = {}, byDate = {};
+  var byStaffDate = {}, byStaffHour = {};
+
+  function key(fields) { return fields.join('|'); }
+  function getOrNew(map, k) {
+    if (!map[k]) map[k] = {total:0,answered:0,inbound:0,outbound:0,
+      inbound_answered:0,inbound_missed:0,outbound_answered:0,outbound_no_response:0,total_dur:0};
+    return map[k];
+  }
+
+  DS.rawCDRRows.forEach(function(r) {
+    var isIn  = r.direction === 'Inbound';
+    var isAns = r.answered;
+
+    function upd(rec) {
+      rec.total++;
+      if (isAns) rec.answered++;
+      if (isIn)  { rec.inbound++;  if (isAns) rec.inbound_answered++;  else rec.inbound_missed++; }
+      else       { rec.outbound++; if (isAns) rec.outbound_answered++; else rec.outbound_no_response++; }
+      rec.total_dur += r.dur_secs;
+    }
+
+    // staff_stats
+    var sk = key([r.real_staff, r.branch, r.dm]);
+    upd(getOrNew(byStaff, sk));
+    // branch_stats
+    if (r.branch !== 'Unknown') upd(getOrNew(byBranch, key([r.branch, r.dm])));
+    // dm_stats
+    if (r.dm !== 'Unknown') upd(getOrNew(byDM, r.dm));
+    // daily
+    upd(getOrNew(byDate, r.date));
+    // staff_daily
+    var sdk = key([r.date, r.real_staff, r.branch, r.dm]);
+    upd(getOrNew(byStaffDate, sdk));
+    // staff_hourly
+    var shk = key([r.date, r.hour, r.real_staff, r.branch, r.dm]);
+    upd(getOrNew(byStaffHour, shk));
+  });
+
+  function rates(r) {
+    r.answer_rate           = r.total ? +(r.answered/r.total*100).toFixed(1) : 0;
+    r.inbound_connect_rate  = r.inbound  ? +(r.inbound_answered/r.inbound*100).toFixed(1)   : 0;
+    r.outbound_connect_rate = r.outbound ? +(r.outbound_answered/r.outbound*100).toFixed(1) : 0;
+    r.avg_dur = r.total ? +(r.total_dur/r.total).toFixed(1) : 0;
+    r.missed  = r.inbound_missed + r.outbound_no_response;
+  }
+
+  // Populate D
+  D.staff_stats = Object.entries(byStaff).map(function(e) {
+    var p=e[0].split('|'); var r=Object.assign({real_staff:p[0],branch:p[1],dm:p[2]},e[1]); rates(r); return r;
+  });
+  D.branch_stats = Object.entries(byBranch).map(function(e) {
+    var p=e[0].split('|'); var r=Object.assign({branch:p[0],dm:p[1]},e[1]); rates(r); return r;
+  });
+  D.dm_stats = Object.entries(byDM).map(function(e) {
+    var r=Object.assign({dm:e[0]},e[1]); rates(r); return r;
+  });
+  D.daily = Object.entries(byDate).sort(function(a,b){return a[0].localeCompare(b[0]);}).map(function(e) {
+    var r=Object.assign({date:e[0]},e[1]); rates(r); return r;
+  });
+  D.staff_daily = Object.entries(byStaffDate).map(function(e) {
+    var p=e[0].split('|'); var r=Object.assign({date:p[0],real_staff:p[1],branch:p[2],dm:p[3]},e[1]); rates(r); return r;
+  });
+  D.staff_hourly = Object.entries(byStaffHour).map(function(e) {
+    var p=e[0].split('|');
+    return Object.assign({date:p[0],hour:p[1],real_staff:p[2],branch:p[3],dm:p[4],calls:e[1].total},e[1]);
+  });
+
+  // Hourly totals
+  var htmp = {};
+  D.staff_hourly.forEach(function(h) { htmp[h.hour]=(htmp[h.hour]||0)+h.calls; });
+  D.hourly_totals = Object.entries(htmp).sort().map(function(e){return {hour:e[0],calls:e[1]};});
+  D.hourly_by_date = D.staff_hourly.map(function(h){return {date:h.date,hour:h.hour,calls:h.calls};});
+  D.hourly = D.hourly_totals;
+
+  // Dates + meta
+  D.dates = D.daily.map(function(d){return d.date;});
+  D.dates_available = D.dates;
+  D.dms = D.dm_stats.map(function(d){return d.dm;}).filter(function(d){return d && d!=='Unknown';});
+  D.branches = D.branch_stats.map(function(b){return b.branch;}).filter(function(b){return b && b!=='Unknown';});
+  D.date_range = D.dates.length ? {start:D.dates[0], end:D.dates[D.dates.length-1]} : {start:'',end:''};
+  D.meta.total_cdr_rows   = DS.rawCDRRows.length + D.duplicates.length;
+  D.meta.agent_calls      = DS.rawCDRRows.length;
+  D.meta.system_calls_excluded = 0; // counted during parse
+
+  // Re-run full normalisation
+  dsNormalise();
+}
+
+// Re-normalise D (mirrors the DATA NORMALISATION v3 section)
+function dsNormalise() {
+  D.daily_summary = D.daily.map(function(d){return Object.assign({},d,{
+    missed_in:+(d.inbound_missed||0), no_resp_out:+(d.outbound_no_response||0)
+  });});
+
+  D.user_stats = D.staff_stats.map(function(u){return Object.assign({},u,{
+    'User Name':u.real_staff, total_calls:+(u.total||0),
+    missed_in:+(u.inbound_missed||0), no_resp_out:+(u.outbound_no_response||0),
+    answered_in:+(u.inbound_answered||0), connect_out:+(u.outbound_answered||0),
+    inbound_rate:+(u.inbound_connect_rate||0), outbound_rate:+(u.outbound_connect_rate||0),
+    answer_rate:+(u.answer_rate||0), avg_dur:+(u.avg_dur||0), talk_time:+(u.total_dur||0),
+    _staff:u.real_staff, _branch:u.branch, _dm:u.dm,
+    _branchNum: BRANCH_NAME_TO_NUM[u.branch]||null
+  });});
+
+  D.user_daily = D.staff_daily.map(function(d){return Object.assign({},d,{
+    'User Name':d.real_staff, total_calls:+(d.total||0),
+    missed_in:+(d.inbound_missed||0), no_resp_out:+(d.outbound_no_response||0),
+    answered_in:+(d.inbound_answered||0), connect_out:+(d.outbound_answered||0),
+    inbound_rate:+(d.inbound_connect_rate||0), outbound_rate:+(d.outbound_connect_rate||0)
+  });});
+
+  D.branch_stats_norm = D.branch_stats.map(function(b){return Object.assign({},b,{
+    missed_in:+(b.inbound_missed||0), no_resp_out:+(b.outbound_no_response||0),
+    icr:+(b.inbound_connect_rate||0), ocr:+(b.outbound_connect_rate||0),
+    branchNum: BRANCH_NAME_TO_NUM[b.branch]||null
+  });});
+
+  D.dm_stats_norm = D.dm_stats.map(function(d){return Object.assign({},d,{
+    missed_in:+(d.inbound_missed||0), no_resp_out:+(d.outbound_no_response||0),
+    icr:+(d.inbound_connect_rate||0), ocr:+(d.outbound_connect_rate||0)
+  });});
+
+  var STAFF_LOOKUP = {};
+  D.user_stats.forEach(function(u){
+    if(!STAFF_LOOKUP[u._staff]) STAFF_LOOKUP[u._staff]={branchNum:u._branchNum,branchName:u._branch,dm:u._dm};
+  });
+
+  // Re-populate dropdown filters with new data
+  populateFilterDropdowns();
+
+  // If on a chart page, re-render it
+  (function(){
+    var sub=document.querySelector('.exec-subtitle');
+    var dr=D.date_range||{};
+    if(sub&&dr.start){var ds=dr.start+(dr.end&&dr.end!==dr.start?' – '+dr.end:'');
+      sub.textContent='Organisation-wide call analytics · '+ds;}
+  })();
+  // Rebuild CDR display rows from real raw data
+  cdrRows = DS.rawCDRRows.map(function(r){
+    var h=Math.floor((r.dur_secs||0)/3600), m=Math.floor(((r.dur_secs||0)%3600)/60), s=Math.floor((r.dur_secs||0)%60);
+    var durStr=h.toString().padStart(2,'0')+':'+m.toString().padStart(2,'0')+':'+s.toString().padStart(2,'0');
+    var outcome=r.direction==='Inbound'?(r.answered?'Answered':'Missed'):(r.answered?'Answered':'No Response');
+    return {
+      date:r.date, time:r.time||r.hour+':00', staff:r.real_staff, branch:r.branch, dm:r.dm,
+      caller:r.user, calling:r.callingTN||'', called:r.calledTN||'',
+      duration:durStr, direction:r.direction, outcome:outcome,
+      answer:r.answered?'Yes':'No',
+      branchNum:BRANCH_NAME_TO_NUM[r.branch]||r.branch
+    };
+  });
+  if (typeof curPage !== 'undefined') {
+    setTimeout(function(){
+      if      (curPage==='executive')    renderExec();
+      else if (curPage==='manager')      renderMgr();
+      else if (curPage==='agents')       renderAgents();
+      else if (curPage==='myperformance')renderMyPerf();
+    }, 50);
+  }
+}
+
+function dsDownloadUnmapped(){
+  var um=DS.unmapped||{};
+  var ns=Object.keys(um).sort();
+  if(!ns.length){showToast('No unmapped CDR names','err');return;}
+  var header='CDR User Name,Call Count,Extension / TN,Suggested Branch,Suggested DM';
+  var rows=ns.map(function(un){
+    var tnInfo=(DS.unmappedTN||{})[un]||{};
+    var tn=(tnInfo.calledTN||tnInfo.callingTN||'').replace(/,/g,' ');
+    var extDisp=tn.replace(/\D/g,'').slice(-7)||un;
+    // Try to find suggested branch from TN
+    var sugBranch='',sugDM='';
+    if(DS.unmappedTN&&DS.unmappedTN[un]){
+      var lun=un.toLowerCase().replace(/\s+/g,'');
+      Object.entries(CFG_BRANCHES).forEach(function(e){
+        if(sugBranch)return;
+        var bn=e[1].name.toLowerCase().replace(/\s+/g,'');
+        if(bn.length>=3&&lun.indexOf(bn)>=0){sugBranch=e[1].name;sugDM=DM_FULL[e[1].dm]||e[1].dm;}
+      });
+    }
+    return '"'+un.replace(/"/g,'""')+'",'+um[un]+',"'+extDisp+'","'+sugBranch+'","'+sugDM+'"';
+  });
+  var csv=[header].concat(rows).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='unmapped_cdr_names.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Downloaded '+ns.length+' unmapped names','ok');
+}
+
+function dsShowUnmappedPanel(){
+  var um=DS.unmapped||{},ns=Object.keys(um).sort();
+  var el=document.getElementById('ds-unmapped-panel');if(!el)return;
+  if(!ns.length){el.style.display='none';return;}
+  el.style.display='';
+  var brO=Object.entries(CFG_BRANCHES).map(function(e){return '<option value="'+e[1].name+'">'+e[1].name+'</option>';}).join('');
+  var dmO=Object.keys(DM_FULL).map(function(k){var d=DM_FULL[k];return '<option value="'+d+'">'+d+'</option>';}).join('');
+  var rows=ns.map(function(un){var sid=un.replace(/[^a-zA-Z0-9]/g,'_');
+    var tnI=(DS.unmappedTN||{})[un]||{};
+    var tnR=tnI.calledTN||tnI.callingTN||'';
+    var tnShort=tnR.replace(/\D/g,'').slice(-7)||un;
+    return '<tr><td style="font-size:11px;font-weight:600">'+un+'</td>'
+      +'<td class="mono dim">'+um[un]+'</td>'
+      +'<td class="mono" style="font-size:10px;color:var(--muted)" title="'+tnR+'">'+tnShort+'</td>'
+      +'<td><select id="ubr-'+sid+'" class="gf-sel" style="padding:4px;font-size:10px;background:var(--s2);border:1px solid var(--border);border-radius:4px;color:var(--text)"><option value="">Pick branch…</option>'+brO+'</select></td>'
+      +'<td><select id="udm-'+sid+'" class="gf-sel" style="padding:4px;font-size:10px;background:var(--s2);border:1px solid var(--border);border-radius:4px;color:var(--text)"><option value="">Pick DM…</option>'+dmO+'</select></td>'
+      +'<td><button class="btn btn-ghost btn-sm" data-sid="'+sid+'" data-orig="'+un.replace(/"/g,'&quot;')+'" onclick="dsManualMap(this)">Save</button></td></tr>';
+  }).join('');
+  el.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+    +'<div><div class="ct">⚠ '+ns.length+' Unmapped CDR Names</div>'
+    +'<div class="cs">These names are not in your mapping file. Assign branch+DM to include them in analytics.</div></div>'
+    +'<div style="display:flex;gap:8px"><select id="bulk-br" class="gf-sel" style="padding:6px 10px;font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:5px;color:var(--text)"><option value="">Bulk assign branch…</option>'+brO+'</select>'
+    +'<button class="btn" style="background:var(--acc);color:#fff;padding:6px 14px;font-size:11px" onclick="dsBulkAssign()">Assign All</button>'
+    +'<button class="btn btn-ghost" style="padding:6px 14px;font-size:11px" onclick="dsDownloadUnmapped()">⬇ Download CSV</button></div>'
+    +'<div class="cs" style="font-size:10px;color:var(--muted);margin-top:4px">Selecting a branch auto-assigns the District Manager linked to that branch in your mapping file.</div></div>'
+    +'<div class="tw" style="max-height:220px;overflow-y:auto"><table><thead><tr><th>CDR Name</th><th>Calls</th><th>Extension/TN</th><th>Branch</th><th>DM</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+function dsManualMap(btn){
+  var sid=btn.getAttribute('data-sid'),orig=btn.getAttribute('data-orig')||sid;
+  var brEl=document.getElementById('ubr-'+sid),dmEl=document.getElementById('udm-'+sid);
+  if(!brEl||!brEl.value||!dmEl||!dmEl.value){showToast('Select branch and DM first','err');return;}
+  var brName=CFG_BRANCHES[brEl.value]?CFG_BRANCHES[brEl.value].name:brEl.value;
+  D.cdr_user_map[orig]={branch:brName,dm:dmEl.value,staff:orig};
+  delete DS.unmapped[orig];
+  DS.rawCDRRows.forEach(function(r){if(r.user===orig){r.branch=brName;r.dm=dmEl.value;r.real_staff=orig;}});
+  dsBuildAggregates();dsShowUnmappedPanel();showToast(orig+' mapped to '+brName,'ok');
+}
+function dsBulkAssign(){
+  var bs=document.getElementById('bulk-br');if(!bs||!bs.value){showToast('Select a branch first','err');return;}
+  var brName=CFG_BRANCHES[bs.value]?CFG_BRANCHES[bs.value].name:bs.value;
+  var dm=CFG_BRANCHES[bs.value]?(DM_FULL[CFG_BRANCHES[bs.value].dm]||CFG_BRANCHES[bs.value].dm):'';
+  var ns=Object.keys(DS.unmapped||{});
+  ns.forEach(function(un){D.cdr_user_map[un]={branch:brName,dm:dm,staff:un};DS.rawCDRRows.forEach(function(r){if(r.user===un){r.branch=brName;r.dm=dm;r.real_staff=un;}});delete DS.unmapped[un];});
+  dsBuildAggregates();dsShowUnmappedPanel();showToast(ns.length+' names assigned to '+brName,'ok');
+}
+
+// ── FILE MANAGER ────────────────────────────────────────────────────────────
+function dsRemoveFile(fileName) {
+  var before = DS.rawCDRRows.length;
+  DS.rawCDRRows = DS.rawCDRRows.filter(function(r){ return r.sourceFile !== fileName; });
+  // Remove dedup keys for rows from this file
+  // Rebuild seenKeys from remaining rows
+  DS.seenKeys = {};
+  DS.rawCDRRows.forEach(function(r){
+    var dk = (r.date||'')+'|'+(r.user||'')+'|'+(r.time||'')+'|'+(r.direction||'');
+    DS.seenKeys[dk] = true;
+  });
+  // Remove from loaded files list
+  DS.cdrFilesLoaded = DS.cdrFilesLoaded.filter(function(f){ return f.name !== fileName; });
+  var removed = before - DS.rawCDRRows.length;
+  if (DS.rawCDRRows.length > 0) {
+    dsBuildAggregates();
+  } else {
+    // All data cleared
+    D.staff_stats=[]; D.branch_stats=[]; D.dm_stats=[]; D.daily=[];
+    D.staff_daily=[]; D.staff_hourly=[]; D.user_stats=[]; D.user_daily=[];
+    D.branch_stats_norm=[]; D.dm_stats_norm=[]; D.hourly_totals=[];
+    D.hourly_by_date=[]; D.dates=[]; D.dates_available=[]; D.dms=[]; D.branches=[];
+    D.daily_summary=[]; D.date_range={start:'',end:''};
+    populateFilterDropdowns();
+  }
+  dsUpdateFileManager();
+  dsUpdateBanner();
+  dsUpdateSummary();
+  showToast('Removed ' + removed + ' rows from ' + fileName, 'ok');
+}
+
+function dsClearAllData() {
+  DS.rawCDRRows=[]; DS.seenKeys={}; DS.cdrFilesLoaded=[];
+  D.staff_stats=[]; D.branch_stats=[]; D.dm_stats=[]; D.daily=[];
+  D.staff_daily=[]; D.staff_hourly=[]; D.user_stats=[]; D.user_daily=[];
+  D.branch_stats_norm=[]; D.dm_stats_norm=[]; D.hourly_totals=[];
+  D.hourly_by_date=[]; D.dates=[]; D.dates_available=[]; D.dms=[]; D.branches=[];
+  D.daily_summary=[]; D.date_range={start:'',end:''};
+  populateFilterDropdowns();
+  dsUpdateFileManager();
+  dsUpdateBanner();
+  dsUpdateSummary();
+  showToast('All CDR data cleared', 'ok');
+}
+
+function dsUpdateFileManager() {
+  var el = document.getElementById('ds-file-manager');
+  if (!el) return;
+  var files = DS.cdrFilesLoaded || [];
+  if (!files.length) {
+    el.innerHTML = '<div style="color:var(--muted);text-align:center;padding:16px 0;font-size:12px">No CDR files loaded</div>';
+    return;
+  }
+  var rows = files.map(function(f) {
+    var safe = f.name.replace(/"/g,'&quot;');
+    var dt = new Date(f.loadedAt).toLocaleString();
+    return '<tr>'
+      +'<td style="font-weight:600;font-size:11px">'+f.name+'</td>'
+      +'<td class="mono dim">'+dt+'</td>'
+      +'<td class="mono" style="color:var(--green)">'+f.rows.toLocaleString()+'</td>'
+      +'<td class="mono" style="color:'+(f.dupes>0?'var(--amber)':'var(--muted)')+'">'+f.dupes+'</td>'
+      +'<td><button class="btn btn-danger btn-sm" onclick="dsRemoveFile(\''+safe+'\')">Remove</button></td>'
+      +'</tr>';
+  }).join('');
+  el.innerHTML = '<div class="tw"><table>'
+    +'<thead><tr><th>File Name</th><th>Loaded At</th><th>Rows</th><th>Dupes</th><th></th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div>'
+    +'<button class="btn btn-danger btn-sm" style="margin-top:8px" onclick="dsClearAllData()">Clear All Data</button>';
+}
+
+// ── FOLDER WATCHER (File System Access API) ─────────────────────────────────
+var DS_FolderHandle = null;
+var DS_WatchTimer   = null;
+var DS_SeenInFolder = {};  // name+'_'+lastModified → true
+
+
+
+// ── FOLDER WATCHER ──────────────────────────────────────────────────────────
+// Pending queue: CDR files found before mapping was loaded
+var DS_Pending = [];
+
+// Parse CSV text string (from folder watch or direct file)
+// Called with plain text so File handle permission never expires
+function dsParseMappingText(text, fileName) {
+  dsSetStatus('ds-map-status', 'Reading ' + fileName + '\u2026', 'info');
+  Papa.parse(text, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(res) {
+      // Re-use full mapping logic by creating synthetic File-like obj
+      var fakeFile = {name: fileName};
+      var rows = res.data;
+      var rawHeaders = res.meta.fields || [];
+      var headers = rawHeaders.map(function(h){ return h.replace(/^\uFEFF/,'').trim(); });
+      var h = headers.map(function(x){ return x.toLowerCase(); });
+      if (!rows.length || !headers.length) {
+        dsSetStatus('ds-map-status', 'File is empty or has no header row.', 'err'); return;
+      }
+      function findCol(keywords) {
+        for (var ki=0; ki<keywords.length; ki++) {
+          var kw=keywords[ki].toLowerCase();
+          for (var hi=0; hi<h.length; hi++) { if (h[hi].indexOf(kw)>=0) return hi; }
+        }
+        return -1;
+      }
+      var colBranch=findCol(['branch name','branch']),colDM=findCol(['district manager','manager','dm']);
+      var colStaff=findCol(['staff name','agent name','employee','staff','agent','name']);
+      var colExt=findCol(['extension','ext']),colCDRName=findCol(['cdr name','user name','username','cdr','seat']);
+      if(colStaff===colBranch&&colStaff>=0){colStaff=-1;for(var hi2=0;hi2<h.length;hi2++){if(hi2!==colBranch&&hi2!==colDM&&(h[hi2].indexOf('name')>=0||h[hi2].indexOf('staff')>=0||h[hi2].indexOf('agent')>=0)){colStaff=hi2;break;}}}
+      if(colBranch<0||colDM<0){dsSetStatus('ds-map-status','Could not find Branch and DM columns in '+fileName,'err');return;}
+      CFG_BRANCHES={}; DM_FULL={}; DM_SHORT={}; D.cdr_user_map={};
+      BRANCH_NAME_TO_NUM={}; BRANCH_NUM_TO_NAME={};
+      var branchNum=1,dmShortMap={};
+      rows.forEach(function(r){
+        var branchName=(r[headers[colBranch]]||'').trim();
+        var dmFull=(r[headers[colDM]]||'').trim();
+        var staffName=colStaff>=0?(r[headers[colStaff]]||'').trim():'';
+        var ext=colExt>=0?(r[headers[colExt]]||'').trim():'';
+        var cdrName=colCDRName>=0?(r[headers[colCDRName]]||'').trim():'';
+        if(!branchName||!dmFull) return;
+        var existingNum=Object.keys(CFG_BRANCHES).find(function(k){return CFG_BRANCHES[k].name===branchName;});
+        if(!existingNum){
+          existingNum=String(branchNum++);
+          var dmParts=dmFull.trim().split(/\s+/),dmShort=dmParts[0]||dmFull;
+          if(!dmShortMap[dmFull])dmShortMap[dmFull]=dmShort;
+          DM_FULL[dmShort]=dmFull;
+          var uLogin=dmFull.toLowerCase().replace(/\s+/g,'.'); DM_SHORT[uLogin]=dmShort;
+          var uLogin2=(dmParts[0]||'')[0].toLowerCase()+(dmParts[1]||'').toLowerCase(); if(uLogin2)DM_SHORT[uLogin2]=dmShort;
+          CFG_BRANCHES[existingNum]={name:branchName,dm:dmShort,address:'',phone:'',staff:[]};
+          BRANCH_NAME_TO_NUM[branchName]=existingNum; BRANCH_NUM_TO_NAME[existingNum]=branchName;
+        }
+        var bn=existingNum,sn=(staffName||'').trim();
+        if(sn&&sn!=='Open Desk'){var already=CFG_BRANCHES[bn].staff.some(function(s){return s.name===sn;});if(!already)CFG_BRANCHES[bn].staff.push({name:sn,ext:ext});}
+        var mapKey=cdrName||sn;
+        if(mapKey) D.cdr_user_map[mapKey]={branch:branchName,dm:DM_FULL[dmShortMap[dmFull]]||dmFull,staff:sn||mapKey};
+      });
+      var nB=Object.keys(CFG_BRANCHES).length,nD=Object.keys(DM_FULL).length,nM=Object.keys(D.cdr_user_map).length;
+      DS.mappingLoaded=true;
+      MAPPING_DATA=JSON.parse(JSON.stringify(CFG_BRANCHES));
+      populateFilterDropdowns();
+      dsSetStatus('ds-map-status','\u2713 '+fileName+': '+nB+' branches, '+nD+' DMs, '+nM+' mapped','ok');
+      var smEl=document.getElementById('ds-map-summary');
+      if(smEl)smEl.innerHTML=dsRow('File',fileName)+dsRow('Branches',nB,'var(--text)')+dsRow('DMs',nD,'var(--text)')+dsRow('Mapped',nM,'var(--text)')+dsRow('Status','\u25cf Ready','var(--green)');
+      dsUpdateBanner(); dsUpdateSummary();
+      dsLogFile(fileName,'Mapping',nB+' branches, '+nD+' DMs');
+      // Process any queued CDR files now that mapping is ready
+      if(DS_Pending.length>0){
+        var q=DS_Pending.slice(); DS_Pending=[];
+        q.forEach(function(p){ dsParseCDRText(p.text,p.name); });
+      }
+    },
+    error: function(e){ dsSetStatus('ds-map-status','Parse error: '+e.message,'err'); }
+  });
+}
+
+function dsParseCDRText(text, fileName) {
+  // Create a synthetic File-like object from text for dsParseCSV
+  var blob = new Blob([text], {type:'text/csv'});
+  var synFile = new File([blob], fileName, {type:'text/csv'});
+  dsParseCSV(synFile);
+}
+
+// ── Detect CSV type by inspecting headers (filename-independent) ──────────────
+// Returns 'mapping', 'cdr', or 'unknown'
+function normaliseDateStr(d){
+  if(!d)return '';d=d.trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(d))return d;
+  var m=d.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+  if(m)return m[3]+'-'+m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');
+  return d;
+}
+
+function dsDetectCsvType(text) {
+  // Read just the first line to get headers
+  var firstLine = text.split(/\r?\n/)[0] || '';
+  // Strip BOM, split by comma (handle quoted fields simply)
+  var cols = firstLine.replace(/^\uFEFF/, '').split(',').map(function(c) {
+    return c.replace(/^"|"$/g, '').trim().toLowerCase();
+  });
+
+  // Mapping file: must have a branch column AND a district manager column
+  var hasBranch  = cols.some(function(c){ return c.indexOf('branch') >= 0; });
+  var hasDM      = cols.some(function(c){
+    return c.indexOf('district') >= 0 || c.indexOf('manager') >= 0 || c === 'dm';
+  });
+  if (hasBranch && hasDM) return 'mapping';
+
+  // CDR file: has direction column (unique to CDR data)
+  var hasDir     = cols.some(function(c){ return c === 'direction' || c.indexOf('call direction') >= 0 || c.indexOf('call type') >= 0; });
+  var hasAns     = cols.some(function(c){ return c.indexOf('answer') >= 0 || c.indexOf('duration') >= 0; });
+  if (hasDir || hasAns) return 'cdr';
+
+  return 'unknown';
+}
+
+async function dsWatchFolder(isFirst) {
+  if (!DS_FolderHandle) return;
+  var lastEl = document.getElementById('ds-folder-last');
+  var stEl   = document.getElementById('ds-folder-status');
+  try {
+    var newFiles = [];
+    for await (var entry of DS_FolderHandle.values()) {
+      if (entry.kind !== 'file') continue;
+      var fname = entry.name;
+      if (!/\.csv$/i.test(fname)) continue;
+      var fileObj = await entry.getFile();
+      var key = fname + '_' + fileObj.lastModified;
+      if (DS_SeenInFolder[key]) continue;
+      // Read immediately while permission is live
+      var text = await fileObj.text();
+      // Detect type by headers, not filename
+      var csvType = dsDetectCsvType(text);
+      newFiles.push({name: fname, key: key, text: text, type: csvType});
+    }
+
+    if (newFiles.length === 0) {
+      if (lastEl) lastEl.textContent = 'Last scan: ' + new Date().toLocaleTimeString() + ' \u2014 no new files';
+      return;
+    }
+
+    // Process mapping files first so CDRs have a mapping to reference
+    newFiles.sort(function(a, b) {
+      return (a.type === 'mapping' ? 0 : 1) - (b.type === 'mapping' ? 0 : 1);
+    });
+
+    var loadedCount = 0, queuedCount = 0, unknownCount = 0;
+    newFiles.forEach(function(f) {
+      if (f.type === 'mapping') {
+        DS_SeenInFolder[f.key] = true;
+        dsParseMappingText(f.text, f.name);
+        loadedCount++;
+      } else if (f.type === 'cdr') {
+        if (DS.mappingLoaded) {
+          DS_SeenInFolder[f.key] = true;
+          dsParseCDRText(f.text, f.name);
+          loadedCount++;
+        } else {
+          // Queue — will be drained when mapping loads
+          DS_Pending.push({text: f.text, name: f.name});
+          DS_SeenInFolder[f.key] = true;
+          queuedCount++;
+        }
+      } else {
+        // Unknown type — can't safely parse, skip silently
+        DS_SeenInFolder[f.key] = true;
+        unknownCount++;
+        console.warn('dsWatchFolder: unrecognised CSV type for', f.name,
+          '— first line:', f.text.split(/\r?\n/)[0].slice(0,120));
+      }
+    });
+
+    var msg = 'Last scan: ' + new Date().toLocaleTimeString();
+    if (loadedCount  > 0) msg += ' \u2014 \u2713 ' + loadedCount + ' loaded';
+    if (queuedCount  > 0) msg += ', ' + queuedCount + ' queued (load mapping first)';
+    if (unknownCount > 0) msg += ', ' + unknownCount + ' unrecognised';
+    if (lastEl) lastEl.textContent = msg;
+
+    if (!isFirst && loadedCount > 0)
+      showToast(loadedCount + ' file(s) auto-imported', 'ok');
+    if (queuedCount > 0 && stEl)
+      stEl.innerHTML = '<span style="color:var(--amber)">\u26a0 '
+        + queuedCount + ' CDR file(s) queued \u2014 drop your mapping file into the folder to process them.</span>';
+
+  } catch(e) {
+    if (stEl) stEl.innerHTML = '<span style="color:var(--red)">Scan error: ' + e.message + '</span>';
+    console.error('dsWatchFolder error:', e);
+  }
+}
+
+async function dsPickFolder() {
+  if (!window.showDirectoryPicker) {
+    dsSetStatus('ds-folder-status', 'Folder watching requires Chrome or Edge (desktop).', 'err'); return;
+  }
+  try {
+    DS_FolderHandle = await window.showDirectoryPicker({ mode: 'read' });
+    var fnEl = document.getElementById('ds-folder-name');
+    if (fnEl) fnEl.textContent = '\ud83d\udcc2 ' + DS_FolderHandle.name;
+    var stopBtn = document.getElementById('ds-folder-stop');
+    if (stopBtn) stopBtn.style.display = '';
+    dsSetStatus('ds-folder-status', 'Watching: ' + DS_FolderHandle.name + ' \u2014 scanning now\u2026', 'ok');
+    // Immediate scan
+    await dsWatchFolder(true);
+    // Set up interval
+    if (DS_WatchTimer) clearInterval(DS_WatchTimer);
+    var intv = parseInt((document.getElementById('ds-watch-interval')||{}).value || '30000');
+    DS_WatchTimer = setInterval(function(){ dsWatchFolder(false); }, intv);
+    dsSetStatus('ds-folder-status', 'Watching: ' + DS_FolderHandle.name + ' \u2014 auto-scanning every '+(intv/1000)+'s', 'ok');
+  } catch(e) {
+    if (e.name !== 'AbortError') dsSetStatus('ds-folder-status', 'Error: ' + e.message, 'err');
+  }
+}
+
+function dsStopWatch() {
+  if (DS_WatchTimer) { clearInterval(DS_WatchTimer); DS_WatchTimer = null; }
+  DS_FolderHandle = null; DS_SeenInFolder = {}; DS_Pending = [];
+  var fnEl = document.getElementById('ds-folder-name');
+  if (fnEl) fnEl.textContent = 'None selected';
+  var stopBtn = document.getElementById('ds-folder-stop');
+  if (stopBtn) stopBtn.style.display = 'none';
+  dsSetStatus('ds-folder-status', 'Folder watch stopped.', 'info');
+  var lastEl = document.getElementById('ds-folder-last');
+  if (lastEl) lastEl.textContent = '';
+}
+
+
+</script>
+
+<!-- ═══ AGENT DETAIL MODAL ═══ -->
+<div id="agent-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;overflow-y:auto;padding:20px">
+  <div style="max-width:960px;margin:0 auto;background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative">
+    <button onclick="closeAgentDetail()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1">✕</button>
+    <div id="agent-detail-content"></div>
+  </div>
+</div>
+</body>
+</html>
