@@ -1,0 +1,246 @@
+Source File,Start Date (MM/DD/YYYY),Start Time (HH:MM:SS) Central,Caller ID Name,User Name,Calling TN,Called TN,End Date (MM/DD/YYYY),End Time (HH:MM:SS) Central,Duration (HH:MM:SS),Direction,Local Call Id,Remote Call Id,Redirecting Reason,Charge Indicator,Answer Indicator
+demo-cdr-2026-05-07-09,05/07/2026,09:37:32,Demo Caller 001,Evelyn Arellano,5550100001,5550200007,05/07/2026,09:37:32,00:00:00,Outbound,demo-local-00001,demo-remote-00001,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,14:59:35,Demo Caller 002,Mario De Leon,5550100002,5550200014,05/07/2026,15:23:52,00:24:17,Outbound,demo-local-00002,demo-remote-00002,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,11:27:39,Demo Caller 003,Priscela Cruz,5550100003,5550200021,05/07/2026,11:34:24,00:06:45,Outbound,demo-local-00003,demo-remote-00003,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,16:38:16,Demo Caller 004,Yoselin Arredondo,5550200028,5550100004,05/07/2026,16:38:16,00:00:00,Inbound,demo-local-00004,demo-remote-00004,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:36:20,Demo Caller 005,Mirna Ramirez,5550100005,5550200035,05/07/2026,10:36:28,00:00:08,Outbound,demo-local-00005,demo-remote-00005,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,16:30:12,Demo Caller 006,Vanessa Lozano,5550200042,5550100006,05/07/2026,16:30:12,00:00:00,Inbound,demo-local-00006,demo-remote-00006,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:13:41,Demo Caller 007,Perla Zigala,5550200049,5550100007,05/07/2026,10:14:53,00:01:12,Inbound,demo-local-00007,demo-remote-00007,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,13:45:41,Demo Caller 008,Gabrielle Orozco (New Hire),5550200056,5550100008,05/07/2026,13:46:28,00:00:47,Inbound,demo-local-00008,demo-remote-00008,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,16:29:55,Demo Caller 009,Aileen Sagastume,5550200063,5550100009,05/07/2026,16:29:55,00:00:00,Inbound,demo-local-00009,demo-remote-00009,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:29:54,Demo Caller 010,Shekinah Edmond,5550100010,5550200070,05/07/2026,11:30:02,00:00:08,Outbound,demo-local-00010,demo-remote-00010,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:00:54,Demo Caller 011,Natividad Hernandez (New Hire),5550100011,5550200077,05/07/2026,10:01:12,00:00:18,Outbound,demo-local-00011,demo-remote-00011,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,09:04:45,Demo Caller 012,Dalaysia King,5550200084,5550100012,05/07/2026,09:04:45,00:00:00,Inbound,demo-local-00012,demo-remote-00012,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,13:35:24,Demo Caller 013,Tania Martinez,5550200091,5550100013,05/07/2026,13:35:24,00:00:00,Inbound,demo-local-00013,demo-remote-00013,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:51:43,Demo Caller 014,Jacob Sangabriel,5550200098,5550100014,05/07/2026,10:51:43,00:00:00,Inbound,demo-local-00014,demo-remote-00014,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:26:36,Demo Caller 015,Kenyetta Thomas,5550200105,5550100015,05/07/2026,15:26:36,00:00:00,Inbound,demo-local-00015,demo-remote-00015,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,09:05:15,Demo Caller 016,Latoya Austin,5550200112,5550100016,05/07/2026,09:05:15,00:00:00,Inbound,demo-local-00016,demo-remote-00016,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:18:17,Demo Caller 017,Toccara Bradberry,5550100017,5550200119,05/07/2026,11:18:17,00:00:00,Outbound,demo-local-00017,demo-remote-00017,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,17:51:47,Demo Caller 018,Evelyn Ontiveros,5550200126,5550100018,05/07/2026,17:51:47,00:00:00,Inbound,demo-local-00018,demo-remote-00018,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,14:21:25,Demo Caller 019,Rosa Solis,5550200133,5550100019,05/07/2026,14:21:25,00:00:00,Inbound,demo-local-00019,demo-remote-00019,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:10:11,Demo Caller 020,Maybelline Aragon (New Hire),5550100020,5550200140,05/07/2026,15:10:17,00:00:06,Outbound,demo-local-00020,demo-remote-00020,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:40:10,Demo Caller 021,Emily Barrera,5550200147,5550100021,05/07/2026,10:40:10,00:00:00,Inbound,demo-local-00021,demo-remote-00021,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,14:12:09,Demo Caller 022,Maleni Lopez,5550100022,5550200154,05/07/2026,14:12:09,00:00:00,Outbound,demo-local-00022,demo-remote-00022,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,19:58:03,Demo Caller 023,Maria Mora,5550200161,5550100023,05/07/2026,19:58:06,00:00:03,Inbound,demo-local-00023,demo-remote-00023,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,13:45:17,Demo Caller 024,Jose De La Barrera,5550200168,5550100024,05/07/2026,13:45:17,00:00:00,Inbound,demo-local-00024,demo-remote-00024,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,17:45:21,Demo Caller 025,Alma Hernandez,5550200175,5550100025,05/07/2026,17:45:21,00:00:00,Inbound,demo-local-00025,demo-remote-00025,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:59:34,Demo Caller 026,Susan Torres,5550200182,5550100026,05/07/2026,11:59:34,00:00:00,Inbound,demo-local-00026,demo-remote-00026,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,17:37:38,Demo Caller 027,Esmeralda De La Torre,5550200189,5550100027,05/07/2026,17:37:38,00:00:00,Inbound,demo-local-00027,demo-remote-00027,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:00:32,Demo Caller 028,Rosalie Estrada,5550200196,5550100028,05/07/2026,11:00:32,00:00:00,Inbound,demo-local-00028,demo-remote-00028,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:14:50,Demo Caller 029,Melissa Deanda,5550200203,5550100029,05/07/2026,15:14:50,00:00:00,Inbound,demo-local-00029,demo-remote-00029,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:42:34,Demo Caller 030,Alejandra Mares,5550100030,5550200210,05/07/2026,10:43:51,00:01:17,Outbound,demo-local-00030,demo-remote-00030,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,15:31:20,Demo Caller 031,Alexandria Stephens,5550200217,5550100031,05/07/2026,15:32:33,00:01:13,Inbound,demo-local-00031,demo-remote-00031,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,11:16:46,Demo Caller 032,Crystal Black,5550100032,5550200224,05/07/2026,11:17:11,00:00:25,Outbound,demo-local-00032,demo-remote-00032,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,14:59:17,Demo Caller 033,Nichelle Mc Bride,5550200231,5550100033,05/07/2026,14:59:17,00:00:00,Inbound,demo-local-00033,demo-remote-00033,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,17:44:51,Demo Caller 034,Hadassa Gomez,5550200238,5550100034,05/07/2026,17:44:51,00:00:00,Inbound,demo-local-00034,demo-remote-00034,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,12:23:17,Demo Caller 035,Lluvia Rabadan,5550100035,5550200245,05/07/2026,12:23:17,00:00:00,Outbound,demo-local-00035,demo-remote-00035,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,13:43:50,Demo Caller 036,Nancy Jaimez,5550200252,5550100036,05/07/2026,13:43:50,00:00:00,Inbound,demo-local-00036,demo-remote-00036,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,18:20:32,Demo Caller 037,Miguel Cardenas,5550200259,5550100037,05/07/2026,18:21:16,00:00:44,Inbound,demo-local-00037,demo-remote-00037,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,15:17:58,Demo Caller 038,Janet Castro,5550200266,5550100038,05/07/2026,15:17:58,00:00:00,Inbound,demo-local-00038,demo-remote-00038,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:23:40,Demo Caller 039,Renely Roman,5550200273,5550100039,05/07/2026,10:23:40,00:00:00,Inbound,demo-local-00039,demo-remote-00039,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:32:04,Demo Caller 040,"Gisela ""Jessie"" Leon",5550100040,5550200280,05/07/2026,15:45:04,00:13:00,Outbound,demo-local-00040,demo-remote-00040,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:31:08,Demo Caller 041,Aaliyah Covington,5550100041,5550200287,05/07/2026,10:31:15,00:00:07,Outbound,demo-local-00041,demo-remote-00041,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,17:32:30,Demo Caller 042,Linda Kovell,5550200294,5550100042,05/07/2026,17:32:30,00:00:00,Inbound,demo-local-00042,demo-remote-00042,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:13:19,Demo Caller 043,Jennifer Parra,5550200301,5550100043,05/07/2026,11:13:19,00:00:00,Inbound,demo-local-00043,demo-remote-00043,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:30:17,Demo Caller 044,Lillian Navarro,5550200308,5550100044,05/07/2026,15:30:17,00:00:00,Inbound,demo-local-00044,demo-remote-00044,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:57:11,Demo Caller 045,Angelica Ruby,5550200315,5550100045,05/07/2026,10:57:11,00:00:00,Inbound,demo-local-00045,demo-remote-00045,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,16:53:26,Demo Caller 046,Gricelda Nicolas,5550200322,5550100046,05/07/2026,16:53:26,00:00:00,Inbound,demo-local-00046,demo-remote-00046,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:42:50,Demo Caller 047,Maria Aguilar,5550200329,5550100047,05/07/2026,10:42:50,00:00:00,Inbound,demo-local-00047,demo-remote-00047,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,14:30:25,Demo Caller 048,Miriam Gonzalez,5550200336,5550100048,05/07/2026,14:43:39,00:13:14,Inbound,demo-local-00048,demo-remote-00048,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,17:32:36,Demo Caller 049,Jessica Ortiz,5550200343,5550100049,05/07/2026,17:32:58,00:00:22,Inbound,demo-local-00049,demo-remote-00049,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,16:29:09,Demo Caller 050,Angelina Damian,5550200350,5550100050,05/07/2026,16:29:09,00:00:00,Inbound,demo-local-00050,demo-remote-00050,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:20:55,Demo Caller 051,Juan Gutierrez,5550100051,5550200357,05/07/2026,10:20:55,00:00:00,Outbound,demo-local-00051,demo-remote-00051,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,12:34:25,Demo Caller 052,Lissette Garcia,5550200364,5550100052,05/07/2026,12:50:21,00:15:56,Inbound,demo-local-00052,demo-remote-00052,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,14:46:19,Demo Caller 053,Taprecia Triplett,5550100053,5550200371,05/07/2026,14:46:25,00:00:06,Outbound,demo-local-00053,demo-remote-00053,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,17:47:33,Demo Caller 054,Asia Jackson (New Hire),5550200378,5550100054,05/07/2026,17:47:33,00:00:00,Inbound,demo-local-00054,demo-remote-00054,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,12:31:27,Demo Caller 055,Kimberly Martin,5550100055,5550200385,05/07/2026,12:32:26,00:00:59,Outbound,demo-local-00055,demo-remote-00055,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,09:05:00,Demo Caller 056,Dasember Booker,5550100056,5550200392,05/07/2026,09:06:23,00:01:23,Outbound,demo-local-00056,demo-remote-00056,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:16:48,Demo Caller 057,Nileedra Turner,5550200399,5550100057,05/07/2026,10:16:48,00:00:00,Inbound,demo-local-00057,demo-remote-00057,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:16:22,Demo Caller 058,Tashea Johnson (New Hire),5550100058,5550200406,05/07/2026,15:16:24,00:00:02,Outbound,demo-local-00058,demo-remote-00058,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:16:47,Demo Caller 059,Mayra Villasenor (New Trainee),5550200413,5550100059,05/07/2026,10:16:47,00:00:00,Inbound,demo-local-00059,demo-remote-00059,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:39:43,Demo Caller 060,Zuri Macedonio,5550100060,5550200420,05/07/2026,15:40:32,00:00:49,Outbound,demo-local-00060,demo-remote-00060,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:47:15,Demo Caller 061,Reyna Hernandez,5550100061,5550200427,05/07/2026,10:47:15,00:00:00,Outbound,demo-local-00061,demo-remote-00061,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,14:20:50,Demo Caller 062,Emily Naranjo,5550200434,5550100062,05/07/2026,14:20:50,00:00:00,Inbound,demo-local-00062,demo-remote-00062,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,18:50:30,Demo Caller 063,Silvia Dominguez (New Trainee),5550200441,5550100063,05/07/2026,18:50:30,00:00:00,Inbound,demo-local-00063,demo-remote-00063,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,12:19:22,Demo Caller 064,Dalila Martinez,5550200448,5550100064,05/07/2026,12:19:22,00:00:00,Inbound,demo-local-00064,demo-remote-00064,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,17:15:35,Demo Caller 065,Jocelyn Salgado (New Trainee),5550200455,5550100065,05/07/2026,17:15:35,00:00:00,Inbound,demo-local-00065,demo-remote-00065,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:36:12,Demo Caller 066,Diana Requejo,5550100066,5550200462,05/07/2026,11:36:16,00:00:04,Outbound,demo-local-00066,demo-remote-00066,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,13:22:23,Demo Caller 067,Daisy Ibara,5550100067,5550200469,05/07/2026,13:24:14,00:01:51,Outbound,demo-local-00067,demo-remote-00067,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:33:11,Demo Caller 068,Jocelyn Herrera,5550200476,5550100068,05/07/2026,10:34:04,00:00:53,Inbound,demo-local-00068,demo-remote-00068,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,15:12:50,Demo Caller 069,Leslie Mercado,5550200483,5550100069,05/07/2026,15:12:50,00:00:00,Inbound,demo-local-00069,demo-remote-00069,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,09:25:08,Demo Caller 070,Marnaie Yarber-Miller,5550100070,5550200490,05/07/2026,09:25:54,00:00:46,Outbound,demo-local-00070,demo-remote-00070,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,14:23:12,Demo Caller 071,Timeka Jones,5550200497,5550100071,05/07/2026,14:23:12,00:00:00,Inbound,demo-local-00071,demo-remote-00071,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,09:28:56,Demo Caller 072,Tamickia Riley,5550200504,5550100072,05/07/2026,09:28:56,00:00:00,Inbound,demo-local-00072,demo-remote-00072,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,13:29:40,Demo Caller 073,Charmaine Weeden,5550100073,5550200511,05/07/2026,13:30:04,00:00:24,Outbound,demo-local-00073,demo-remote-00073,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,18:35:26,Demo Caller 074,Daphaney Rollins-Battle,5550200518,5550100074,05/07/2026,18:35:26,00:00:00,Inbound,demo-local-00074,demo-remote-00074,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,15:04:04,Demo Caller 075,Treasure Davis,5550200525,5550100075,05/07/2026,15:04:04,00:00:00,Inbound,demo-local-00075,demo-remote-00075,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:18:22,Demo Caller 076,Lucyy Rodriguez,5550200532,5550100076,05/07/2026,11:19:09,00:00:47,Inbound,demo-local-00076,demo-remote-00076,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,09:45:08,Demo Caller 077,Maria Ibarra,5550200539,5550100077,05/07/2026,09:48:56,00:03:48,Inbound,demo-local-00077,demo-remote-00077,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,10:45:58,Demo Caller 078,Selene Arellano (New Trainee),5550200546,5550100078,05/07/2026,10:45:58,00:00:00,Inbound,demo-local-00078,demo-remote-00078,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,11:59:34,Demo Caller 079,Tierra Grier,5550100079,5550200553,05/07/2026,12:02:30,00:02:56,Outbound,demo-local-00079,demo-remote-00079,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,13:49:36,Demo Caller 080,Alina Flores,5550200560,5550100080,05/07/2026,13:56:54,00:07:18,Inbound,demo-local-00080,demo-remote-00080,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,08:43:21,Demo Caller 081,Rebeca Gamboa,5550200567,5550100081,05/08/2026,08:43:25,00:00:04,Inbound,demo-local-00081,demo-remote-00081,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,13:05:06,Demo Caller 082,Syklaly Perez,5550200574,5550100082,05/08/2026,13:05:06,00:00:00,Inbound,demo-local-00082,demo-remote-00082,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:57:36,Demo Caller 083,Cristian Concepcion,5550200581,5550100083,05/08/2026,11:57:36,00:00:00,Inbound,demo-local-00083,demo-remote-00083,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,09:09:22,Demo Caller 084,Maria Eugenia Abadia,5550200588,5550100084,05/08/2026,09:19:42,00:10:20,Inbound,demo-local-00084,demo-remote-00084,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,14:03:16,Demo Caller 085,Marlene Basaldua,5550200595,5550100085,05/08/2026,14:03:16,00:00:00,Inbound,demo-local-00085,demo-remote-00085,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,18:29:59,Demo Caller 086,Guadalupe Ceja,5550200602,5550100086,05/08/2026,18:29:59,00:00:00,Inbound,demo-local-00086,demo-remote-00086,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:25:40,Demo Caller 087,Norma Rojas,5550100087,5550200609,05/08/2026,11:26:03,00:00:23,Outbound,demo-local-00087,demo-remote-00087,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,13:36:53,Demo Caller 088,Sarahi Reynoso,5550100088,5550200616,05/08/2026,13:36:53,00:00:00,Outbound,demo-local-00088,demo-remote-00088,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,16:05:53,Demo Caller 089,Faith Macedonio,5550200623,5550100089,05/08/2026,16:05:53,00:00:00,Inbound,demo-local-00089,demo-remote-00089,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,10:44:35,Demo Caller 090,Jacqueline Coffee,5550200630,5550100090,05/08/2026,10:44:35,00:00:00,Inbound,demo-local-00090,demo-remote-00090,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,16:00:45,Demo Caller 091,Dionne Strickland,5550100091,5550200637,05/08/2026,16:01:21,00:00:36,Outbound,demo-local-00091,demo-remote-00091,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,10:26:20,Demo Caller 092,Elena Zermeno,5550200644,5550100092,05/08/2026,10:26:20,00:00:00,Inbound,demo-local-00092,demo-remote-00092,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,13:14:23,Demo Caller 093,Michelle Boens (New Trainee),5550200651,5550100093,05/08/2026,13:14:23,00:00:00,Inbound,demo-local-00093,demo-remote-00093,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,17:01:00,Demo Caller 094,Jacqueline Garcia,5550200658,5550100094,05/08/2026,17:01:00,00:00:00,Inbound,demo-local-00094,demo-remote-00094,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,13:44:21,Demo Caller 095,Christina Davila,5550200665,5550100095,05/08/2026,13:44:21,00:00:00,Inbound,demo-local-00095,demo-remote-00095,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:08:36,Demo Caller 096,Jazmin Monroy,5550200672,5550100096,05/08/2026,11:08:36,00:00:00,Inbound,demo-local-00096,demo-remote-00096,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,09:27:21,Demo Caller 097,Christian Harris,5550200679,5550100097,05/08/2026,09:27:21,00:00:00,Inbound,demo-local-00097,demo-remote-00097,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,14:14:19,Demo Caller 098,Daejah Hawthorne,5550200686,5550100098,05/08/2026,14:14:19,00:00:00,Inbound,demo-local-00098,demo-remote-00098,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,16:24:58,Demo Caller 099,Ana Delgado,5550200693,5550100099,05/08/2026,16:24:58,00:00:00,Inbound,demo-local-00099,demo-remote-00099,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,09:26:19,Demo Caller 100,Yesenia Braulio,5550200700,5550100100,05/08/2026,09:26:19,00:00:00,Inbound,demo-local-00100,demo-remote-00100,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,12:35:10,Demo Caller 101,Evelyn Arellano,5550100101,5550200707,05/08/2026,12:36:30,00:01:20,Outbound,demo-local-00101,demo-remote-00101,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,16:56:59,Demo Caller 102,Mario De Leon,5550200714,5550100102,05/08/2026,16:56:59,00:00:00,Inbound,demo-local-00102,demo-remote-00102,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:31:34,Demo Caller 103,Priscela Cruz,5550200721,5550100103,05/08/2026,11:31:34,00:00:00,Inbound,demo-local-00103,demo-remote-00103,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,18:18:36,Demo Caller 104,Yoselin Arredondo,5550200728,5550100104,05/08/2026,18:18:36,00:00:00,Inbound,demo-local-00104,demo-remote-00104,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:54:16,Demo Caller 105,Mirna Ramirez,5550200735,5550100105,05/08/2026,11:54:25,00:00:09,Inbound,demo-local-00105,demo-remote-00105,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,13:52:41,Demo Caller 106,Vanessa Lozano,5550200742,5550100106,05/08/2026,13:56:14,00:03:33,Inbound,demo-local-00106,demo-remote-00106,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,17:29:51,Demo Caller 107,Perla Zigala,5550200749,5550100107,05/08/2026,17:29:51,00:00:00,Inbound,demo-local-00107,demo-remote-00107,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,16:03:52,Demo Caller 108,Gabrielle Orozco (New Hire),5550100108,5550200756,05/08/2026,16:05:42,00:01:50,Outbound,demo-local-00108,demo-remote-00108,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,10:41:48,Demo Caller 109,Aileen Sagastume,5550200763,5550100109,05/08/2026,10:41:48,00:00:00,Inbound,demo-local-00109,demo-remote-00109,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:58:59,Demo Caller 110,Shekinah Edmond,5550100110,5550200770,05/08/2026,11:58:59,00:00:00,Outbound,demo-local-00110,demo-remote-00110,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,14:50:24,Demo Caller 111,Natividad Hernandez (New Hire),5550100111,5550200777,05/08/2026,14:50:28,00:00:04,Outbound,demo-local-00111,demo-remote-00111,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,09:27:28,Demo Caller 112,Dalaysia King,5550200784,5550100112,05/08/2026,09:27:28,00:00:00,Inbound,demo-local-00112,demo-remote-00112,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:31:38,Demo Caller 113,Tania Martinez,5550200791,5550100113,05/08/2026,11:35:33,00:03:55,Inbound,demo-local-00113,demo-remote-00113,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,16:04:10,Demo Caller 114,Jacob Sangabriel,5550100114,5550200798,05/08/2026,16:04:36,00:00:26,Outbound,demo-local-00114,demo-remote-00114,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,11:06:51,Demo Caller 115,Kenyetta Thomas,5550200805,5550100115,05/08/2026,11:07:35,00:00:44,Inbound,demo-local-00115,demo-remote-00115,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,09:36:16,Demo Caller 116,Latoya Austin,5550200812,5550100116,05/08/2026,09:41:11,00:04:55,Inbound,demo-local-00116,demo-remote-00116,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,16:49:45,Demo Caller 117,Toccara Bradberry,5550200819,5550100117,05/08/2026,16:49:45,00:00:00,Inbound,demo-local-00117,demo-remote-00117,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,12:01:07,Demo Caller 118,Evelyn Ontiveros,5550200826,5550100118,05/08/2026,12:01:07,00:00:00,Inbound,demo-local-00118,demo-remote-00118,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,13:42:04,Demo Caller 119,Rosa Solis,5550100119,5550200833,05/08/2026,13:42:32,00:00:28,Outbound,demo-local-00119,demo-remote-00119,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,17:27:46,Demo Caller 120,Maybelline Aragon (New Hire),5550200840,5550100120,05/08/2026,17:27:46,00:00:00,Inbound,demo-local-00120,demo-remote-00120,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,17:35:28,Demo Caller 121,Emily Barrera,5550200847,5550100121,05/08/2026,17:44:05,00:08:37,Inbound,demo-local-00121,demo-remote-00121,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,10:06:20,Demo Caller 122,Maleni Lopez,5550200854,5550100122,05/08/2026,10:06:20,00:00:00,Inbound,demo-local-00122,demo-remote-00122,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,12:39:35,Demo Caller 123,Maria Mora,5550200861,5550100123,05/08/2026,12:39:35,00:00:00,Inbound,demo-local-00123,demo-remote-00123,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,09:47:46,Demo Caller 124,Jose De La Barrera,5550200868,5550100124,05/08/2026,09:47:46,00:00:00,Inbound,demo-local-00124,demo-remote-00124,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,17:46:45,Demo Caller 125,Alma Hernandez,5550200875,5550100125,05/08/2026,17:46:45,00:00:00,Inbound,demo-local-00125,demo-remote-00125,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,10:00:17,Demo Caller 126,Susan Torres,5550200882,5550100126,05/08/2026,10:00:17,00:00:00,Inbound,demo-local-00126,demo-remote-00126,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:48:12,Demo Caller 127,Esmeralda De La Torre,5550200889,5550100127,05/08/2026,11:49:21,00:01:09,Inbound,demo-local-00127,demo-remote-00127,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,14:35:34,Demo Caller 128,Rosalie Estrada,5550200896,5550100128,05/08/2026,14:35:34,00:00:00,Inbound,demo-local-00128,demo-remote-00128,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,16:58:33,Demo Caller 129,Melissa Deanda,5550100129,5550200903,05/08/2026,16:59:36,00:01:03,Outbound,demo-local-00129,demo-remote-00129,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,11:07:17,Demo Caller 130,Alejandra Mares,5550200910,5550100130,05/08/2026,11:07:17,00:00:00,Inbound,demo-local-00130,demo-remote-00130,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,18:32:46,Demo Caller 131,Alexandria Stephens,5550200917,5550100131,05/08/2026,18:32:46,00:00:00,Inbound,demo-local-00131,demo-remote-00131,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,11:14:41,Demo Caller 132,Crystal Black,5550100132,5550200924,05/08/2026,11:14:57,00:00:16,Outbound,demo-local-00132,demo-remote-00132,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,12:33:26,Demo Caller 133,Nichelle Mc Bride,5550200931,5550100133,05/08/2026,12:33:26,00:00:00,Inbound,demo-local-00133,demo-remote-00133,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,16:02:03,Demo Caller 134,Hadassa Gomez,5550200938,5550100134,05/08/2026,16:02:03,00:00:00,Inbound,demo-local-00134,demo-remote-00134,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,18:51:35,Demo Caller 135,Lluvia Rabadan,5550200945,5550100135,05/08/2026,18:51:35,00:00:00,Inbound,demo-local-00135,demo-remote-00135,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,12:36:07,Demo Caller 136,Nancy Jaimez,5550200952,5550100136,05/08/2026,12:40:13,00:04:06,Inbound,demo-local-00136,demo-remote-00136,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,12:48:43,Demo Caller 137,Miguel Cardenas,5550200959,5550100137,05/08/2026,12:56:19,00:07:36,Inbound,demo-local-00137,demo-remote-00137,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,17:55:11,Demo Caller 138,Janet Castro,5550200966,5550100138,05/08/2026,17:55:16,00:00:05,Inbound,demo-local-00138,demo-remote-00138,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,11:15:53,Demo Caller 139,Renely Roman,5550100139,5550200973,05/08/2026,11:16:23,00:00:30,Outbound,demo-local-00139,demo-remote-00139,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,09:55:46,Demo Caller 140,"Gisela ""Jessie"" Leon",5550100140,5550200980,05/08/2026,09:56:16,00:00:30,Outbound,demo-local-00140,demo-remote-00140,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,11:45:29,Demo Caller 141,Aaliyah Covington,5550200987,5550100141,05/08/2026,11:45:29,00:00:00,Inbound,demo-local-00141,demo-remote-00141,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,13:19:49,Demo Caller 142,Linda Kovell,5550200994,5550100142,05/08/2026,13:19:49,00:00:00,Inbound,demo-local-00142,demo-remote-00142,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,16:55:24,Demo Caller 143,Jennifer Parra,5550201001,5550100143,05/08/2026,16:56:43,00:01:19,Inbound,demo-local-00143,demo-remote-00143,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,09:28:43,Demo Caller 144,Lillian Navarro,5550201008,5550100144,05/08/2026,09:28:43,00:00:00,Inbound,demo-local-00144,demo-remote-00144,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,13:20:58,Demo Caller 145,Angelica Ruby,5550201015,5550100145,05/08/2026,13:20:58,00:00:00,Inbound,demo-local-00145,demo-remote-00145,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,09:39:29,Demo Caller 146,Gricelda Nicolas,5550100146,5550201022,05/08/2026,09:40:22,00:00:53,Outbound,demo-local-00146,demo-remote-00146,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,14:54:39,Demo Caller 147,Maria Aguilar,5550201029,5550100147,05/08/2026,14:54:39,00:00:00,Inbound,demo-local-00147,demo-remote-00147,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,10:38:07,Demo Caller 148,Miriam Gonzalez,5550201036,5550100148,05/08/2026,10:38:07,00:00:00,Inbound,demo-local-00148,demo-remote-00148,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,15:45:48,Demo Caller 149,Jessica Ortiz,5550201043,5550100149,05/08/2026,15:45:48,00:00:00,Inbound,demo-local-00149,demo-remote-00149,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,09:34:34,Demo Caller 150,Angelina Damian,5550201050,5550100150,05/08/2026,09:34:34,00:00:00,Inbound,demo-local-00150,demo-remote-00150,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,13:42:21,Demo Caller 151,Juan Gutierrez,5550201057,5550100151,05/08/2026,13:42:21,00:00:00,Inbound,demo-local-00151,demo-remote-00151,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,15:32:40,Demo Caller 152,Lissette Garcia,5550100152,5550201064,05/08/2026,15:33:07,00:00:27,Outbound,demo-local-00152,demo-remote-00152,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,09:11:58,Demo Caller 153,Taprecia Triplett,5550201071,5550100153,05/08/2026,09:11:58,00:00:00,Inbound,demo-local-00153,demo-remote-00153,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,17:25:17,Demo Caller 154,Asia Jackson (New Hire),5550201078,5550100154,05/08/2026,17:25:17,00:00:00,Inbound,demo-local-00154,demo-remote-00154,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,15:00:45,Demo Caller 155,Kimberly Martin,5550201085,5550100155,05/08/2026,15:00:45,00:00:00,Inbound,demo-local-00155,demo-remote-00155,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,09:21:58,Demo Caller 156,Dasember Booker,5550201092,5550100156,05/08/2026,09:21:58,00:00:00,Inbound,demo-local-00156,demo-remote-00156,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,10:22:50,Demo Caller 157,Nileedra Turner,5550100157,5550201099,05/08/2026,10:24:10,00:01:20,Outbound,demo-local-00157,demo-remote-00157,,No,Yes
+demo-cdr-2026-05-07-09,05/08/2026,07:52:11,Demo Caller 158,Tashea Johnson (New Hire),5550201106,5550100158,05/08/2026,07:52:11,00:00:00,Inbound,demo-local-00158,demo-remote-00158,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,10:14:58,Demo Caller 159,Mayra Villasenor (New Trainee),5550201113,5550100159,05/08/2026,10:14:58,00:00:00,Inbound,demo-local-00159,demo-remote-00159,,No,No
+demo-cdr-2026-05-07-09,05/08/2026,14:15:32,Demo Caller 160,Zuri Macedonio,5550201120,5550100160,05/08/2026,14:16:20,00:00:48,Inbound,demo-local-00160,demo-remote-00160,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,07:01:55,Demo Caller 161,Reyna Hernandez,5550201127,5550100161,05/09/2026,07:01:55,00:00:00,Inbound,demo-local-00161,demo-remote-00161,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,12:08:00,Demo Caller 162,Emily Naranjo,5550201134,5550100162,05/09/2026,12:08:00,00:00:00,Inbound,demo-local-00162,demo-remote-00162,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:44:13,Demo Caller 163,Silvia Dominguez (New Trainee),5550201141,5550100163,05/09/2026,13:44:13,00:00:00,Inbound,demo-local-00163,demo-remote-00163,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,12:22:11,Demo Caller 164,Dalila Martinez,5550201148,5550100164,05/09/2026,12:22:11,00:00:00,Inbound,demo-local-00164,demo-remote-00164,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,10:17:40,Demo Caller 165,Jocelyn Salgado (New Trainee),5550100165,5550201155,05/09/2026,10:17:55,00:00:15,Outbound,demo-local-00165,demo-remote-00165,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,13:02:17,Demo Caller 166,Diana Requejo,5550201162,5550100166,05/09/2026,13:02:17,00:00:00,Inbound,demo-local-00166,demo-remote-00166,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,09:18:05,Demo Caller 167,Daisy Ibara,5550201169,5550100167,05/09/2026,09:18:05,00:00:00,Inbound,demo-local-00167,demo-remote-00167,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:54:07,Demo Caller 168,Jocelyn Herrera,5550201176,5550100168,05/09/2026,11:54:07,00:00:00,Inbound,demo-local-00168,demo-remote-00168,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:40:26,Demo Caller 169,Leslie Mercado,5550201183,5550100169,05/09/2026,13:40:35,00:00:09,Inbound,demo-local-00169,demo-remote-00169,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,13:24:58,Demo Caller 170,Marnaie Yarber-Miller,5550201190,5550100170,05/09/2026,13:24:58,00:00:00,Inbound,demo-local-00170,demo-remote-00170,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:26:00,Demo Caller 171,Timeka Jones,5550201197,5550100171,05/09/2026,11:26:00,00:00:00,Inbound,demo-local-00171,demo-remote-00171,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,15:53:27,Demo Caller 172,Tamickia Riley,5550201204,5550100172,05/09/2026,15:53:38,00:00:11,Inbound,demo-local-00172,demo-remote-00172,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:35:38,Demo Caller 173,Charmaine Weeden,5550201211,5550100173,05/09/2026,10:35:38,00:00:00,Inbound,demo-local-00173,demo-remote-00173,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:59:44,Demo Caller 174,Daphaney Rollins-Battle,5550201218,5550100174,05/09/2026,11:59:44,00:00:00,Inbound,demo-local-00174,demo-remote-00174,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:45:32,Demo Caller 175,Treasure Davis,5550201225,5550100175,05/09/2026,13:45:32,00:00:00,Inbound,demo-local-00175,demo-remote-00175,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,09:17:44,Demo Caller 176,Lucyy Rodriguez,5550201232,5550100176,05/09/2026,09:17:44,00:00:00,Inbound,demo-local-00176,demo-remote-00176,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,10:22:56,Demo Caller 177,Maria Ibarra,5550201239,5550100177,05/09/2026,10:22:56,00:00:00,Inbound,demo-local-00177,demo-remote-00177,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:42:57,Demo Caller 178,Selene Arellano (New Trainee),5550100178,5550201246,05/09/2026,13:44:11,00:01:14,Outbound,demo-local-00178,demo-remote-00178,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,11:54:52,Demo Caller 179,Tierra Grier,5550201253,5550100179,05/09/2026,11:54:52,00:00:00,Inbound,demo-local-00179,demo-remote-00179,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:55:36,Demo Caller 180,Alina Flores,5550201260,5550100180,05/09/2026,13:55:36,00:00:00,Inbound,demo-local-00180,demo-remote-00180,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:07:54,Demo Caller 181,Rebeca Gamboa,5550201267,5550100181,05/09/2026,11:07:54,00:00:00,Inbound,demo-local-00181,demo-remote-00181,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,16:48:06,Demo Caller 182,Syklaly Perez,5550201274,5550100182,05/09/2026,16:48:28,00:00:22,Inbound,demo-local-00182,demo-remote-00182,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,11:16:14,Demo Caller 183,Cristian Concepcion,5550201281,5550100183,05/09/2026,11:16:14,00:00:00,Inbound,demo-local-00183,demo-remote-00183,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:28:23,Demo Caller 184,Maria Eugenia Abadia,5550201288,5550100184,05/09/2026,13:28:29,00:00:06,Inbound,demo-local-00184,demo-remote-00184,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,11:14:31,Demo Caller 185,Marlene Basaldua,5550100185,5550201295,05/09/2026,11:14:38,00:00:07,Outbound,demo-local-00185,demo-remote-00185,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:55:25,Demo Caller 186,Guadalupe Ceja,5550201302,5550100186,05/09/2026,10:55:25,00:00:00,Inbound,demo-local-00186,demo-remote-00186,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:52:39,Demo Caller 187,Norma Rojas,5550201309,5550100187,05/09/2026,13:52:39,00:00:00,Inbound,demo-local-00187,demo-remote-00187,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,10:16:23,Demo Caller 188,Sarahi Reynoso,5550100188,5550201316,05/09/2026,10:18:40,00:02:17,Outbound,demo-local-00188,demo-remote-00188,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,12:26:25,Demo Caller 189,Faith Macedonio,5550201323,5550100189,05/09/2026,12:37:16,00:10:51,Inbound,demo-local-00189,demo-remote-00189,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:31:15,Demo Caller 190,Jacqueline Coffee,5550201330,5550100190,05/09/2026,10:31:15,00:00:00,Inbound,demo-local-00190,demo-remote-00190,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,18:00:28,Demo Caller 191,Dionne Strickland,5550201337,5550100191,05/09/2026,18:00:34,00:00:06,Inbound,demo-local-00191,demo-remote-00191,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:19:22,Demo Caller 192,Elena Zermeno,5550201344,5550100192,05/09/2026,10:21:25,00:02:03,Inbound,demo-local-00192,demo-remote-00192,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,11:44:33,Demo Caller 193,Michelle Boens (New Trainee),5550201351,5550100193,05/09/2026,11:44:33,00:00:00,Inbound,demo-local-00193,demo-remote-00193,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:23:29,Demo Caller 194,Jacqueline Garcia,5550201358,5550100194,05/09/2026,13:23:29,00:00:00,Inbound,demo-local-00194,demo-remote-00194,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,14:05:25,Demo Caller 195,Christina Davila,5550201365,5550100195,05/09/2026,14:05:29,00:00:04,Inbound,demo-local-00195,demo-remote-00195,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,17:02:08,Demo Caller 196,Jazmin Monroy,5550201372,5550100196,05/09/2026,17:02:44,00:00:36,Inbound,demo-local-00196,demo-remote-00196,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:44:29,Demo Caller 197,Christian Harris,5550100197,5550201379,05/09/2026,10:45:04,00:00:35,Outbound,demo-local-00197,demo-remote-00197,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,13:06:35,Demo Caller 198,Daejah Hawthorne,5550201386,5550100198,05/09/2026,13:06:35,00:00:00,Inbound,demo-local-00198,demo-remote-00198,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,12:20:40,Demo Caller 199,Ana Delgado,5550100199,5550201393,05/09/2026,12:21:00,00:00:20,Outbound,demo-local-00199,demo-remote-00199,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:23:37,Demo Caller 200,Yesenia Braulio,5550201400,5550100200,05/09/2026,10:23:37,00:00:00,Inbound,demo-local-00200,demo-remote-00200,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:49:21,Demo Caller 201,Evelyn Arellano,5550201407,5550100201,05/09/2026,11:49:21,00:00:00,Inbound,demo-local-00201,demo-remote-00201,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,09:44:00,Demo Caller 202,Mario De Leon,5550201414,5550100202,05/09/2026,09:44:00,00:00:00,Inbound,demo-local-00202,demo-remote-00202,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,12:40:06,Demo Caller 203,Priscela Cruz,5550201421,5550100203,05/09/2026,12:40:06,00:00:00,Inbound,demo-local-00203,demo-remote-00203,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,10:37:44,Demo Caller 204,Yoselin Arredondo,5550201428,5550100204,05/09/2026,10:37:44,00:00:00,Inbound,demo-local-00204,demo-remote-00204,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,16:42:50,Demo Caller 205,Mirna Ramirez,5550100205,5550201435,05/09/2026,16:42:56,00:00:06,Outbound,demo-local-00205,demo-remote-00205,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,13:05:45,Demo Caller 206,Vanessa Lozano,5550100206,5550201442,05/09/2026,13:05:45,00:00:00,Outbound,demo-local-00206,demo-remote-00206,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,09:40:09,Demo Caller 207,Perla Zigala,5550201449,5550100207,05/09/2026,09:42:51,00:02:42,Inbound,demo-local-00207,demo-remote-00207,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:37:44,Demo Caller 208,Gabrielle Orozco (New Hire),5550201456,5550100208,05/09/2026,10:37:44,00:00:00,Inbound,demo-local-00208,demo-remote-00208,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,12:17:58,Demo Caller 209,Aileen Sagastume,5550201463,5550100209,05/09/2026,12:17:58,00:00:00,Inbound,demo-local-00209,demo-remote-00209,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:27:13,Demo Caller 210,Shekinah Edmond,5550201470,5550100210,05/09/2026,13:27:13,00:00:00,Inbound,demo-local-00210,demo-remote-00210,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:46:49,Demo Caller 211,Natividad Hernandez (New Hire),5550201477,5550100211,05/09/2026,11:46:49,00:00:00,Inbound,demo-local-00211,demo-remote-00211,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,09:28:34,Demo Caller 212,Dalaysia King,5550100212,5550201484,05/09/2026,09:29:05,00:00:31,Outbound,demo-local-00212,demo-remote-00212,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,12:32:08,Demo Caller 213,Tania Martinez,5550201491,5550100213,05/09/2026,12:32:08,00:00:00,Inbound,demo-local-00213,demo-remote-00213,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:11:12,Demo Caller 214,Jacob Sangabriel,5550201498,5550100214,05/09/2026,13:11:12,00:00:00,Inbound,demo-local-00214,demo-remote-00214,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,16:00:04,Demo Caller 215,Kenyetta Thomas,5550201505,5550100215,05/09/2026,16:00:09,00:00:05,Inbound,demo-local-00215,demo-remote-00215,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,11:21:09,Demo Caller 216,Latoya Austin,5550201512,5550100216,05/09/2026,11:30:35,00:09:26,Inbound,demo-local-00216,demo-remote-00216,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,13:03:13,Demo Caller 217,Toccara Bradberry,5550201519,5550100217,05/09/2026,13:03:13,00:00:00,Inbound,demo-local-00217,demo-remote-00217,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,16:10:52,Demo Caller 218,Evelyn Ontiveros,5550100218,5550201526,05/09/2026,16:11:06,00:00:14,Outbound,demo-local-00218,demo-remote-00218,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:40:05,Demo Caller 219,Rosa Solis,5550100219,5550201533,05/09/2026,10:40:47,00:00:42,Outbound,demo-local-00219,demo-remote-00219,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,12:46:40,Demo Caller 220,Maybelline Aragon (New Hire),5550201540,5550100220,05/09/2026,12:46:40,00:00:00,Inbound,demo-local-00220,demo-remote-00220,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:41:11,Demo Caller 221,Emily Barrera,5550201547,5550100221,05/09/2026,11:45:35,00:04:24,Inbound,demo-local-00221,demo-remote-00221,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,09:15:09,Demo Caller 222,Maleni Lopez,5550201554,5550100222,05/09/2026,09:16:22,00:01:13,Inbound,demo-local-00222,demo-remote-00222,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:29:16,Demo Caller 223,Maria Mora,5550201561,5550100223,05/09/2026,10:29:16,00:00:00,Inbound,demo-local-00223,demo-remote-00223,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,11:54:32,Demo Caller 224,Jose De La Barrera,5550201568,5550100224,05/09/2026,11:56:22,00:01:50,Inbound,demo-local-00224,demo-remote-00224,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,13:41:42,Demo Caller 225,Alma Hernandez,5550100225,5550201575,05/09/2026,13:41:49,00:00:07,Outbound,demo-local-00225,demo-remote-00225,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,18:24:05,Demo Caller 226,Susan Torres,5550201582,5550100226,05/09/2026,18:24:12,00:00:07,Inbound,demo-local-00226,demo-remote-00226,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:46:38,Demo Caller 227,Esmeralda De La Torre,5550201589,5550100227,05/09/2026,10:46:38,00:00:00,Inbound,demo-local-00227,demo-remote-00227,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:51:25,Demo Caller 228,Rosalie Estrada,5550201596,5550100228,05/09/2026,13:51:25,00:00:00,Inbound,demo-local-00228,demo-remote-00228,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,19:52:02,Demo Caller 229,Melissa Deanda,5550201603,5550100229,05/09/2026,19:52:05,00:00:03,Inbound,demo-local-00229,demo-remote-00229,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,12:34:51,Demo Caller 230,Alejandra Mares,5550201610,5550100230,05/09/2026,12:34:51,00:00:00,Inbound,demo-local-00230,demo-remote-00230,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,09:48:38,Demo Caller 231,Alexandria Stephens,5550201617,5550100231,05/09/2026,09:50:48,00:02:10,Inbound,demo-local-00231,demo-remote-00231,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,09:39:01,Demo Caller 232,Crystal Black,5550201624,5550100232,05/09/2026,09:39:01,00:00:00,Inbound,demo-local-00232,demo-remote-00232,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,12:17:23,Demo Caller 233,Nichelle Mc Bride,5550201631,5550100233,05/09/2026,12:17:23,00:00:00,Inbound,demo-local-00233,demo-remote-00233,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,15:55:47,Demo Caller 234,Hadassa Gomez,5550100234,5550201638,05/09/2026,15:56:00,00:00:13,Outbound,demo-local-00234,demo-remote-00234,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:18:56,Demo Caller 235,Lluvia Rabadan,5550201645,5550100235,05/09/2026,10:21:48,00:02:52,Inbound,demo-local-00235,demo-remote-00235,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,13:18:50,Demo Caller 236,Nancy Jaimez,5550201652,5550100236,05/09/2026,13:18:50,00:00:00,Inbound,demo-local-00236,demo-remote-00236,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,10:14:32,Demo Caller 237,Miguel Cardenas,5550100237,5550201659,05/09/2026,10:14:32,00:00:00,Outbound,demo-local-00237,demo-remote-00237,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:20:22,Demo Caller 238,Janet Castro,5550201666,5550100238,05/09/2026,13:20:26,00:00:04,Inbound,demo-local-00238,demo-remote-00238,,No,Yes
+demo-cdr-2026-05-07-09,05/09/2026,10:11:58,Demo Caller 239,Renely Roman,5550201673,5550100239,05/09/2026,10:11:58,00:00:00,Inbound,demo-local-00239,demo-remote-00239,,No,No
+demo-cdr-2026-05-07-09,05/09/2026,13:55:37,Demo Caller 240,"Gisela ""Jessie"" Leon",5550201680,5550100240,05/09/2026,13:55:37,00:00:00,Inbound,demo-local-00240,demo-remote-00240,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,09:37:32,Demo Caller 001,Evelyn Arellano,5550100001,5550200007,05/07/2026,09:37:32,00:00:00,Outbound,demo-duplicate-local-00001,demo-duplicate-remote-00001,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,14:59:35,Demo Caller 002,Mario De Leon,5550100002,5550200014,05/07/2026,15:23:52,00:24:17,Outbound,demo-duplicate-local-00002,demo-duplicate-remote-00002,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,11:27:39,Demo Caller 003,Priscela Cruz,5550100003,5550200021,05/07/2026,11:34:24,00:06:45,Outbound,demo-duplicate-local-00003,demo-duplicate-remote-00003,,No,Yes
+demo-cdr-2026-05-07-09,05/07/2026,16:38:16,Demo Caller 004,Yoselin Arredondo,5550200028,5550100004,05/07/2026,16:38:16,00:00:00,Inbound,demo-duplicate-local-00004,demo-duplicate-remote-00004,,No,No
+demo-cdr-2026-05-07-09,05/07/2026,10:36:20,Demo Caller 005,Mirna Ramirez,5550100005,5550200035,05/07/2026,10:36:28,00:00:08,Outbound,demo-duplicate-local-00005,demo-duplicate-remote-00005,,No,Yes

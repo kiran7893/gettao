@@ -1,2 +1,4 @@
 *.csv
+!public/demo/
+!public/demo/*.csv
 CSI CDR iDashboard.html

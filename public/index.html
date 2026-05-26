@@ -449,6 +449,16 @@ tbody td{padding:9px 12px;}
         </div>
       </div>
 
+      <!-- ── HOSTED DEMO DATA ──────────────────────────────── -->
+      <div class="cc" id="ds-demo-card" style="margin-bottom:16px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="ct">Hosted Demo Data</div>
+          <div class="cs">Loads bundled sample mapping and CDR records from this deployment</div>
+          <div id="ds-demo-status" style="font-size:12px;color:var(--muted)">Ready to load bundled demo files.</div>
+        </div>
+        <button id="ds-demo-btn" class="btn btn-primary" onclick="dsToggleDemoData()">Load Demo Data</button>
+      </div>
+
       <!-- ── TWO FILE INPUTS ───────────────────────────────── -->
       <div class="cg" style="margin-bottom:16px">
 
@@ -799,7 +809,7 @@ function doLogin(){
     var stored = localStorage.getItem('cdri_users');
     if (stored) USERS = JSON.parse(stored) || USERS;
   } catch(e) {}
-  var u=document.getElementById('au').value.trim(),p=document.getElementById('ap').value;p=p.trim();var user=USERS.find(function(x){return x.username===u&&x.password===p&&x.active!==false;});if(!user){document.getElementById('aerr').textContent='Invalid credentials.';return;}CU=user;document.getElementById('auth').style.display='none';document.getElementById('app').style.display='block';document.getElementById('nav-av').textContent=user.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();document.getElementById('nav-name').textContent=user.name;document.getElementById('nav-role').textContent=({superadmin:'Super Admin',executive:'Executive',district_manager:'District Manager',staff:'Staff',viewer:'Viewer'})[user.role]||user.role;applyNavPerms();populateFilterDropdowns();initCharts();var pages=getAllowedPages();var defs={superadmin:'executive',executive:'executive',district_manager:'manager',staff:'myperformance',viewer:'executive'};var first=defs[CU.role]||pages[0]||'executive';goPage(pages.includes(first)?first:(pages[0]||'executive'));}
+  var u=document.getElementById('au').value.trim(),p=document.getElementById('ap').value;p=p.trim();var user=USERS.find(function(x){return x.username===u&&x.password===p&&x.active!==false;});if(!user){document.getElementById('aerr').textContent='Invalid credentials.';return;}CU=user;document.getElementById('auth').style.display='none';document.getElementById('app').style.display='block';document.getElementById('nav-av').textContent=user.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();document.getElementById('nav-name').textContent=user.name;document.getElementById('nav-role').textContent=({superadmin:'Super Admin',executive:'Executive',district_manager:'District Manager',staff:'Staff',viewer:'Viewer'})[user.role]||user.role;applyNavPerms();populateFilterDropdowns();initCharts();var pages=getAllowedPages();var defs={superadmin:'executive',executive:'executive',district_manager:'manager',staff:'myperformance',viewer:'executive'};var first=defs[CU.role]||pages[0]||'executive';goPage(pages.includes(first)?first:(pages[0]||'executive'));setTimeout(dsAutoLoadDemoOnce,100);}
 
 function doLogout(){CU=null;document.getElementById('app').style.display='none';document.getElementById('auth').style.display='flex';document.getElementById('au').value='';document.getElementById('ap').value='';document.getElementById('aerr').textContent='';destroyAllCharts();}
 document.getElementById('ap').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
@@ -2147,6 +2157,9 @@ var DS = {
   cdrFilesLoaded: [],
   rawCDRRows: [],           // all accepted CDR rows [{date,hour,user,direction,answered,dur_secs,branch,dm,real_staff}]
   seenKeys: {},             // dedup: "date|user|time|dir" → true
+  demoLoaded: false,
+  demoLoading: false,
+  demoAutoTried: false,
 };
 
 // ── Utility ──────────────────────────────────────────────────────────────────
@@ -2180,6 +2193,149 @@ function dsLoadMapping(e) {
 
 function dsLoadCDR(e) {
   Array.from(e.target.files).forEach(function(f){ dsParseCSV(f); });
+}
+
+var DEMO_MAPPING_URL = '/demo/table.csv';
+var DEMO_CDR_URL = '/demo/cdr-demo.csv';
+var DEMO_MAPPING_NAME = 'table.csv';
+var DEMO_CDR_NAME = 'cdr-demo.csv';
+
+function dsSetDemoStatus(msg, type) {
+  var el = document.getElementById('ds-demo-status');
+  if (!el) return;
+  var colors = {ok:'var(--green)', err:'var(--red)', warn:'var(--amber)', info:'var(--muted)'};
+  el.innerHTML = '<span style="color:' + (colors[type||'info']) + '">' + msg + '</span>';
+}
+
+function dsUpdateDemoButton() {
+  var btn = document.getElementById('ds-demo-btn');
+  if (!btn) return;
+  if (DS.demoLoading) {
+    btn.textContent = 'Loading Demo Data';
+    btn.disabled = true;
+    btn.className = 'btn btn-ghost';
+    return;
+  }
+  btn.disabled = false;
+  if (DS.demoLoaded) {
+    btn.textContent = 'Unload Demo Data';
+    btn.className = 'btn btn-danger';
+  } else {
+    btn.textContent = 'Load Demo Data';
+    btn.className = 'btn btn-primary';
+  }
+}
+
+function dsRefreshDataViews() {
+  populateFilterDropdowns();
+  dsUpdateFileManager();
+  dsUpdateBanner();
+  dsUpdateSummary();
+  dsUpdateDuplicateLog();
+  var badge = document.getElementById('nb-cdr-cnt');
+  if (badge) {
+    var total = DS.rawCDRRows.length;
+    badge.textContent = total > 999 ? Math.round(total / 1000) + 'K' : String(total);
+  }
+  var cdrDate = document.getElementById('cdr-date');
+  if (cdrDate) {
+    var dOpts = (D.dates_available||D.dates||[]).map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');
+    cdrDate.innerHTML = '<option value="all">All Days</option>' + dOpts;
+  }
+  if (curPage === 'executive') renderExec();
+  else if (curPage === 'manager') renderMgr();
+  else if (curPage === 'agents') renderAgents();
+  else if (curPage === 'cdr') renderCDR(1);
+  else if (curPage === 'myperformance') renderMyPerf();
+  else if (curPage === 'mapping') renderMapping();
+  else if (curPage === 'upload') renderUploadStats();
+}
+
+function dsResetAllDataset() {
+  DS.mappingLoaded = false;
+  DS.cdrFilesLoaded = [];
+  DS.rawCDRRows = [];
+  DS.seenKeys = {};
+  DS.unmapped = {};
+  DS.unmappedTN = {};
+  D.daily=[]; D.hourly=[]; D.dm_stats=[]; D.branch_stats=[]; D.staff_stats=[];
+  D.staff_daily=[]; D.staff_hourly=[]; D.user_stats=[]; D.user_daily=[];
+  D.branch_stats_norm=[]; D.dm_stats_norm=[]; D.hourly_totals=[]; D.hourly_by_date=[];
+  D.dates=[]; D.branches=[]; D.dms=[]; D.cdr_user_map={}; D.branch_dir={};
+  D.dates_available=[]; D.date_range={start:'',end:''};
+  D.redirect_reasons={}; D.meta={total_cdr_rows:0,agent_calls:0,system_calls_excluded:0};
+  D.duplicates=[];
+  CFG_BRANCHES={}; CDR_PREFIX_MAP={}; NUM_IDX={}; DM_FULL={}; DM_SHORT={};
+  BRANCH_NAME_TO_NUM={}; BRANCH_NUM_TO_NAME={}; STAFF_LOOKUP={};
+  MAPPING_DATA={}; cdrRows=[];
+  if (typeof DS_Pending !== 'undefined') DS_Pending = [];
+  if (typeof dsParseCSV !== 'undefined') dsParseCSV._extMap = null;
+  var filesLog = document.getElementById('ds-files-log');
+  if (filesLog) filesLog.innerHTML = '<div style="color:var(--muted);text-align:center;padding:16px 0">None</div>';
+  var mapSummary = document.getElementById('ds-map-summary');
+  if (mapSummary) mapSummary.innerHTML = '<div style="color:var(--muted);text-align:center;padding:16px 0">No mapping loaded</div>';
+  ['ds-map-status','ds-cdr-status'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='';});
+  var diag = document.getElementById('ds-cdr-diag');
+  if (diag) { diag.style.display = 'none'; diag.innerHTML = ''; }
+  var unmapped = document.getElementById('ds-unmapped-panel');
+  if (unmapped) unmapped.style.display = 'none';
+  var dupDetail = document.getElementById('ds-dup-detail');
+  if (dupDetail) dupDetail.style.display = 'none';
+  var dupBtn = document.getElementById('ds-dup-btn');
+  if (dupBtn) dupBtn.style.display = 'none';
+  dsRefreshDataViews();
+}
+
+async function dsLoadDemoData(isAuto) {
+  if (DS.demoLoading) return;
+  DS.demoLoading = true;
+  dsUpdateDemoButton();
+  dsSetDemoStatus('Loading bundled demo files...', 'info');
+  try {
+    if (DS.rawCDRRows.length || DS.mappingLoaded) dsResetAllDataset();
+    var mapRes = await fetch(DEMO_MAPPING_URL, {cache:'no-store'});
+    if (!mapRes.ok) throw new Error(DEMO_MAPPING_URL + ' returned ' + mapRes.status);
+    var mapText = await mapRes.text();
+    dsParseMappingText(mapText, DEMO_MAPPING_NAME);
+    var cdrRes = await fetch(DEMO_CDR_URL, {cache:'no-store'});
+    if (!cdrRes.ok) throw new Error(DEMO_CDR_URL + ' returned ' + cdrRes.status);
+    var cdrText = await cdrRes.text();
+    setTimeout(function(){
+      dsParseCDRText(cdrText, DEMO_CDR_NAME);
+      DS.demoLoaded = true;
+      DS.demoLoading = false;
+      dsUpdateDemoButton();
+      dsSetDemoStatus('Demo data loaded from bundled CSV files.', 'ok');
+      setTimeout(dsRefreshDataViews, 300);
+      if (!isAuto) showToast('Demo data loaded', 'ok');
+    }, 0);
+  } catch(e) {
+    DS.demoLoaded = false;
+    DS.demoLoading = false;
+    dsUpdateDemoButton();
+    dsSetDemoStatus('Demo data could not be loaded: ' + e.message, 'err');
+    if (!isAuto) showToast('Demo load failed: ' + e.message, 'err');
+  }
+}
+
+function dsUnloadDemoData() {
+  dsResetAllDataset();
+  DS.demoLoaded = false;
+  DS.demoLoading = false;
+  dsUpdateDemoButton();
+  dsSetDemoStatus('Demo data unloaded. You can load local CSV files now.', 'info');
+  showToast('Demo data unloaded', 'ok');
+}
+
+function dsToggleDemoData() {
+  if (DS.demoLoaded) dsUnloadDemoData();
+  else dsLoadDemoData(false);
+}
+
+function dsAutoLoadDemoOnce() {
+  if (DS.demoAutoTried || DS.mappingLoaded || DS.rawCDRRows.length) return;
+  DS.demoAutoTried = true;
+  dsLoadDemoData(true);
 }
 
 // ── Parse mapping CSV → build CFG_BRANCHES + cdr_user_map + DM constants ─────
