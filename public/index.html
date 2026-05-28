@@ -211,6 +211,30 @@ tbody td{padding:9px 12px;}
 .rp-staff{background:rgba(16,185,129,.12);color:#34d399;}
 .rp-viewer{background:rgba(100,116,139,.15);color:var(--muted);}
 
+/* ── OPERATIONAL DASHBOARDS ── */
+.op-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-bottom:14px;}
+.op-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:16px;overflow:hidden;}
+.op-card.c12{grid-column:span 12}.op-card.c8{grid-column:span 8}.op-card.c6{grid-column:span 6}.op-card.c4{grid-column:span 4}.op-card.c3{grid-column:span 3}
+.score-pill{display:inline-flex;align-items:center;justify-content:center;min-width:54px;padding:4px 8px;border-radius:7px;font-size:11px;font-weight:800;font-family:var(--mono);}
+.score-good{background:rgba(16,185,129,.13);color:#34d399}.score-watch{background:rgba(245,158,11,.14);color:#fbbf24}.score-critical{background:rgba(239,68,68,.13);color:#f87171}
+.risk-list{display:flex;flex-direction:column;gap:8px}
+.risk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(31,45,69,.65);font-size:11px}
+.risk-row:last-child{border-bottom:none}
+.issue-sev{display:inline-flex;padding:3px 7px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.sev-high{background:rgba(239,68,68,.13);color:#f87171}.sev-med{background:rgba(245,158,11,.14);color:#fbbf24}.sev-low{background:rgba(59,130,246,.13);color:#60a5fa}
+.empty-mini{padding:24px;text-align:center;color:var(--muted);font-size:12px}
+
+@media(max-width:760px){
+  .sidebar{position:relative;width:100%;height:auto;bottom:auto;border-right:none;border-bottom:1px solid var(--border);}
+  .main{margin-left:0;padding:16px;}
+  .nav-item{display:inline-flex;margin:3px 4px;}
+  .sb-section,.sb-bottom{display:none;}
+  .gfb,.ph,.dl-bar{align-items:stretch;}
+  .gfb select,.gfb input,.ph-right .gf-sel{width:100%!important;}
+  .filter-actions{margin-left:0;}
+  .op-card.c8,.op-card.c6,.op-card.c4,.op-card.c3,.op-card.c12{grid-column:span 12;}
+}
+
 /* ── DUPLICATE MODAL ── */
 .dup-row{background:var(--s2);border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid var(--border);}
 .dup-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--muted);margin-top:6px;}
@@ -254,6 +278,11 @@ tbody td{padding:9px 12px;}
     <div class="sb-section">Analytics</div>
     <div class="nav-item active" onclick="goPage('executive')" id="nb-executive"><span class="nav-icon">📊</span>Executive View</div>
     <div class="nav-item" onclick="goPage('manager')" id="nb-manager"><span class="nav-icon">📈</span>Manager View</div>
+    <div class="nav-item" onclick="goPage('recovery')" id="nb-recovery"><span class="nav-icon">↩</span>Recovery</div>
+    <div class="nav-item" onclick="goPage('health')" id="nb-health"><span class="nav-icon">▣</span>Branch Health</div>
+    <div class="nav-item" onclick="goPage('coaching')" id="nb-coaching"><span class="nav-icon">◎</span>Coaching</div>
+    <div class="nav-item" onclick="goPage('coverage')" id="nb-coverage"><span class="nav-icon">◷</span>Coverage</div>
+    <div class="nav-item" onclick="goPage('quality')" id="nb-quality"><span class="nav-icon">✓</span>Data Quality</div>
     <div class="nav-item" onclick="goPage('agents')" id="nb-agents"><span class="nav-icon">👤</span>Agent Performance</div>
     <div class="nav-item" onclick="goPage('cdr')" id="nb-cdr"><span class="nav-icon">📋</span>CDR Records<span class="nav-badge" id="nb-cdr-cnt">26K</span></div>
     <div class="nav-item" onclick="goPage('myperf')" id="nb-myperformance"><span class="nav-icon">🎯</span>My Performance</div>
@@ -331,6 +360,111 @@ tbody td{padding:9px 12px;}
         <div class="ct">Call Volume Heatmap</div><div class="cs">Hour × Day — click cell to filter by hour</div>
         <div id="mgr-heatmap" style="margin-top:12px;overflow-x:auto;"></div>
         <div id="heatmap-detail-table"></div>
+      </div>
+    </div>
+
+    <!-- ═══ MISSED CALL RECOVERY ═══ -->
+    <div class="page" id="page-recovery">
+      <div class="ph">
+        <div class="ph-left"><h1>Missed Call Recovery <span class="view-tag">Operations</span></h1><p>Inbound misses, repeat callers, and inferred callbacks</p></div>
+        <div class="ph-right"><button class="btn btn-ghost btn-sm" onclick="downloadPDF('recovery')">⬇ PDF</button></div>
+      </div>
+      <div class="gfb">
+        <span class="gfb-label">Filters:</span>
+        <select class="gf-sel" id="rf-date" onchange="applyOpFilters('recovery')"><option value="all">All Dates</option></select>
+        <select class="gf-sel" id="rf-dm" onchange="cascadeOpDM('recovery')"><option value="all">All Districts</option></select>
+        <select class="gf-sel" id="rf-branch" onchange="cascadeOpBranch('recovery')"><option value="all">All Branches</option></select>
+        <select class="gf-sel" id="rf-staff" onchange="applyOpFilters('recovery')"><option value="all">All Staff</option></select>
+        <div class="filter-actions"><button class="btn btn-ghost btn-sm" onclick="clearOpFilters('recovery')">✕ Clear</button></div>
+      </div>
+      <div class="kpi-grid" id="recovery-kpis"></div>
+      <div class="op-grid">
+        <div class="op-card c4"><div class="ct">Missed by Hour</div><div class="cs">Inbound calls not answered</div><canvas id="ch-rec-hour"></canvas></div>
+        <div class="op-card c4"><div class="ct">Missed by Branch</div><div class="cs">Highest recovery workload</div><canvas id="ch-rec-branch"></canvas></div>
+        <div class="op-card c4"><div class="ct">Repeat Caller Attempts</div><div class="cs">Callers with multiple missed inbound attempts</div><canvas id="ch-rec-repeat"></canvas></div>
+        <div class="op-card c12"><div class="ct">Recovery Queue</div><div class="cs">Callback is inferred only when a later outbound call exists to the same caller number</div><div class="tw"><table><thead><tr><th>Caller #</th><th>Attempts</th><th>Last Missed</th><th>Branch</th><th>Staff / CDR User</th><th>Callback Found</th></tr></thead><tbody id="recovery-tbody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ BRANCH HEALTH ═══ -->
+    <div class="page" id="page-health">
+      <div class="ph">
+        <div class="ph-left"><h1>Branch Health Scorecard <span class="view-tag">Executive</span></h1><p>Branch ranking from connect rates, missed-call burden, and peak-hour pressure</p></div>
+        <div class="ph-right"><button class="btn btn-ghost btn-sm" onclick="downloadPDF('health')">⬇ PDF</button></div>
+      </div>
+      <div class="gfb">
+        <span class="gfb-label">Filters:</span>
+        <select class="gf-sel" id="hf-date" onchange="applyOpFilters('health')"><option value="all">All Dates</option></select>
+        <select class="gf-sel" id="hf-dm" onchange="cascadeOpDM('health')"><option value="all">All Districts</option></select>
+        <select class="gf-sel" id="hf-branch" onchange="applyOpFilters('health')"><option value="all">All Branches</option></select>
+        <div class="filter-actions"><button class="btn btn-ghost btn-sm" onclick="clearOpFilters('health')">✕ Clear</button></div>
+      </div>
+      <div class="kpi-grid" id="health-kpis"></div>
+      <div class="op-grid">
+        <div class="op-card c8"><div class="ct">Branch Health Ranking</div><div class="cs">Healthy ≥80 · Watch 60-79 · Critical &lt;60</div><canvas id="ch-health-score"></canvas></div>
+        <div class="op-card c4"><div class="ct">Needs Attention</div><div class="cs">Lowest scoring branches</div><div class="risk-list" id="health-risk-list"></div></div>
+        <div class="op-card c12"><div class="ct">Scorecard Detail</div><div class="tw"><table><thead><tr><th>Branch</th><th>District</th><th>Total</th><th>Inbound Connect</th><th>Outbound Connect</th><th>Missed Inbound</th><th>No Resp Out</th><th>Peak Miss</th><th>Score</th><th>Status</th></tr></thead><tbody id="health-tbody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ AGENT COACHING ═══ -->
+    <div class="page" id="page-coaching">
+      <div class="ph">
+        <div class="ph-left"><h1>Agent Coaching <span class="view-tag">Supervisor</span></h1><p>Prioritized coaching opportunities from missed calls, connect rates, and talk-time outliers</p></div>
+        <div class="ph-right"><button class="btn btn-ghost btn-sm" onclick="downloadPDF('coaching')">⬇ PDF</button></div>
+      </div>
+      <div class="gfb">
+        <span class="gfb-label">Filters:</span>
+        <select class="gf-sel" id="cf-date" onchange="applyOpFilters('coaching')"><option value="all">All Dates</option></select>
+        <select class="gf-sel" id="cf-dm" onchange="cascadeOpDM('coaching')"><option value="all">All Districts</option></select>
+        <select class="gf-sel" id="cf-branch" onchange="cascadeOpBranch('coaching')"><option value="all">All Branches</option></select>
+        <select class="gf-sel" id="cf-staff" onchange="applyOpFilters('coaching')"><option value="all">All Staff</option></select>
+        <div class="filter-actions"><button class="btn btn-ghost btn-sm" onclick="clearOpFilters('coaching')">✕ Clear</button></div>
+      </div>
+      <div class="kpi-grid" id="coaching-kpis"></div>
+      <div class="op-grid">
+        <div class="op-card c6"><div class="ct">Coaching Priority</div><div class="cs">Highest priority agents first</div><canvas id="ch-coach-priority"></canvas></div>
+        <div class="op-card c6"><div class="ct">Volume vs Inbound Connect</div><div class="cs">High volume with low connect rate needs fast review</div><canvas id="ch-coach-scatter"></canvas></div>
+        <div class="op-card c12"><div class="ct">Coaching Queue</div><div class="tw"><table><thead><tr><th>Agent</th><th>Branch</th><th>District</th><th>Total</th><th>Missed In</th><th>No Resp Out</th><th>Inbound Connect</th><th>Outbound Connect</th><th>Avg Duration</th><th>Reason</th></tr></thead><tbody id="coaching-tbody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ PEAK HOUR / COVERAGE ═══ -->
+    <div class="page" id="page-coverage">
+      <div class="ph">
+        <div class="ph-left"><h1>Peak Hour / Coverage <span class="view-tag">Staffing</span></h1><p>Busy windows, missed-call pressure, and active staff coverage</p></div>
+        <div class="ph-right"><button class="btn btn-ghost btn-sm" onclick="downloadPDF('coverage')">⬇ PDF</button></div>
+      </div>
+      <div class="gfb">
+        <span class="gfb-label">Filters:</span>
+        <select class="gf-sel" id="covf-date" onchange="applyOpFilters('coverage')"><option value="all">All Dates</option></select>
+        <select class="gf-sel" id="covf-dm" onchange="cascadeOpDM('coverage')"><option value="all">All Districts</option></select>
+        <select class="gf-sel" id="covf-branch" onchange="cascadeOpBranch('coverage')"><option value="all">All Branches</option></select>
+        <select class="gf-sel" id="covf-staff" onchange="applyOpFilters('coverage')"><option value="all">All Staff</option></select>
+        <div class="filter-actions"><button class="btn btn-ghost btn-sm" onclick="clearOpFilters('coverage')">✕ Clear</button></div>
+      </div>
+      <div class="kpi-grid" id="coverage-kpis"></div>
+      <div class="op-grid">
+        <div class="op-card c6"><div class="ct">Hourly Call Volume</div><div class="cs">All calls by hour</div><canvas id="ch-cov-volume"></canvas></div>
+        <div class="op-card c6"><div class="ct">Hourly Missed Inbound</div><div class="cs">Missed customer calls by hour</div><canvas id="ch-cov-missed"></canvas></div>
+        <div class="op-card c8"><div class="ct">Day / Hour Heatmap</div><div class="cs">Darker cells mean higher call volume</div><div id="coverage-heatmap" style="margin-top:12px;overflow-x:auto"></div></div>
+        <div class="op-card c4"><div class="ct">Branch Peak Pressure</div><div class="cs">Branches with the most missed calls during their busiest hours</div><canvas id="ch-cov-branch"></canvas></div>
+        <div class="op-card c12"><div class="ct">Hourly Coverage Detail</div><div class="tw"><table><thead><tr><th>Hour</th><th>Total Calls</th><th>Inbound</th><th>Missed Inbound</th><th>Active Staff</th><th>Miss Rate</th></tr></thead><tbody id="coverage-tbody"></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ DATA QUALITY ═══ -->
+    <div class="page" id="page-quality">
+      <div class="ph">
+        <div class="ph-left"><h1>Data Quality <span class="view-tag">Admin</span></h1><p>Mapping coverage, duplicate records, date coverage, and CSV hygiene</p></div>
+        <div class="ph-right"><button class="btn btn-ghost btn-sm" onclick="downloadPDF('quality')">⬇ PDF</button></div>
+      </div>
+      <div class="kpi-grid" id="quality-kpis"></div>
+      <div class="op-grid">
+        <div class="op-card c4"><div class="ct">Unmapped CDR Users</div><div class="cs">Names not reliably tied to mapping</div><div class="risk-list" id="quality-unmapped"></div></div>
+        <div class="op-card c4"><div class="ct">Duplicate Records</div><div class="cs">Rows skipped or repeated by call identity</div><div class="risk-list" id="quality-dupes"></div></div>
+        <div class="op-card c4"><div class="ct">Mapping Gaps</div><div class="cs">Branch/staff setup issues</div><div class="risk-list" id="quality-gaps"></div></div>
+        <div class="op-card c12"><div class="ct">Quality Issue Register</div><div class="tw"><table><thead><tr><th>Issue Type</th><th>Severity</th><th>Affected Item</th><th>Suggested Fix</th></tr></thead><tbody id="quality-tbody"></tbody></table></div></div>
       </div>
     </div>
 
@@ -630,18 +764,8 @@ tbody td{padding:9px 12px;}
       </div>
     </div>
 
-
-      <div class="page" id="page-validate" style="display:none">
-        <!-- populated by renderValidate() -->
-      </div></div>
-        <div class="ph-right"><button class="btn btn-primary" onclick="openUserModal()">+ New User</button></div>
-      </div>
-      <div class="info-box"><b>Role Hierarchy:</b> Super Admin → Executive → District Manager → Staff. Each role sees only data relevant to their scope.</div>
-      <div class="gfb"><input class="gf-sel" id="usr-search" placeholder="🔍 Search users…" oninput="renderUsers()" style="width:200px;"><select class="gf-sel" id="usr-role" onchange="renderUsers()"><option value="all">All Roles</option></select></div>
-      <div class="cc"><div class="tw">
-        <table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Branch / DM</th><th>Pages</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="usr-tbody"></tbody></table>
-      </div></div>
+    <div class="page" id="page-validate" style="display:none">
+      <!-- populated by renderValidate() -->
     </div>
 
   </main>
@@ -815,10 +939,10 @@ function doLogout(){CU=null;document.getElementById('app').style.display='none';
 document.getElementById('ap').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
 var ROLE_PAGES = {
-  superadmin:       ['executive','manager','agents','cdr','myperformance','mapping','upload','users'],
-  executive:        ['executive','manager','agents','cdr','myperformance','mapping','users'],
-  district_manager: ['manager','agents','cdr','myperformance','mapping'],
-  staff:            ['cdr','myperformance'],
+  superadmin:       ['executive','manager','recovery','health','coaching','coverage','quality','agents','cdr','myperformance','mapping','upload','users'],
+  executive:        ['executive','manager','recovery','health','coaching','coverage','quality','agents','cdr','myperformance','mapping','users'],
+  district_manager: ['manager','recovery','health','coaching','coverage','quality','agents','cdr','myperformance','mapping'],
+  staff:            ['myperformance'],
   viewer:           ['executive']
 };
 var ROLE_LABELS = {
@@ -827,6 +951,9 @@ var ROLE_LABELS = {
 };
 var PAGE_LABELS = {
   executive:'Executive Overview', manager:'Manager Dashboard',
+  recovery:'Missed Call Recovery', health:'Branch Health',
+  coaching:'Agent Coaching', coverage:'Peak Hour Coverage',
+  quality:'Data Quality',
   agents:'Agent Performance', cdr:'CDR Records',
   myperformance:'My Performance', mapping:'Branch Directory',
   upload:'Data Sources', users:'User Management'
@@ -935,7 +1062,7 @@ function saveUser(){
 
 function getAllowedPages(){if(!CU)return[];return ROLE_PAGES[CU.role]||CU.pages||['myperformance'];}
 
-function applyNavPerms(){var a=getAllowedPages();['executive','manager','agents','cdr','myperformance','mapping','upload','users','validate'].forEach(function(id){var nb=document.getElementById('nb-'+id);if(nb)nb.style.display=a.includes(id)?'':'none';var pg=document.getElementById('page-'+id);if(pg&&!a.includes(id)){pg.style.display='none';pg.classList.remove('active');}});}
+function applyNavPerms(){var a=getAllowedPages();['executive','manager','recovery','health','coaching','coverage','quality','agents','cdr','myperformance','mapping','upload','users','validate'].forEach(function(id){var nb=document.getElementById('nb-'+id);if(nb)nb.style.display=a.includes(id)?'':'none';var pg=document.getElementById('page-'+id);if(pg&&!a.includes(id)){pg.style.display='none';pg.classList.remove('active');}});}
 
 // ══════════════════════════════════════════════════════
 // NAVIGATION
@@ -1016,6 +1143,32 @@ function dsUpdateDuplicateLog() {
   }).join('');
 }
 
+function dsShowDuplicates(){
+  var dupes=D.duplicates||[];
+  var detail=document.getElementById('ds-dup-detail'),wrap=document.getElementById('ds-dup-table-wrap');
+  if(!dupes.length){showToast('No duplicate records found','ok');return;}
+  if(wrap)wrap.innerHTML='<table><thead><tr><th>File</th><th>Date</th><th>Time</th><th>User</th><th>Direction</th><th>Call ID</th><th>Duplicate Key</th></tr></thead><tbody>'
+    +dupes.map(function(d){return '<tr><td>'+esc(d.file)+'</td><td class="mono">'+esc(d.date)+'</td><td class="mono">'+esc(d.time)+'</td><td>'+esc(d.user)+'</td><td>'+esc(d.direction)+'</td><td class="mono">'+esc(d.localCallId||d.remoteCallId||'')+'</td><td class="mono dim">'+esc(d.dup_key)+'</td></tr>';}).join('')
+    +'</tbody></table>';
+  if(detail)detail.style.display='';
+  showToast(dupes.length+' duplicate records listed','ok');
+}
+
+function dsExportDuplicates(){
+  var dupes=D.duplicates||[];
+  if(!dupes.length){showToast('No duplicates to export','err');return;}
+  downloadCSV('duplicate_cdr_records.csv',dupes.map(function(d){return {
+    file:d.file,loaded_at:d.loaded_at,date:d.date,time:d.time,user:d.user,direction:d.direction,
+    answered:d.answered,duration:d.duration,local_call_id:d.localCallId||'',remote_call_id:d.remoteCallId||'',duplicate_key:d.dup_key
+  };}));
+  showToast('Duplicate CSV exported','ok');
+}
+
+function resolveDups(action){
+  closeModal('dup-modal');
+  showToast(action==='remove'?'Duplicates are already skipped during import':'Duplicates kept in log','ok');
+}
+
 function renderUploadStats() {
   dsUpdateBanner();
   dsUpdateSummary();
@@ -1053,6 +1206,8 @@ function downloadPDF(pageId){
   var el=document.getElementById('page-'+pageId);
   if(!el){showToast('Page not found','err');return;}
   var ttl=({executive:'Executive Overview',manager:'Manager Dashboard',
+    recovery:'Missed Call Recovery',health:'Branch Health Scorecard',
+    coaching:'Agent Coaching',coverage:'Peak Hour Coverage',quality:'Data Quality',
     agents:'Agent Performance',cdr:'CDR Records',myperformance:'My Performance',
     mapping:'Branch Directory'})[pageId]||pageId;
   showToast('Preparing PDF\u2026','ok');
@@ -1124,12 +1279,59 @@ function downloadPDF(pageId){
   }).catch(function(e){showToast('Capture failed: '+e.message,'err');});
 }
 
+function downloadCSV(name, rows) {
+  if(!rows||!rows.length){showToast('No rows to export','err');return;}
+  var headers=Object.keys(rows[0]);
+  var csv=[headers.join(',')].concat(rows.map(function(r){
+    return headers.map(function(h){return '"'+String(r[h]==null?'':r[h]).replace(/"/g,'""')+'"';}).join(',');
+  })).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);
+}
+
+function downloadPBI(){
+  var rows=(DS.rawCDRRows||[]).map(function(r){return {
+    date:r.date,time:r.time,hour:r.hour,user:r.user,staff:r.real_staff,branch:r.branch,dm:r.dm,
+    direction:r.direction,answered:r.answered?'Yes':'No',duration_seconds:r.dur_secs,
+    calling_tn:r.callingTN,called_tn:r.calledTN,source:r.sourceFile
+  };});
+  if(!rows.length){showToast('Load CDR data before exporting','err');return;}
+  downloadCSV('cdr_powerbi_calls.csv',rows);
+  setTimeout(function(){downloadCSV('cdr_powerbi_branch_health.csv',buildBranchHealthData({}).branches.map(function(b){return {
+    branch:b.branch,dm:b.dm,total_calls:b.total,inbound_connect_rate:b.inboundRate.toFixed(1),
+    outbound_connect_rate:b.outboundRate.toFixed(1),missed_inbound:b.inbound_missed,
+    no_response_outbound:b.outbound_no_response,peak_miss_rate:b.peakMissRate.toFixed(1),
+    health_score:b.score.toFixed(1),status:b.status
+  };}));},250);
+  setTimeout(function(){downloadCSV('cdr_powerbi_agent_coaching.csv',buildAgentCoachingData({}).agents.map(function(a){return {
+    agent:a.agent,branch:a.branch,dm:a.dm,total_calls:a.total,missed_inbound:a.inbound_missed,
+    no_response_outbound:a.outbound_no_response,inbound_connect_rate:a.inboundRate.toFixed(1),
+    outbound_connect_rate:a.outboundRate.toFixed(1),avg_duration_seconds:a.avgDur.toFixed(1),
+    coaching_reason:a.reasons.join('; ')
+  };}));},500);
+  showToast('Exported Power BI CSV files','ok');
+}
+
 function openAgentDetail(staffName) {
   var u = (D.user_stats || []).find(function(x){ return (x._staff||x['User Name']||'') === staffName; });
-  var msg = u
-    ? staffName + ': ' + (u.total_calls||0) + ' calls | ' + (u.answer_rate||0) + '% answer rate | ' + (u._branch||'')
-    : 'No data for ' + staffName;
-  showToast(msg, u ? 'ok' : 'err');
+  var overlay=document.getElementById('agent-modal-overlay'),content=document.getElementById('agent-detail-content');
+  if(!u||!overlay||!content){showToast('No data for '+staffName,'err');return;}
+  var calls=(DS.rawCDRRows||[]).filter(function(r){return (r.real_staff||r.user||'')===staffName;}).sort(function(a,b){return rowTimeValue(b)-rowTimeValue(a);}).slice(0,25);
+  content.innerHTML='<div class="ph" style="margin-bottom:12px"><div><h1 style="font-size:20px">'+esc(staffName)+'</h1><p>'+esc(u._branch||'')+' · '+esc(u._dm||'')+'</p></div></div>'
+    +'<div class="kpi-grid" style="margin-bottom:14px">'
+    +'<div class="kpi"><div class="kpi-lbl">Total Calls</div><div class="kpi-val">'+(u.total_calls||0)+'</div></div>'
+    +'<div class="kpi"><div class="kpi-lbl">Inbound Connect</div><div class="kpi-val">'+numPct(u.inbound_rate||0)+'</div></div>'
+    +'<div class="kpi"><div class="kpi-lbl">Outbound Connect</div><div class="kpi-val">'+numPct(u.outbound_rate||0)+'</div></div>'
+    +'<div class="kpi"><div class="kpi-lbl">Avg Duration</div><div class="kpi-val">'+durFmt(u.avg_dur||0)+'</div></div></div>'
+    +'<div class="ct">Recent CDR Rows</div><div class="tw"><table><thead><tr><th>Date</th><th>Time</th><th>Direction</th><th>Outcome</th><th>Caller</th><th>Called</th></tr></thead><tbody>'
+    +(calls.length?calls.map(function(r){return '<tr><td class="mono">'+esc(r.date)+'</td><td class="mono">'+esc(r.time)+'</td><td>'+esc(r.direction)+'</td><td>'+(r.answered?'Answered':(r.direction==='Inbound'?'Missed':'No Response'))+'</td><td class="mono">'+esc(r.callingTN)+'</td><td class="mono">'+esc(r.calledTN)+'</td></tr>';}).join(''):'<tr><td colspan="6" class="empty-mini">No recent CDR rows.</td></tr>')
+    +'</tbody></table></div>';
+  overlay.style.display='block';
+}
+
+function closeAgentDetail(){
+  var overlay=document.getElementById('agent-modal-overlay');
+  if(overlay)overlay.style.display='none';
 }
 
 
@@ -1159,14 +1361,42 @@ function closeModal(id) {
 }
 
 
-function goPage(id){var a=getAllowedPages();if(!a.includes(id)){if(a.length)goPage(a[0]);return;}document.querySelectorAll('.page').forEach(function(p){p.style.display='none';p.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});var pg=document.getElementById('page-'+id);if(pg){pg.style.display='block';pg.classList.add('active');}var nb=document.getElementById('nb-'+id);if(nb)nb.classList.add('active');curPage=id;setTimeout(function(){if(id==='executive')renderExec();else if(id==='manager')renderMgr();else if(id==='agents')renderAgents();else if(id==='cdr')renderCDR(1);else if(id==='myperformance')renderMyPerf();else if(id==='mapping')renderMapping();else if(id==='upload')renderUploadStats();else if(id==='users'){renderUsers();populateRoleSelect();}},30);}
+function goPage(id){if(id==='myperf')id='myperformance';var a=getAllowedPages();if(!a.includes(id)){if(a.length)goPage(a[0]);return;}document.querySelectorAll('.page').forEach(function(p){p.style.display='none';p.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});var pg=document.getElementById('page-'+id);if(pg){pg.style.display='block';pg.classList.add('active');}var nb=document.getElementById('nb-'+id);if(nb)nb.classList.add('active');curPage=id;setTimeout(function(){if(id==='executive')renderExec();else if(id==='manager')renderMgr();else if(id==='recovery')renderRecovery();else if(id==='health')renderHealth();else if(id==='coaching')renderCoaching();else if(id==='coverage')renderCoverage();else if(id==='quality')renderQuality();else if(id==='agents')renderAgents();else if(id==='cdr')renderCDR(1);else if(id==='myperformance')renderMyPerf();else if(id==='mapping')renderMapping();else if(id==='upload')renderUploadStats();else if(id==='users'){renderUsers();populateRoleSelect();}},30);}
 
 // ══════════════════════════════════════════════════════
 // FILTER DROPDOWNS
 // ══════════════════════════════════════════════════════
 function populateFilterDropdowns(){var myDM=scopedDM();var allDMs=(D.dms&&D.dms.length)?D.dms:Object.values(DM_FULL).filter(Boolean);var visDMs=allDMs.filter(function(d){return d!=='Unknown';});if(myDM)visDMs=[myDM];var dmOpts=visDMs.map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');['ef-dm','mf-dm'].forEach(function(id){var el=document.getElementById(id);if(!el)return;if(myDM){el.innerHTML='<option value="'+myDM+'">'+myDM+'</option>';el.disabled=true;}else{el.innerHTML='<option value="all">All Districts</option>'+dmOpts;el.disabled=false;}});var agDm=document.getElementById('agf-dm');if(agDm){if(myDM){agDm.innerHTML='<option value="'+myDM+'">'+myDM+'</option>';agDm.disabled=true;}else{agDm.innerHTML='<option value="all">All Districts</option>'+dmOpts;agDm.disabled=false;}}var visBN=null;if(CU.role==='district_manager'){visBN={};D.user_stats.filter(function(u){return(u._dm||u.dm||'')===myDM;}).forEach(function(u){if(u._branch)visBN[u._branch]=1;});}else if(CU.role==='staff'){visBN={};D.user_stats.filter(function(u){return(u._staff||u['User Name']||'')===CU.name;}).forEach(function(u){if(u._branch)visBN[u._branch]=1;});}var brOpts=Object.entries(CFG_BRANCHES).filter(function(e){return !visBN||visBN[e[1].name];}).sort(function(a,b){return a[1].name.localeCompare(b[1].name);}).map(function(e){return '<option value="'+e[1].name+'">'+e[1].name+'</option>';}).join('');['ef-branch','mf-branch','agf-branch','cdr-branch'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Branches</option>'+brOpts;});var seen={};var sn=CU.role==='district_manager'?D.user_stats.filter(function(u){return(u._dm||u.dm||'')===myDM;}).map(function(u){return u._staff||u['User Name']||'';}).filter(function(n){if(!n||seen[n])return false;seen[n]=1;return true;}).sort():CU.role==='staff'?[CU.name]:getAllVisibleStaff();['ef-staff','mf-staff'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Staff</option>'+sn.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');});
   var dOpts=(D.dates_available||D.dates||[]).map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');
-  ['ef-date','mf-date'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Dates</option>'+dOpts;});}
+  ['ef-date','mf-date'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Dates</option>'+dOpts;});
+  populateOperationalDropdowns();
+}
+
+function populateOperationalDropdowns(){
+  var myDM=scopedDM();
+  var dmList=(D.dms&&D.dms.length?D.dms:Object.values(DM_FULL).filter(Boolean)).filter(function(d){return d&&d!=='Unknown';});
+  if(myDM)dmList=[myDM];
+  var dmOpts=dmList.map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');
+  var brList=Object.values(CFG_BRANCHES).map(function(b){return b.name;}).filter(Boolean).sort(function(a,b){return a.localeCompare(b);});
+  if(myDM){
+    brList=brList.filter(function(name){
+      var br=Object.values(CFG_BRANCHES).find(function(b){return b.name===name;});
+      var full=br?(DM_FULL[br.dm]||br.dm):'';
+      return full===myDM;
+    });
+  }
+  var brOpts=brList.map(function(b){return '<option value="'+b+'">'+b+'</option>';}).join('');
+  var staffList=myDM
+    ? D.user_stats.filter(function(u){return (u._dm||u.dm||'')===myDM;}).map(function(u){return u._staff||u['User Name']||'';})
+    : getAllVisibleStaff();
+  staffList=[...new Set(staffList.filter(Boolean))].sort();
+  var stOpts=staffList.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');
+  var dOpts=(D.dates_available||D.dates||[]).map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');
+  ['rf-date','hf-date','cf-date','covf-date'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Dates</option>'+dOpts;});
+  ['rf-dm','hf-dm','cf-dm','covf-dm'].forEach(function(id){var el=document.getElementById(id);if(!el)return;if(myDM){el.innerHTML='<option value="'+myDM+'">'+myDM+'</option>';el.disabled=true;}else{el.innerHTML='<option value="all">All Districts</option>'+dmOpts;el.disabled=false;}});
+  ['rf-branch','hf-branch','cf-branch','covf-branch'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Branches</option>'+brOpts;});
+  ['rf-staff','cf-staff','covf-staff'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML='<option value="all">All Staff</option>'+stOpts;});
+}
 
 function getVisibleBranches() {
   if (!CU) return [];
@@ -1329,6 +1559,54 @@ function clearFilters(page) {
   if(page==='mgr')renderMgr();
 }
 
+function opPrefix(page){return {recovery:'rf',health:'hf',coaching:'cf',coverage:'covf'}[page]||'';}
+function getOpFilterValues(page){
+  var p=opPrefix(page),res={date:'all',dm:'all',branch:'all',staff:'all'};
+  if(!p)return res;
+  ['date','dm','branch','staff'].forEach(function(k){var el=document.getElementById(p+'-'+k);if(el)res[k]=el.value||'all';});
+  var myDM=scopedDM();if(myDM)res.dm=myDM;
+  return res;
+}
+function applyOpFilters(page){
+  if(page==='recovery')renderRecovery();
+  else if(page==='health')renderHealth();
+  else if(page==='coaching')renderCoaching();
+  else if(page==='coverage')renderCoverage();
+}
+function clearOpFilters(page){
+  var p=opPrefix(page);if(!p)return;
+  ['date','dm','branch','staff'].forEach(function(k){var el=document.getElementById(p+'-'+k);if(el&&!el.disabled)el.value='all';});
+  cascadeOpDM(page);
+}
+function cascadeOpDM(page){
+  var p=opPrefix(page),dmEl=document.getElementById(p+'-dm'),brEl=document.getElementById(p+'-branch'),stEl=document.getElementById(p+'-staff');
+  if(!p)return;
+  var dm=(dmEl&&dmEl.value)||scopedDM()||'all';
+  if(brEl)brEl.value='all';
+  if(stEl)stEl.value='all';
+  var brNames=Object.values(CFG_BRANCHES).filter(function(b){return dm==='all'||(DM_FULL[b.dm]||b.dm)===dm;}).map(function(b){return b.name;}).sort(function(a,b){return a.localeCompare(b);});
+  if(brEl)brEl.innerHTML='<option value="all">All Branches</option>'+brNames.map(function(b){return '<option value="'+b+'">'+b+'</option>';}).join('');
+  var staff=D.user_stats.filter(function(u){return dm==='all'||(u._dm||u.dm||'')===dm;}).map(function(u){return u._staff||u['User Name']||'';});
+  staff=[...new Set(staff.filter(Boolean))].sort();
+  if(stEl)stEl.innerHTML='<option value="all">All Staff</option>'+staff.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');
+  applyOpFilters(page);
+}
+function cascadeOpBranch(page){
+  var p=opPrefix(page),brEl=document.getElementById(p+'-branch'),stEl=document.getElementById(p+'-staff'),dmEl=document.getElementById(p+'-dm');
+  if(!p)return;
+  var br=(brEl&&brEl.value)||'all',dm=(dmEl&&dmEl.value)||scopedDM()||'all';
+  if(stEl){
+    var staff=D.user_stats.filter(function(u){
+      if(dm!=='all'&&(u._dm||u.dm||'')!==dm)return false;
+      if(br!=='all'&&(u._branch||u.branch||'')!==br)return false;
+      return true;
+    }).map(function(u){return u._staff||u['User Name']||'';});
+    staff=[...new Set(staff.filter(Boolean))].sort();
+    stEl.innerHTML='<option value="all">All Staff</option>'+staff.map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('');
+  }
+  applyOpFilters(page);
+}
+
 // ══════════════════════════════════════════════════════
 // DATA FILTER LOGIC
 // ══════════════════════════════════════════════════════
@@ -1383,6 +1661,224 @@ function agentMetrics(u) {
     talk_time: u.total_dur||0,
     total: u.total_calls||0
   };
+}
+
+// ══════════════════════════════════════════════════════
+// OPERATIONAL DASHBOARD ANALYTICS
+// ══════════════════════════════════════════════════════
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
+function numPct(n){return (+n||0).toFixed(1)+'%';}
+function phoneNorm(v){return String(v||'').replace(/\D/g,'');}
+function rowTimeValue(r){
+  var d=(r.date||'').replace(/\D/g,'');
+  var t=(r.time||'00:00:00').split(':').map(function(x){return x.padStart(2,'0');}).join('');
+  return +(d+t);
+}
+function rawRowsForFilters(f){
+  f=f||{};
+  var dmScope=scopedDM(), staffScope=scopedStaff();
+  return (DS.rawCDRRows||[]).filter(function(r){
+    if(dmScope&&(r.dm||'')!==dmScope)return false;
+    if(staffScope&&(r.real_staff||'')!==staffScope)return false;
+    if(f.date&&f.date!=='all'&&r.date!==f.date)return false;
+    if(f.dm&&f.dm!=='all'&&(r.dm||'')!==f.dm)return false;
+    if(f.branch&&f.branch!=='all'&&(r.branch||'')!==f.branch)return false;
+    if(f.staff&&f.staff!=='all'&&(r.real_staff||'')!==f.staff)return false;
+    return true;
+  });
+}
+function groupAggSeed(){return {total:0,answered:0,inbound:0,outbound:0,inbound_answered:0,inbound_missed:0,outbound_answered:0,outbound_no_response:0,total_dur:0,staffSet:{},hourly:{}};}
+function addRowToAgg(a,r){
+  var isIn=r.direction==='Inbound', ans=!!r.answered;
+  a.total++;if(ans)a.answered++;a.total_dur+=(+r.dur_secs||0);
+  if(r.real_staff)a.staffSet[r.real_staff]=1;
+  a.hourly[r.hour]=a.hourly[r.hour]||{total:0,inbound:0,missed:0,staffSet:{}};
+  a.hourly[r.hour].total++;if(r.real_staff)a.hourly[r.hour].staffSet[r.real_staff]=1;
+  if(isIn){a.inbound++;a.hourly[r.hour].inbound++;if(ans)a.inbound_answered++;else{a.inbound_missed++;a.hourly[r.hour].missed++;}}
+  else{a.outbound++;if(ans)a.outbound_answered++;else a.outbound_no_response++;}
+}
+function opStatus(score){return score>=80?'Healthy':score>=60?'Watch':'Critical';}
+function statusClass(status){return status==='Healthy'?'score-good':status==='Watch'?'score-watch':'score-critical';}
+function fillEmptyTbody(id,cols,msg){var el=document.getElementById(id);if(el)el.innerHTML='<tr><td colspan="'+cols+'" class="empty-mini">'+esc(msg||'No data available')+'</td></tr>';}
+
+function buildMissedRecoveryData(filters){
+  var rows=rawRowsForFilters(filters), missed=rows.filter(function(r){return r.direction==='Inbound'&&!r.answered;});
+  var outbound=rows.filter(function(r){return r.direction==='Outbound';}).map(function(r){return Object.assign({phone:phoneNorm(r.calledTN),tv:rowTimeValue(r)},r);});
+  var byCaller={},byHour={},byBranch={};
+  missed.forEach(function(r){
+    var phone=phoneNorm(r.callingTN)||'Unknown';
+    byHour[r.hour]=(byHour[r.hour]||0)+1;
+    byBranch[r.branch||'Unknown']=(byBranch[r.branch||'Unknown']||0)+1;
+    if(!byCaller[phone])byCaller[phone]={phone:phone,attempts:0,lastMissed:null,lastTime:0,branch:'',staff:'',callback:false};
+    var g=byCaller[phone],tv=rowTimeValue(r);g.attempts++;
+    if(tv>=g.lastTime){g.lastTime=tv;g.lastMissed=r;g.branch=r.branch||'Unknown';g.staff=r.real_staff||r.user||'Unknown';}
+  });
+  Object.values(byCaller).forEach(function(g){
+    g.callback=outbound.some(function(o){return o.phone&&o.phone===g.phone&&o.tv>g.lastTime;});
+  });
+  var callers=Object.values(byCaller).sort(function(a,b){return b.attempts-a.attempts||b.lastTime-a.lastTime;});
+  return {
+    rows:rows, missed:missed, callers:callers,
+    uniqueCallers:callers.length,
+    repeatCallers:callers.filter(function(c){return c.attempts>1;}).length,
+    callbacks:callers.filter(function(c){return c.callback;}).length,
+    byHour:byHour, byBranch:byBranch
+  };
+}
+
+function buildBranchHealthData(filters){
+  var rows=rawRowsForFilters(filters), byBranch={};
+  rows.forEach(function(r){
+    var br=r.branch||'Unknown';if(br==='Unknown')return;
+    if(!byBranch[br])byBranch[br]=Object.assign({branch:br,dm:r.dm||'Unknown'},groupAggSeed());
+    addRowToAgg(byBranch[br],r);
+  });
+  var branches=Object.values(byBranch), maxMiss=Math.max(1,...branches.map(function(b){return b.inbound_missed;}));
+  branches.forEach(function(b){
+    b.inboundRate=b.inbound?b.inbound_answered/b.inbound*100:100;
+    b.outboundRate=b.outbound?b.outbound_answered/b.outbound*100:100;
+    b.burdenScore=100-(b.inbound_missed/maxMiss*100);
+    var peakMissRate=0;
+    Object.values(b.hourly).forEach(function(h){if(h.inbound)peakMissRate=Math.max(peakMissRate,h.missed/h.inbound*100);});
+    b.peakMissRate=peakMissRate;
+    b.peakScore=100-peakMissRate;
+    b.score=clamp((b.inboundRate*.40)+(b.outboundRate*.20)+(b.burdenScore*.25)+(b.peakScore*.15),0,100);
+    b.status=opStatus(b.score);
+  });
+  branches.sort(function(a,b){return b.score-a.score;});
+  return {branches:branches,best:branches[0]||null,worst:branches[branches.length-1]||null,critical:branches.filter(function(b){return b.status==='Critical';}).length};
+}
+
+function buildAgentCoachingData(filters){
+  var rows=rawRowsForFilters(filters), byAgent={};
+  rows.forEach(function(r){
+    var key=(r.real_staff||r.user||'Unknown')+'|'+(r.branch||'Unknown')+'|'+(r.dm||'Unknown');
+    if(!byAgent[key])byAgent[key]=Object.assign({agent:r.real_staff||r.user||'Unknown',branch:r.branch||'Unknown',dm:r.dm||'Unknown'},groupAggSeed());
+    addRowToAgg(byAgent[key],r);
+  });
+  var agents=Object.values(byAgent);
+  agents.forEach(function(a){
+    a.inboundRate=a.inbound?a.inbound_answered/a.inbound*100:100;
+    a.outboundRate=a.outbound?a.outbound_answered/a.outbound*100:100;
+    a.avgDur=a.total?a.total_dur/a.total:0;
+    var reasons=[];
+    if(a.inbound>=10&&a.inbound_missed>=10)reasons.push('High missed inbound');
+    if(a.inbound>=10&&a.inboundRate<40)reasons.push('Low inbound connect');
+    if(a.outbound>=10&&a.outboundRate<60)reasons.push('Low outbound connect');
+    if(a.total<5)reasons.push('Low activity');
+    if(a.total>=5&&(a.avgDur<15||a.avgDur>180))reasons.push('Talk-time outlier');
+    a.reasons=reasons;
+    a.priority=(a.inbound_missed*2)+a.outbound_no_response+(a.inbound>=10?Math.max(0,60-a.inboundRate):0)+(a.outbound>=10?Math.max(0,70-a.outboundRate)/2:0)+(reasons.length*8);
+  });
+  agents.sort(function(a,b){return b.priority-a.priority||b.total-a.total;});
+  return {
+    agents:agents,
+    attention:agents.filter(function(a){return a.reasons.length;}).length,
+    highMissed:agents.filter(function(a){return a.reasons.indexOf('High missed inbound')>=0;}).length,
+    lowOutbound:agents.filter(function(a){return a.reasons.indexOf('Low outbound connect')>=0;}).length,
+    talkOutliers:agents.filter(function(a){return a.reasons.indexOf('Talk-time outlier')>=0;}).length
+  };
+}
+
+function buildCoverageData(filters){
+  var rows=rawRowsForFilters(filters), hours={}, heat={}, branchHour={};
+  Array.from({length:24},function(_,i){var h=String(i).padStart(2,'0');hours[h]=Object.assign({hour:h},groupAggSeed());});
+  rows.forEach(function(r){
+    addRowToAgg(hours[r.hour],r);
+    var hk=(r.date||'')+'_'+r.hour;heat[hk]=heat[hk]||{date:r.date,hour:r.hour,total:0,missed:0};heat[hk].total++;if(r.direction==='Inbound'&&!r.answered)heat[hk].missed++;
+    var bk=(r.branch||'Unknown')+'|'+r.hour;branchHour[bk]=branchHour[bk]||{branch:r.branch||'Unknown',hour:r.hour,total:0,missed:0};branchHour[bk].total++;if(r.direction==='Inbound'&&!r.answered)branchHour[bk].missed++;
+  });
+  var hourRows=Object.values(hours).map(function(h){h.activeStaff=Object.keys(h.staffSet).length;h.missRate=h.inbound?h.inbound_missed/h.inbound*100:0;return h;});
+  var busiest=hourRows.slice().sort(function(a,b){return b.total-a.total;})[0]||null;
+  var worstMiss=hourRows.slice().sort(function(a,b){return b.inbound_missed-a.inbound_missed;})[0]||null;
+  var peakRate=hourRows.slice().filter(function(h){return h.inbound>=5;}).sort(function(a,b){return b.missRate-a.missRate;})[0]||null;
+  var branchPressure=Object.values(branchHour).filter(function(b){return b.branch!=='Unknown';}).sort(function(a,b){return b.missed-a.missed||b.total-a.total;}).slice(0,12);
+  return {rows:rows,hours:hourRows,busiest:busiest,worstMiss:worstMiss,peakRate:peakRate,heat:heat,branchPressure:branchPressure};
+}
+
+function buildDataQualityData(){
+  var raw=DS.rawCDRRows||[],unmapped=Object.assign({},DS.unmapped||{});
+  raw.forEach(function(r){if((r.branch||'Unknown')==='Unknown')unmapped[r.user]=(unmapped[r.user]||0)+1;});
+  var unmappedNames=Object.entries(unmapped).sort(function(a,b){return b[1]-a[1];});
+  var duplicates=D.duplicates||[],issues=[];
+  if(!DS.mappingHasCDRName)issues.push({type:'Mapping schema',sev:'med',item:'Mapping CSV has no CDR Name column',fix:'Add a CDR Name column that exactly matches phone-system User Name values.'});
+  unmappedNames.slice(0,50).forEach(function(e){issues.push({type:'Unmapped CDR user',sev:'high',item:e[0]+' ('+e[1]+' calls)',fix:'Add this CDR name to the mapping file or map it from Data Sources.'});});
+  duplicates.slice(0,50).forEach(function(d){issues.push({type:'Duplicate CDR row',sev:'med',item:(d.localCallId||d.remoteCallId||d.dup_key||d.user),fix:'Confirm whether this call appears in multiple files or duplicate exports.'});});
+  Object.entries(CFG_BRANCHES).forEach(function(e){
+    var br=e[1],staff=(br.staff||[]).filter(function(s){return s.name&&s.name!=='Open Desk';});
+    if(!staff.length)issues.push({type:'Branch mapping gap',sev:'med',item:br.name,fix:'Add at least one staff/extension mapping for this branch.'});
+    staff.filter(function(s){return !s.ext;}).forEach(function(s){issues.push({type:'Missing extension',sev:'low',item:br.name+' / '+s.name,fix:'Add extension so phone-number fallback mapping is more reliable.'});});
+  });
+  var mappedRows=raw.filter(function(r){return (r.branch||'Unknown')!=='Unknown';}).length;
+  var coverage=raw.length?mappedRows/raw.length*100:0;
+  return {raw:raw,unmapped:unmappedNames,duplicates:duplicates,coverage:coverage,issues:issues,dateRange:D.date_range||{start:'',end:''}};
+}
+
+function renderRecovery(){
+  var data=buildMissedRecoveryData(getOpFilterValues('recovery')),hrs=Array.from({length:24},function(_,i){return String(i).padStart(2,'0');});
+  document.getElementById('recovery-kpis').innerHTML='<div class="kpi" style="--kpi-c:#ef4444"><div class="kpi-lbl">Missed Inbound</div><div class="kpi-val">'+fmt(data.missed.length)+'</div><div class="kpi-sub">Customer calls not answered</div></div><div class="kpi" style="--kpi-c:#3b82f6"><div class="kpi-lbl">Unique Missed Callers</div><div class="kpi-val">'+fmt(data.uniqueCallers)+'</div></div><div class="kpi" style="--kpi-c:#f59e0b"><div class="kpi-lbl">Repeat Missed Callers</div><div class="kpi-val">'+fmt(data.repeatCallers)+'</div></div><div class="kpi" style="--kpi-c:#10b981"><div class="kpi-lbl">Callbacks Found</div><div class="kpi-val">'+fmt(data.callbacks)+'</div><div class="kpi-sub">Inferred later outbound calls</div></div>';
+  mk('ch-rec-hour','bar',{labels:hrs.map(function(h){return h+':00';}),datasets:[{label:'Missed',data:hrs.map(function(h){return data.byHour[h]||0;}),backgroundColor:cc('#ef4444',.5),borderRadius:4}]},{plugins:{legend:{display:false}}});
+  var br=Object.entries(data.byBranch).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+  mk('ch-rec-branch','bar',{labels:br.map(function(e){return e[0];}),datasets:[{label:'Missed',data:br.map(function(e){return e[1];}),backgroundColor:cc('#f59e0b',.5),borderRadius:4}]},{plugins:{legend:{display:false}},scales:{x:{...CHART_OPTS.scales.x,ticks:{...CHART_OPTS.scales.x.ticks,maxRotation:45,font:{size:9}}},y:CHART_OPTS.scales.y}});
+  var reps=data.callers.filter(function(c){return c.attempts>1;}).slice(0,10);
+  mk('ch-rec-repeat','bar',{labels:reps.map(function(c){return c.phone.slice(-4)||'Unknown';}),datasets:[{label:'Attempts',data:reps.map(function(c){return c.attempts;}),backgroundColor:cc('#8b5cf6',.5),borderRadius:4}]},{plugins:{legend:{display:false}}});
+  var tb=document.getElementById('recovery-tbody');if(!tb)return;if(!data.callers.length){fillEmptyTbody('recovery-tbody',6,'No missed inbound calls for this filter.');return;}
+  tb.innerHTML=data.callers.slice(0,80).map(function(c){var r=c.lastMissed||{};return '<tr><td class="mono">'+esc(c.phone||'Unknown')+'</td><td class="mono">'+c.attempts+'</td><td class="mono dim">'+esc((r.date||'')+' '+(r.time||''))+'</td><td>'+esc(c.branch)+'</td><td>'+esc(c.staff)+'</td><td><span class="badge '+(c.callback?'b-yes':'b-miss')+'">'+(c.callback?'Yes':'No')+'</span></td></tr>';}).join('');
+}
+
+function renderHealth(){
+  var data=buildBranchHealthData(getOpFilterValues('health')),branches=data.branches;
+  document.getElementById('health-kpis').innerHTML='<div class="kpi" style="--kpi-c:#3b82f6"><div class="kpi-lbl">Branches Scored</div><div class="kpi-val">'+branches.length+'</div></div><div class="kpi" style="--kpi-c:#ef4444"><div class="kpi-lbl">Critical Branches</div><div class="kpi-val">'+data.critical+'</div></div><div class="kpi" style="--kpi-c:#10b981"><div class="kpi-lbl">Best Branch</div><div class="kpi-val" style="font-size:20px">'+esc(data.best?data.best.branch:'-')+'</div><div class="kpi-sub">'+(data.best?data.best.score.toFixed(0):0)+' score</div></div><div class="kpi" style="--kpi-c:#f59e0b"><div class="kpi-lbl">Needs Attention</div><div class="kpi-val" style="font-size:20px">'+esc(data.worst?data.worst.branch:'-')+'</div><div class="kpi-sub">'+(data.worst?data.worst.score.toFixed(0):0)+' score</div></div>';
+  var chartRows=branches.slice().sort(function(a,b){return a.score-b.score;}).slice(0,15);
+  mk('ch-health-score','bar',{labels:chartRows.map(function(b){return b.branch;}),datasets:[{label:'Health Score',data:chartRows.map(function(b){return +b.score.toFixed(1);}),backgroundColor:chartRows.map(function(b){return b.status==='Healthy'?cc('#10b981',.5):b.status==='Watch'?cc('#f59e0b',.5):cc('#ef4444',.5);}),borderRadius:4}]},{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{...CHART_OPTS.scales.x,min:0,max:100},y:CHART_OPTS.scales.y}});
+  var risk=document.getElementById('health-risk-list');if(risk)risk.innerHTML=(branches.slice().sort(function(a,b){return a.score-b.score;}).slice(0,6).map(function(b){return '<div class="risk-row"><span>'+esc(b.branch)+'<br><span class="dim">'+esc(b.dm)+'</span></span><span class="score-pill '+statusClass(b.status)+'">'+b.score.toFixed(0)+'</span></div>';}).join('')||'<div class="empty-mini">No branch data.</div>');
+  var tb=document.getElementById('health-tbody');if(!tb)return;if(!branches.length){fillEmptyTbody('health-tbody',10,'No branch data for this filter.');return;}
+  tb.innerHTML=branches.map(function(b){return '<tr><td style="font-weight:600">'+esc(b.branch)+'</td><td>'+esc(b.dm)+'</td><td class="mono">'+b.total+'</td><td class="mono">'+numPct(b.inboundRate)+'</td><td class="mono">'+numPct(b.outboundRate)+'</td><td class="mono">'+b.inbound_missed+'</td><td class="mono">'+b.outbound_no_response+'</td><td class="mono">'+numPct(b.peakMissRate)+'</td><td><span class="score-pill '+statusClass(b.status)+'">'+b.score.toFixed(0)+'</span></td><td>'+b.status+'</td></tr>';}).join('');
+}
+
+function renderCoaching(){
+  var data=buildAgentCoachingData(getOpFilterValues('coaching')),agents=data.agents;
+  document.getElementById('coaching-kpis').innerHTML='<div class="kpi" style="--kpi-c:#ef4444"><div class="kpi-lbl">Need Attention</div><div class="kpi-val">'+data.attention+'</div></div><div class="kpi" style="--kpi-c:#f59e0b"><div class="kpi-lbl">High Missed Inbound</div><div class="kpi-val">'+data.highMissed+'</div></div><div class="kpi" style="--kpi-c:#8b5cf6"><div class="kpi-lbl">Low Outbound Connect</div><div class="kpi-val">'+data.lowOutbound+'</div></div><div class="kpi" style="--kpi-c:#06b6d4"><div class="kpi-lbl">Talk-Time Outliers</div><div class="kpi-val">'+data.talkOutliers+'</div></div>';
+  var top=agents.filter(function(a){return a.priority>0;}).slice(0,12);
+  mk('ch-coach-priority','bar',{labels:top.map(function(a){return a.agent;}),datasets:[{label:'Priority',data:top.map(function(a){return +a.priority.toFixed(1);}),backgroundColor:cc('#ef4444',.45),borderRadius:4}]},{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:CHART_OPTS.scales.x,y:{...CHART_OPTS.scales.y,ticks:{...CHART_OPTS.scales.y.ticks,font:{size:9}}}}});
+  mk('ch-coach-scatter','scatter',{datasets:[{label:'Agents',data:agents.map(function(a){return {x:a.total,y:+a.inboundRate.toFixed(1),agent:a.agent};}),backgroundColor:cc('#3b82f6',.55),pointRadius:4}]},{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){var p=ctx.raw;return (p.agent||'Agent')+': '+p.x+' calls, '+p.y+'% inbound connect';}}}},scales:{x:{type:'linear',title:{display:true,text:'Total Calls',color:'#94a3b8'},ticks:{color:'#94a3b8'},grid:{color:'#1f2d45'}},y:{min:0,max:100,title:{display:true,text:'Inbound Connect %',color:'#94a3b8'},ticks:{color:'#94a3b8'},grid:{color:'#1f2d45'}}}});
+  var tb=document.getElementById('coaching-tbody');if(!tb)return;if(!agents.length){fillEmptyTbody('coaching-tbody',10,'No agent data for this filter.');return;}
+  tb.innerHTML=agents.slice(0,100).map(function(a){return '<tr><td style="font-weight:600">'+esc(a.agent)+'</td><td>'+esc(a.branch)+'</td><td>'+esc(a.dm)+'</td><td class="mono">'+a.total+'</td><td class="mono">'+a.inbound_missed+'</td><td class="mono">'+a.outbound_no_response+'</td><td class="mono">'+numPct(a.inboundRate)+'</td><td class="mono">'+numPct(a.outboundRate)+'</td><td class="mono">'+durFmt(a.avgDur)+'</td><td>'+esc(a.reasons.join(', ')||'Monitor')+'</td></tr>';}).join('');
+}
+
+function renderCoverage(){
+  var data=buildCoverageData(getOpFilterValues('coverage')),hrs=data.hours;
+  document.getElementById('coverage-kpis').innerHTML='<div class="kpi" style="--kpi-c:#3b82f6"><div class="kpi-lbl">Busiest Hour</div><div class="kpi-val">'+(data.busiest?data.busiest.hour+':00':'-')+'</div><div class="kpi-sub">'+(data.busiest?data.busiest.total:0)+' calls</div></div><div class="kpi" style="--kpi-c:#ef4444"><div class="kpi-lbl">Worst Missed Hour</div><div class="kpi-val">'+(data.worstMiss?data.worstMiss.hour+':00':'-')+'</div><div class="kpi-sub">'+(data.worstMiss?data.worstMiss.inbound_missed:0)+' missed inbound</div></div><div class="kpi" style="--kpi-c:#f59e0b"><div class="kpi-lbl">Peak Miss Rate</div><div class="kpi-val">'+(data.peakRate?numPct(data.peakRate.missRate):'0.0%')+'</div></div><div class="kpi" style="--kpi-c:#10b981"><div class="kpi-lbl">Active Staff Peak</div><div class="kpi-val">'+Math.max(0,...hrs.map(function(h){return h.activeStaff||0;}))+'</div></div>';
+  mk('ch-cov-volume','line',{labels:hrs.map(function(h){return h.hour+':00';}),datasets:[{label:'Calls',data:hrs.map(function(h){return h.total;}),borderColor:'#3b82f6',backgroundColor:cc('#3b82f6',.12),fill:true,tension:.35,pointRadius:2}]},{plugins:{legend:{display:false}}});
+  mk('ch-cov-missed','bar',{labels:hrs.map(function(h){return h.hour+':00';}),datasets:[{label:'Missed',data:hrs.map(function(h){return h.inbound_missed;}),backgroundColor:cc('#ef4444',.5),borderRadius:4}]},{plugins:{legend:{display:false}}});
+  var bp=data.branchPressure;
+  mk('ch-cov-branch','bar',{labels:bp.map(function(b){return b.branch;}),datasets:[{label:'Missed',data:bp.map(function(b){return b.missed;}),backgroundColor:cc('#f59e0b',.5),borderRadius:4}]},{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:CHART_OPTS.scales.x,y:{...CHART_OPTS.scales.y,ticks:{...CHART_OPTS.scales.y.ticks,font:{size:9}}}}});
+  renderCoverageHeatmap(data.heat);
+  var tb=document.getElementById('coverage-tbody');if(!tb)return;tb.innerHTML=hrs.map(function(h){return '<tr><td class="mono">'+h.hour+':00</td><td class="mono">'+h.total+'</td><td class="mono">'+h.inbound+'</td><td class="mono">'+h.inbound_missed+'</td><td class="mono">'+h.activeStaff+'</td><td class="mono">'+numPct(h.missRate)+'</td></tr>';}).join('');
+}
+
+function renderCoverageHeatmap(heat){
+  var el=document.getElementById('coverage-heatmap');if(!el)return;
+  var dates=D.dates_available||D.dates||[],hrs=Array.from({length:24},function(_,i){return String(i).padStart(2,'0');});
+  if(!dates.length){el.innerHTML='<div class="empty-mini">No date data available.</div>';return;}
+  var maxV=Math.max(1,...Object.values(heat).map(function(h){return h.total;}));
+  var html='<div class="heatmap" style="grid-template-columns:52px repeat(24,1fr)"><div></div>';
+  hrs.forEach(function(h){html+='<div style="font-size:8px;color:var(--muted);text-align:center">'+h+'</div>';});
+  dates.forEach(function(d){html+='<div style="font-size:9px;color:var(--muted);padding-right:4px">'+d.slice(5)+'</div>';hrs.forEach(function(h){var v=(heat[d+'_'+h]||{}).total||0,m=(heat[d+'_'+h]||{}).missed||0;var bg=v?'rgba(59,130,246,'+Math.max(.08,(v/maxV)*.9)+')':'var(--s2)';html+='<div class="hm-cell" title="'+d+' '+h+':00 - '+v+' calls, '+m+' missed" style="background:'+bg+'">'+(v||'')+'</div>';});});
+  el.innerHTML=html+'</div>';
+}
+
+function renderQuality(){
+  var q=buildDataQualityData();
+  document.getElementById('quality-kpis').innerHTML='<div class="kpi" style="--kpi-c:#ef4444"><div class="kpi-lbl">Unmapped CDR Users</div><div class="kpi-val">'+q.unmapped.length+'</div></div><div class="kpi" style="--kpi-c:#f59e0b"><div class="kpi-lbl">Duplicate Records</div><div class="kpi-val">'+q.duplicates.length+'</div></div><div class="kpi" style="--kpi-c:#10b981"><div class="kpi-lbl">Mapping Coverage</div><div class="kpi-val">'+numPct(q.coverage)+'</div></div><div class="kpi" style="--kpi-c:#3b82f6"><div class="kpi-lbl">Date Range Loaded</div><div class="kpi-val" style="font-size:18px">'+esc(q.dateRange.start||'-')+'</div><div class="kpi-sub">'+esc(q.dateRange.end||'')+'</div></div>';
+  function listRows(id,rows,empty,mapper){var el=document.getElementById(id);if(!el)return;el.innerHTML=rows.length?rows.slice(0,8).map(mapper).join(''):'<div class="empty-mini">'+esc(empty)+'</div>';}
+  listRows('quality-unmapped',q.unmapped,'No unmapped users.',function(e){return '<div class="risk-row"><span>'+esc(e[0])+'</span><span class="badge b-miss">'+e[1]+'</span></div>';});
+  listRows('quality-dupes',q.duplicates,'No duplicates logged.',function(d){return '<div class="risk-row"><span class="mono">'+esc(d.localCallId||d.remoteCallId||d.user||'Duplicate')+'</span><span class="dim">'+esc(d.date||'')+'</span></div>';});
+  var gaps=q.issues.filter(function(i){return i.type==='Mapping schema'||i.type==='Branch mapping gap'||i.type==='Missing extension';});
+  listRows('quality-gaps',gaps,'No mapping gaps found.',function(i){return '<div class="risk-row"><span>'+esc(i.item)+'</span><span class="issue-sev sev-'+i.sev+'">'+i.sev+'</span></div>';});
+  var tb=document.getElementById('quality-tbody');if(!tb)return;if(!q.issues.length){fillEmptyTbody('quality-tbody',4,'No quality issues found.');return;}
+  tb.innerHTML=q.issues.slice(0,150).map(function(i){return '<tr><td>'+esc(i.type)+'</td><td><span class="issue-sev sev-'+i.sev+'">'+esc(i.sev)+'</span></td><td>'+esc(i.item)+'</td><td>'+esc(i.fix)+'</td></tr>';}).join('');
 }
 
 // ══════════════════════════════════════════════════════
@@ -2160,6 +2656,7 @@ var DS = {
   demoLoaded: false,
   demoLoading: false,
   demoAutoTried: false,
+  mappingHasCDRName: false,
 };
 
 // ── Utility ──────────────────────────────────────────────────────────────────
@@ -2244,6 +2741,11 @@ function dsRefreshDataViews() {
   }
   if (curPage === 'executive') renderExec();
   else if (curPage === 'manager') renderMgr();
+  else if (curPage === 'recovery') renderRecovery();
+  else if (curPage === 'health') renderHealth();
+  else if (curPage === 'coaching') renderCoaching();
+  else if (curPage === 'coverage') renderCoverage();
+  else if (curPage === 'quality') renderQuality();
   else if (curPage === 'agents') renderAgents();
   else if (curPage === 'cdr') renderCDR(1);
   else if (curPage === 'myperformance') renderMyPerf();
@@ -2322,6 +2824,7 @@ function dsUnloadDemoData() {
   dsResetAllDataset();
   DS.demoLoaded = false;
   DS.demoLoading = false;
+  DS.mappingHasCDRName = false;
   dsUpdateDemoButton();
   dsSetDemoStatus('Demo data unloaded. You can load local CSV files now.', 'info');
   showToast('Demo data unloaded', 'ok');
@@ -2378,6 +2881,7 @@ function dsParseMapping(file) {
       var colStaff   = findCol(['staff name', 'agent name', 'employee', 'staff', 'agent', 'name']);
       var colExt     = findCol(['extension', 'ext']);
       var colCDRName = findCol(['cdr name', 'user name', 'username', 'cdr', 'seat']);
+      DS.mappingHasCDRName = colCDRName >= 0;
 
       // If staff column would match the branch column, find the NEXT name column
       if (colStaff === colBranch && colStaff >= 0) {
@@ -2559,6 +3063,8 @@ function dsParseCSV(file) {
       var colSrc       = findHdr(['source file','source','file name']);
       var colCallingTN = findHdr(['calling tn','calling number','caller number','from number','ani','calling party']);
       var colCalledTN  = findHdr(['called tn','called number','dialed number','to number','dnis','called party','destination']);
+      var colLocalId   = findHdr(['local call id','local id']);
+      var colRemoteId  = findHdr(['remote call id','remote id']);
 
       // Must have at minimum user + direction
       if (!colUser || !colDir) {
@@ -2586,6 +3092,8 @@ function dsParseCSV(file) {
         var srcFile   = colSrc  ? (r[colSrc]  || '').trim() : '';
         var startDate = normaliseDateStr(colDate ? (r[colDate] || '').trim() : '');
         var startTime = colTime ? (r[colTime] || '').trim() : '';
+        var localCallId = colLocalId ? (r[colLocalId] || '').trim() : '';
+        var remoteCallId = colRemoteId ? (r[colRemoteId] || '').trim() : '';
 
         // Fallback date from source file name
         if (!startDate && srcFile) startDate = srcFile.slice(0,10);
@@ -2657,6 +3165,7 @@ function dsParseCSV(file) {
             date: startDate, time: startTime,
             user: userName,  direction: dir,
             answered: ans,   duration: dur,
+            localCallId: localCallId, remoteCallId: remoteCallId,
             dup_key: dk
           });
           return;
@@ -2698,6 +3207,8 @@ function dsParseCSV(file) {
           dur_secs:   durSecs,
           callingTN:  colCallingTN ? (r[colCallingTN]||'').trim() : '',
           calledTN:   colCalledTN  ? (r[colCalledTN] ||'').trim() : '',
+          localCallId: localCallId,
+          remoteCallId: remoteCallId,
           source:     srcFile || file.name
         });
         accepted++;
@@ -2931,6 +3442,11 @@ function dsNormalise() {
     setTimeout(function(){
       if      (curPage==='executive')    renderExec();
       else if (curPage==='manager')      renderMgr();
+      else if (curPage==='recovery')     renderRecovery();
+      else if (curPage==='health')       renderHealth();
+      else if (curPage==='coaching')     renderCoaching();
+      else if (curPage==='coverage')     renderCoverage();
+      else if (curPage==='quality')      renderQuality();
       else if (curPage==='agents')       renderAgents();
       else if (curPage==='myperformance')renderMyPerf();
     }, 50);
@@ -3122,6 +3638,7 @@ function dsParseMappingText(text, fileName) {
       var colBranch=findCol(['branch name','branch']),colDM=findCol(['district manager','manager','dm']);
       var colStaff=findCol(['staff name','agent name','employee','staff','agent','name']);
       var colExt=findCol(['extension','ext']),colCDRName=findCol(['cdr name','user name','username','cdr','seat']);
+      DS.mappingHasCDRName = colCDRName >= 0;
       if(colStaff===colBranch&&colStaff>=0){colStaff=-1;for(var hi2=0;hi2<h.length;hi2++){if(hi2!==colBranch&&hi2!==colDM&&(h[hi2].indexOf('name')>=0||h[hi2].indexOf('staff')>=0||h[hi2].indexOf('agent')>=0)){colStaff=hi2;break;}}}
       if(colBranch<0||colDM<0){dsSetStatus('ds-map-status','Could not find Branch and DM columns in '+fileName,'err');return;}
       CFG_BRANCHES={}; DM_FULL={}; DM_SHORT={}; D.cdr_user_map={};
